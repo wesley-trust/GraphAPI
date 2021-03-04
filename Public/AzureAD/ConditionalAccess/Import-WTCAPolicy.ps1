@@ -127,17 +127,16 @@ function Import-WTCAPolicy {
     Begin {
         try {
             # Function definitions
-            $FunctionLocation = "$ENV:USERPROFILE\GitHub\Scripts\Functions"
             $Functions = @(
-                "$FunctionLocation\GraphAPI\Get-WTGraphAccessToken.ps1",
-                "$FunctionLocation\Toolkit\Invoke-WTPropertyTagging.ps1",
-                "$FunctionLocation\Azure\AzureAD\ConditionalAccess\Remove-WTCAPolicy.ps1",
-                "$FunctionLocation\Azure\AzureAD\ConditionalAccess\Get-WTCAPolicy.ps1",
-                "$FunctionLocation\Azure\AzureAD\ConditionalAccess\New-WTCAPolicy.ps1"
-                "$FunctionLocation\Azure\AzureAD\ConditionalAccess\New-WTCAGroup.ps1"
-                "$FunctionLocation\Azure\AzureAD\ConditionalAccess\Edit-WTCAPolicy.ps1"
-                "$FunctionLocation\Azure\AzureAD\ConditionalAccess\Export-WTCAPolicy.ps1"
-                "$FunctionLocation\Azure\AzureAD\ConditionalAccess\Remove-WTCAGroup.ps1"
+                "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
+                "Toolkit\Public\Invoke-WTPropertyTagging.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Remove-WTCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\New-WTCAPolicy.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\New-WTCAGroup.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Edit-WTCAPolicy.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Export-WTCAPolicy.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Remove-WTCAGroup.ps1"
             )
 
             # Function dot source

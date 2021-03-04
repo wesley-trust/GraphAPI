@@ -99,10 +99,9 @@ function Invoke-WTGraphPatch {
     Begin {
         try {
             # Function definitions
-            $FunctionLocation = "$ENV:USERPROFILE\GitHub\Scripts\Functions"
             $Functions = @(
-                "$FunctionLocation\GraphAPI\Get-WTGraphAccessToken.ps1",
-                "$FunctionLocation\GraphAPI\Invoke-WTGraphQuery.ps1"
+                "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
+                "GraphAPI\Private\Invoke-WTGraphQuery.ps1"
             )
 
             # Function dot source

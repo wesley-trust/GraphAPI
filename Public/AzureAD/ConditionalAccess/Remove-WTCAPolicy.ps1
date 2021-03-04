@@ -91,11 +91,10 @@ function Remove-WTCAPolicy {
     Begin {
         try {
             # Function definitions
-            $FunctionLocation = "$ENV:USERPROFILE\GitHub\Scripts\Functions"
             $Functions = @(
-                "$FunctionLocation\GraphAPI\Get-WTGraphAccessToken.ps1",
-                "$FunctionLocation\GraphAPI\Invoke-WTGraphDelete.ps1",
-                "$FunctionLocation\Azure\AzureAD\ConditionalAccess\Get-WTCAPolicy.ps1"
+                "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
+                "GraphAPI\Private\Invoke-WTGraphDelete.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAPolicy.ps1"
             )
 
             # Function dot source

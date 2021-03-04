@@ -81,11 +81,10 @@ function Remove-WTCAGroup {
     Begin {
         try {
             # Function definitions
-            $FunctionLocation = "$ENV:USERPROFILE\GitHub\Scripts\Functions"
             $Functions = @(
-                "$FunctionLocation\GraphAPI\Get-WTGraphAccessToken.ps1",
-                "$FunctionLocation\Azure\AzureAD\ConditionalAccess\Get-WTCAGroup.ps1"
-                "$FunctionLocation\Azure\AzureAD\Groups\Remove-WTAzureADGroup.ps1"
+                "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAGroup.ps1"
+                "GraphAPI\Public\AzureAD\Groups\Remove-WTAzureADGroup.ps1"
             )
 
             # Function dot source

@@ -176,16 +176,21 @@ function Import-WTCAPolicy {
                     }
                 }
 
-                # For each directory, get the file path of all JSON files within the directory
+                # For each directory, get the file path of all JSON files within the directory, if the directory exists
                 if ($Path) {
-                    $FilePath = foreach ($Directory in $Path) {
-                        (Get-ChildItem -Path $Directory -Filter "*.json").FullName
+                    $PathExists = Test-Path -Path $Path
+                    if ($PathExists) {
+                        $FilePath = foreach ($Directory in $Path) {
+                            (Get-ChildItem -Path $Directory -Filter "*.json").FullName
+                        }
                     }
                 }
 
                 # Import policies from JSON file
-                $ConditionalAccessPolicies = foreach ($File in $FilePath) {
-                    Get-Content -Raw -Path $File
+                if ($FilePath){
+                    $ConditionalAccessPolicies = foreach ($File in $FilePath) {
+                        Get-Content -Raw -Path $File
+                    }
                 }
 
                 # If a file has been imported, convert from JSON to an object for deployment
@@ -196,12 +201,12 @@ function Import-WTCAPolicy {
                     Write-Host "Importing Conditional Access Policies (Count: $($ConditionalAccessPolicies.count))"
                 }
                 else {
-                    $WarningMessage = "No Conditional Access policies to be imported"
+                    $WarningMessage = "No Conditional Access policies to be imported, import may have failed or none may exist"
                     Write-Warning $WarningMessage
 
                     # If there are no policies to import, but existing policies should be removed, for safety, "Force" is required
                     if ($RemoveExistingPolicies -and !$Force) {
-                        $ErrorMessage = "To remove any existing policies use the switch -Force"
+                        $ErrorMessage = "To continue, which will remove all existing policies, use the switch -Force"
                         throw $ErrorMessage
                     }
                 }

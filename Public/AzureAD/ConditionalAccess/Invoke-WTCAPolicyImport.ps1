@@ -253,6 +253,9 @@ function Invoke-WTCAPolicyImport {
                         if ($PolicyState) {
                             $ApplyParameters.Add("PolicyState", $PolicyState)
                         }
+                        if ($Pipeline) {
+                            $ApplyParameters.Add("Pipeline", $true)
+                        }
                     
                         # Apply plan to Azure AD
                         Write-Host "Stage 3: Apply"

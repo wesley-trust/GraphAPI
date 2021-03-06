@@ -276,7 +276,7 @@ function Invoke-WTApplyCAPolicy {
 
                     # If executing in a pipeline, commit and push the changes back to the repo
                     if ($Pipeline) {
-                        Set-Location %REPOHOME$
+                        Set-Location %REPOHOME%
                         git config user.email AzurePipeline@wesleytrust.com
                         git config user.name AzurePipeline
                         git commit -a -m "Commit configuration changes post deployment [skip ci]"

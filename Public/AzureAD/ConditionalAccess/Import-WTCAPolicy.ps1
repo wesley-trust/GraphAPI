@@ -42,7 +42,7 @@
     Import-WTCAPolicy.ps1 -AccessToken $AccessToken -FilePath ""
 #>
 
-function Import-WTCAPolicy {
+function Invoke-WTCAPolicyImport {
     [cmdletbinding()]
     param (
         [parameter(
@@ -122,31 +122,29 @@ function Import-WTCAPolicy {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "If there are no policies to import, whether to forcibly remove any existing policies"
         )]
-        [switch]$Force
+        [switch]$Force,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "Specify until what stage the import should invoke. All preceding stages will execute as dependencies"
+        )]
+        [ValidateSet("Validate", "Plan", "Apply")]
+        [string]$Stage = "Apply"
     )
     Begin {
         try {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "Toolkit\Public\Invoke-WTPropertyTagging.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Remove-WTCAPolicy.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAPolicy.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\New-WTCAPolicy.ps1"
-                "GraphAPI\Public\AzureAD\ConditionalAccess\New-WTCAGroup.ps1"
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Edit-WTCAPolicy.ps1"
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Export-WTCAPolicy.ps1"
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Remove-WTCAGroup.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Invoke-WTValidateCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Invoke-WTPlanCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Invoke-WTApplyCAPolicy.ps1"
             )
 
             # Function dot source
             foreach ($Function in $Functions) {
                 . $Function
             }
-
-            # Variables
-            $Tags = @("REF", "ENV")
-            $PropertyToTag = "DisplayName"
         }
         catch {
             Write-Error -Message $_.Exception
@@ -155,239 +153,110 @@ function Import-WTCAPolicy {
     }
     Process {
         try {
-            
-            # If there is no access token, obtain one
-            if (!$AccessToken) {
-                $AccessToken = Get-WTGraphAccessToken `
-                    -ClientID $ClientID `
-                    -ClientSecret $ClientSecret `
-                    -TenantDomain $TenantDomain
-            }
 
-            if ($AccessToken) {
+            if ($Stage -eq "Validate" -or $Stage -eq "Plan" -or $Stage -eq "Apply") {
                 
                 # Build Parameters
-                $Parameters = @{
-                    AccessToken = $AccessToken
-                }
+                $ValidateParameters = @{}
                 if ($ExcludePreviewFeatures) {
-                    $Parameters += @{
-                        ExcludePreviewFeatures = $true
-                    }
+                    $ValidateParameters.Add("ExcludePreviewFeatures", $true)
                 }
-
-                # For each directory, get the file path of all JSON files within the directory, if the directory exists
-                if ($Path) {
-                    $PathExists = Test-Path -Path $Path
-                    if ($PathExists) {
-                        $FilePath = foreach ($Directory in $Path) {
-                            (Get-ChildItem -Path $Directory -Filter "*.json").FullName
-                        }
-                    }
+                if ($FilePath) {
+                    $ValidateParameters.Add("FilePath", $FilePath)
                 }
-
-                # Import policies from JSON file
-                if ($FilePath){
-                    $ConditionalAccessPolicies = foreach ($File in $FilePath) {
-                        Get-Content -Raw -Path $File
-                    }
+                elseif ($Path) {
+                    $ValidateParameters.Add("Path", $Path)
                 }
-
-                # If a file has been imported, convert from JSON to an object for deployment
-                if ($ConditionalAccessPolicies) {
-                    $ConditionalAccessPolicies = $ConditionalAccessPolicies | ConvertFrom-Json
-                    
-                    # Output current action
-                    Write-Host "Importing Conditional Access Policies (Count: $($ConditionalAccessPolicies.count))"
-                }
-                else {
-                    $WarningMessage = "No Conditional Access policies to be imported, import may have failed or none may exist"
-                    Write-Warning $WarningMessage
-
-                    # If there are no policies to import, but existing policies should be removed, for safety, "Force" is required
+            
+                # Import and validate policies
+                Write-Host "Validate Stage"
+                $ValidateCAPolicies = Invoke-WTValidateCAPolicy @ValidateParameters
+            
+                # If there are no policies to import, but existing policies should be removed, for safety, "Force" is required
+                if (!$ValidateCAPolicies) {
                     if ($RemoveExistingPolicies -and !$Force) {
                         $ErrorMessage = "To continue, which will remove all existing policies, use the switch -Force"
                         throw $ErrorMessage
                     }
                 }
+            }
+
+            if ($Stage -eq "Plan" -or $Stage -eq "Apply") {
+
+                # If there is no access token, obtain one
+                if (!$AccessToken) {
+                    $AccessToken = Get-WTGraphAccessToken `
+                        -ClientID $ClientID `
+                        -ClientSecret $ClientSecret `
+                        -TenantDomain $TenantDomain
+                }
+
+                if ($AccessToken) {
+
+                    # Build Parameters
+                    $PlanParameters = @{
+                        AccessToken = $AccessToken
+                    }
+                    if ($ExcludePreviewFeatures) {
+                        $PlanParameters.Add("ExcludePreviewFeatures", $true)
+                    }
+                    if ($ValidateCAPolicies) {
+                        $PlanParameters.Add("ConditionalAccessPolicies", $ValidateCAPolicies)
+                    }
+                    if ($UpdateExistingPolicies) {
+                        $PlanParameters.Add("UpdateExistingPolicies", $true)
+                    }
+                    if ($RemoveExistingPolicies) {
+                        $PlanParameters.Add("RemoveExistingPolicies", $true)
+                    }
+                    if ($Force) {
+                        $PlanParameters.Add("Force", $true)
+                    }
                 
-                # Evaluate policies if parameters exist
-                if ($RemoveExistingPolicies -or $UpdateExistingPolicies) {
+                    # Create plan evaluating whether to create, update or remove policies
+                    Write-Host "Plan Stage"
+                    $PlanCAPolicies = Invoke-WTPlanCAPolicy @PlanParameters
 
-                    # Get existing policies for comparison
-                    $ExistingPolicies = Get-WTCAPolicy @Parameters
+                }
+                else {
+                    $ErrorMessage = "No access token specified, obtain an access token object from Get-WTGraphAccessToken"
+                    Write-Error $ErrorMessage
+                    throw $ErrorMessage
+                }
 
-                    if ($ExistingPolicies) {
+                if ($Stage -eq "Apply") {
+                    if ($PlanCAPolicies) {
 
-                        if ($ConditionalAccessPolicies) {
-
-                            # Compare object on id and pass thru all objects, including those that exist and are to be imported
-                            $PolicyComparison = Compare-Object `
-                                -ReferenceObject $ExistingPolicies `
-                                -DifferenceObject $ConditionalAccessPolicies `
-                                -Property id `
-                                -PassThru
-                                
-                            # Filter for policies that should be removed, as they do not exist in the import
-                            $RemovePolicies = $PolicyComparison | Where-Object { $_.sideindicator -eq "<=" }
-
-                            # Filter for policies that did not contain an id, and so are policies that should be created
-                            $CreatePolicies = $PolicyComparison | Where-Object { $_.sideindicator -eq "=>" }
+                        # Build Parameters
+                        $ApplyParameters = @{
+                            AccessToken               = $AccessToken
+                            ConditionalAccessPolicies = $PlanCAPolicies
                         }
-                        else {
-
-                            # If force is enabled, then if removal of policies is specified, all existing will be removed
-                            if ($Force) {
-                                $RemovePolicies = $ExistingPolicies
-                            }
-                        }
-
-                        if ($RemoveExistingPolicies) {
-
-                            # If policies require removing, pass the ids to the remove function
-                            if ($RemovePolicies) {
-                                $PolicyIDs = $RemovePolicies.id
-                                Remove-WTCAPolicy @Parameters -PolicyIDs $PolicyIDs
-
-                                # If the switch to not remove groups is not set, remove the groups for each Conditional Access policy also
-                                if (!$ExcludeGroupRemoval) {
-                                
-                                    # Policy Include groups
-                                    $PolicyIncludeGroupIDs = $RemovePolicies.conditions.users.includeGroups
-                                
-                                    # Policy Exclude groups
-                                    $PolicyExcludeGroupIDs = $RemovePolicies.conditions.users.excludeGroups
-                                
-                                    # Combined unique list
-                                    $PolicyGroupIDs = $PolicyIncludeGroupIDs + $PolicyExcludeGroupIDs | Sort-Object -Unique
-
-                                    # Pass all groups, which will perform a check and remove only Conditional Access groups
-                                    Remove-WTCAGroup @Parameters -IDs $PolicyGroupIDs
-                                }
-                            }
-                            else {
-                                $WarningMessage = "No policies will be removed, as none exist that are different to the import"
-                                Write-Warning $WarningMessage
-                            }
-
+                        if ($ExcludePreviewFeatures) {
+                            $ApplyParameters.Add("ExcludePreviewFeatures", $true)
                         }
                         if ($UpdateExistingPolicies) {
-                            if ($ConditionalAccessPolicies) {
-                                
-                                # Check whether the policies that could be updated have valid ids (so can be updated, ignore the rest)
-                                $UpdatePolicies = foreach ($Policy in $ConditionalAccessPolicies) {
-                                    if ($Policy.id -in $ExistingPolicies.id) {
-                                        $Policy
-                                    }
-                                }
-
-                                # If policies exist, with ids that matched the import
-                                if ($UpdatePolicies) {
-                            
-                                    # Compare again, with all mandatory property elements for differences
-                                    $PolicyPropertyComparison = Compare-Object `
-                                        -ReferenceObject $ExistingPolicies `
-                                        -DifferenceObject $UpdatePolicies `
-                                        -Property id, displayName, state, sessionControls, conditions, grantControls
-
-                                    $UpdatePolicies = $PolicyPropertyComparison | Where-Object { $_.sideindicator -eq "=>" }
-                                }
-
-                                # If policies require updating, pass the ids
-                                if ($UpdatePolicies) {
-                                    Edit-WTCAPolicy @Parameters -ConditionalAccessPolicies $UpdatePolicies -PolicyState $PolicyState
-                                }
-                                else {
-                                    $WarningMessage = "No policies will be updated, as none exist that are different to the import"
-                                    Write-Warning $WarningMessage
-                                }
-                            }
+                            $ApplyParameters.Add("UpdateExistingPolicies", $true)
                         }
+                        if ($RemoveExistingPolicies) {
+                            $ApplyParameters.Add("RemoveExistingPolicies", $true)
+                        }
+                        if ($ExcludeGroupRemoval) {
+                            $ApplyParameters.Add("ExcludeGroupRemoval", $true)
+                        }
+                        if ($PolicyState) {
+                            $ApplyParameters.Add("PolicyState", $PolicyState)
+                        }
+                    
+                        # Apply plan to Azure AD
+                        Write-Host "Apply Stage"
+                        Invoke-WTApplyCAPolicy @ApplyParameters
                     }
                     else {
-                        # If no policies exist, any imported must be created
-                        $CreatePolicies = $ConditionalAccessPolicies
+                        $WarningMessage = "No policies will be created, updated or removed, as none exist that are different to the import"
+                        Write-Warning $WarningMessage
                     }
                 }
-                else {
-                    # If no policies are to be removed or updated, any imported must be created
-                    $CreatePolicies = $ConditionalAccessPolicies
-                }
-                
-                # If there are new policies to be created, create them, passing through the policy state
-                if ($CreatePolicies) {
-                        
-                    # Remove existing tags, so these can be updated from the display name
-                    foreach ($Tag in $Tags) {
-                        $CreatePolicies | Foreach-Object {
-                            $_.PSObject.Properties.Remove($Tag)
-                        }
-                    }
-                        
-                    # Evaluate the tags on the policies to be created
-                    $TaggedPolicies = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $CreatePolicies -PropertyToTag $PropertyToTag
-
-                    # Calculate the display names to be used for the CA groups
-                    $CAGroupDisplayNames = foreach ($Policy in $TaggedPolicies) {
-                        $DisplayName = $null
-                        foreach ($Tag in $Tags) {
-                            $DisplayName += $Tag + "-" + $Policy.$Tag + ";"
-                        }
-                        $DisplayName
-                    }
-
-                    # Create include and exclude groups
-                    $ConditionalAccessIncludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAGroupDisplayNames -GroupType Include
-                    $ConditionalAccessExcludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAGroupDisplayNames -GroupType Exclude
-                        
-                    # Tag groups
-                    $TaggedCAIncludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessIncludeGroups -PropertyToTag $PropertyToTag
-                    $TaggedCAExcludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessExcludeGroups -PropertyToTag $PropertyToTag
-                        
-                    # For each policy, find the matching group
-                    $CreatePolicies = foreach ($Policy in $TaggedPolicies) {
-                            
-                        # Find the matching include group
-                        $CAIncludeGroup = $null
-                        $CAIncludeGroup = $TaggedCAIncludeGroups | Where-Object {
-                            $_.ref -eq $Policy.ref -and $_.env -eq $Policy.env
-                        }
-
-                        # Update the property with the group id, which must be in an array, and return the policy
-                        $Policy.conditions.users.includeGroups = @($CAIncludeGroup.id)
-
-                        # Find the matching exclude group
-                        $CAExcludeGroup = $null
-                        $CAExcludeGroup = $TaggedCAExcludeGroups | Where-Object {
-                            $_.ref -eq $Policy.ref -and $_.env -eq $Policy.env
-                        }
-
-                        # Update the property with the group id, which must be in an array
-                        $Policy.conditions.users.excludeGroups = @($CAExcludeGroup.id)
-                            
-                        # Return the policy
-                        $Policy
-                    }
-
-                    # Create policies
-                    $ConditionalAccessPolicies = New-WTCAPolicy @Parameters `
-                        -ConditionalAccessPolicies $CreatePolicies `
-                        -PolicyState $PolicyState
-                        
-                    # Update configuration files
-                    Export-WTCAPolicy -ConditionalAccessPolicies $ConditionalAccessPolicies `
-                        -Path $Path `
-                        -ExcludeExportCleanup
-                }
-                else {
-                    $WarningMessage = "No policies will be created, as none exist that are different to the import"
-                    Write-Warning $WarningMessage
-                }
-            }
-            else {
-                $ErrorMessage = "No access token specified, obtain an access token object from Get-WTGraphAccessToken"
-                Write-Error $ErrorMessage
-                throw $ErrorMessage
             }
         }
         catch {

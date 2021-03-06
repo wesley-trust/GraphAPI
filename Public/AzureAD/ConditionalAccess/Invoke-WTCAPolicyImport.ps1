@@ -169,7 +169,7 @@ function Invoke-WTCAPolicyImport {
                 }
             
                 # Import and validate policies
-                Write-Host "Validate Stage"
+                Write-Host "Stage 1: Validate"
                 $ValidateCAPolicies = Invoke-WTValidateCAPolicy @ValidateParameters
             
                 # If there are no policies to import, but existing policies should be removed, for safety, "Force" is required
@@ -214,7 +214,7 @@ function Invoke-WTCAPolicyImport {
                     }
                 
                     # Create plan evaluating whether to create, update or remove policies
-                    Write-Host "Plan Stage"
+                    Write-Host "Stage 2: Plan"
                     $PlanCAPolicies = Invoke-WTPlanCAPolicy @PlanParameters
 
                 }
@@ -249,7 +249,7 @@ function Invoke-WTCAPolicyImport {
                         }
                     
                         # Apply plan to Azure AD
-                        Write-Host "Apply Stage"
+                        Write-Host "Stage 3: Apply"
                         Invoke-WTApplyCAPolicy @ApplyParameters
                     }
                     else {

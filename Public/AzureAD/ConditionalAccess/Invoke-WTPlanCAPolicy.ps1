@@ -134,6 +134,9 @@ function Invoke-WTPlanCAPolicy {
             }
 
             if ($AccessToken) {
+
+                # Output current action
+                Write-Host "Evaluating Conditional Access Policies"
                 
                 # Build Parameters
                 $Parameters = @{
@@ -220,12 +223,33 @@ function Invoke-WTPlanCAPolicy {
 
                 if ($RemovePolicies) {
                     $PlanCAPolicies.Add("RemovePolicies", $RemovePolicies)
+                    
+                    # Output current action
+                    Write-Host "Policies to remove: $($RemovePolicies.count)"
+
+                    foreach ($Policy in $RemovePolicies) {
+                        Write-Host "Remove: Policy ID: $($Policy.id)" -ForegroundColor DarkRed
+                    }
                 }
                 if ($UpdatePolicies) {
                     $PlanCAPolicies.Add("UpdatePolicies", $UpdatePolicies)
+                                        
+                    # Output current action
+                    Write-Host "Policies to update: $($UpdatePolicies.count)"
+                    
+                    foreach ($Policy in $UpdatePolicies) {
+                        Write-Host "Update: Policy ID: $($Policy.id)" -ForegroundColor DarkYellow
+                    }
                 }
                 if ($CreatePolicies) {
-                    $PlanCAPolicy.Add("CreatePolicies", $CreatePolicies)
+                    $PlanCAPolicies.Add("CreatePolicies", $CreatePolicies)
+                                        
+                    # Output current action
+                    Write-Host "Policies to create: $($CreatePolicies.count)"
+
+                    foreach ($Policy in $CreatePolicies) {
+                        Write-Host "Create: Policy Name: $($Policy.displayName)" -ForegroundColor DarkGreen
+                    }
                 }
 
                 # If there are policies, return PS object

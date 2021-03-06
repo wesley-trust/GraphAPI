@@ -99,7 +99,7 @@ function Get-WTCAPolicy {
             }
 
             # Variables
-            $Activity = "Getting Conditional Access Policies"
+            $Activity = "Getting Conditional Access Policies from Azure AD"
             $Uri = "identity/conditionalAccess/policies"
             $Tags = @("REF", "VER", "ENV")
 

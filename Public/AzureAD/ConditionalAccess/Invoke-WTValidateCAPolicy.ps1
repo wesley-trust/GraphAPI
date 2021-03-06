@@ -90,12 +90,18 @@ function Invoke-WTValidateCAPolicy {
             # If a file has been imported, convert from JSON to an object for deployment
             if ($ConditionalAccessPolicies) {
                 $ConditionalAccessPolicies = $ConditionalAccessPolicies | ConvertFrom-Json
-                    
+                
                 # Output current action
-                Write-Host "Importing Conditional Access Policies (Count: $($ConditionalAccessPolicies.count))"
-
+                Write-Host "Importing Conditional Access Policies"
+                Write-Host "Policies: $($ConditionalAccessPolicies.count)"
+                
+                foreach ($Policy in $ConditionalAccessPolicies){
+                    Write-Host "Import: Policy Name: $($Policy.displayName)"
+                }
+                
                 # TODO: Validate import contains mandatory fields
                 if ($ConditionalAccessPolicies) {
+
                     $ValidateCAPolicies = $ConditionalAccessPolicies
                     
                     # Return policies

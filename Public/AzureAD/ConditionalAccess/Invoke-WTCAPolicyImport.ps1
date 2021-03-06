@@ -129,7 +129,13 @@ function Invoke-WTCAPolicyImport {
             HelpMessage = "Specify until what stage the import should invoke. All preceding stages will execute as dependencies"
         )]
         [ValidateSet("Validate", "Plan", "Apply")]
-        [string]$Stage = "Apply"
+        [string]$Stage = "Apply",
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "Specify whether the function is operating within a pipeline"
+        )]
+        [switch]$Pipeline
     )
     Begin {
         try {

@@ -110,7 +110,13 @@ function Invoke-WTApplyCAPolicy {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "Specify whether to exclude features in preview, a production API version will then be used instead"
         )]
-        [switch]$ExcludePreviewFeatures
+        [switch]$ExcludePreviewFeatures,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "Specify whether the function is operating within a pipeline"
+        )]
+        [switch]$Pipeline
     )
     Begin {
         try {
@@ -268,8 +274,13 @@ function Invoke-WTApplyCAPolicy {
                         -Path $Path `
                         -ExcludeExportCleanup
 
-                    # Commit and push changed policies
-
+                    # If executing in a pipeline, commit and push the changes back to the repo
+                    if ($Pipeline) {
+                        git config user.email AzurePipeline@wesleytrust.com
+                        git config user.name AzurePipeline
+                        git commit -a -m "Commit configuration changes post deployment [skip ci]"
+                        git push https://%GITHUBPAT%@github.com/wesley-trust/GraphAPIConfig.git HEAD:main
+                    }
                 }
                 else {
                     $WarningMessage = "No policies will be created, as none exist that are different to the import"

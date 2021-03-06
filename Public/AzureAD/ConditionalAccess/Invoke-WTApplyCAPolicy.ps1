@@ -280,7 +280,7 @@ function Invoke-WTApplyCAPolicy {
                         git config user.email AzurePipeline@wesleytrust.com
                         git config user.name AzurePipeline
                         git commit -a -m "Commit configuration changes post deployment [skip ci]"
-                        git push https://%GITHUBPAT%@github.com/wesley-trust/GraphAPIConfig.git HEAD:main
+                        git push https://${env:GITHUBPAT}@github.com/wesley-trust/GraphAPIConfig.git HEAD:main
                     }
                 }
                 else {

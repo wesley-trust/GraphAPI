@@ -231,6 +231,9 @@ function Invoke-WTPlanCAPolicy {
                         Write-Host "Remove: Policy ID: $($Policy.id)" -ForegroundColor DarkRed
                     }
                 }
+                else {
+                    Write-Host "No policies will be removed, as none exist that are different to the import"
+                }
                 if ($UpdatePolicies) {
                     $PlanCAPolicies.Add("UpdatePolicies", $UpdatePolicies)
                                         
@@ -241,6 +244,9 @@ function Invoke-WTPlanCAPolicy {
                         Write-Host "Update: Policy ID: $($Policy.id)" -ForegroundColor DarkYellow
                     }
                 }
+                else {
+                    Write-Host "No policies will be updated, as none exist that are different to the import"
+                }
                 if ($CreatePolicies) {
                     $PlanCAPolicies.Add("CreatePolicies", $CreatePolicies)
                                         
@@ -250,6 +256,9 @@ function Invoke-WTPlanCAPolicy {
                     foreach ($Policy in $CreatePolicies) {
                         Write-Host "Create: Policy Name: $($Policy.displayName)" -ForegroundColor DarkGreen
                     }
+                }
+                else {
+                    Write-Host "No policies will be created, as none exist that are different to the import"
                 }
 
                 # If there are policies, return PS object

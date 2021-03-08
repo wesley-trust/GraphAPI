@@ -258,8 +258,7 @@ function Invoke-WTPlanCAPolicy {
                     $PlanCAPolicies
                 }
                 else {
-                    $WarningMessage = "No policies will be created, updated or removed, as none exist that are different to the import"
-                    Write-Warning $WarningMessage
+                    Write-Host = "No policies will be created, updated or removed, as none exist that are different to the import"
                 }
             }
             else {

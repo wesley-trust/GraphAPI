@@ -114,6 +114,18 @@ function Invoke-WTApplyCAPolicy {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "The file path to the JSON file(s) that will be exported"
+        )]
+        [string]$FilePath,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "The directory path(s) of which all JSON file(s) will be exported"
+        )]
+        [string]$Path,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "Specify whether the function is operating within a pipeline"
         )]
         [switch]$Pipeline
@@ -212,6 +224,7 @@ function Invoke-WTApplyCAPolicy {
                 # If there are new policies to be created, create them, passing through the policy state
                 if ($ConditionalAccessPolicies.CreatePolicies) {
                     $CreatePolicies = $ConditionalAccessPolicies.CreatePolicies
+                    
                     # Remove existing tags, so these can be updated from the display name
                     foreach ($Tag in $Tags) {
                         $CreatePolicies | Foreach-Object {
@@ -276,11 +289,11 @@ function Invoke-WTApplyCAPolicy {
 
                     # If executing in a pipeline, commit and push the changes back to the repo
                     if ($Pipeline) {
-                        Set-Location ${env:REPOHOME}
+                        Set-Location ${ENV:REPOHOME}
                         git config user.email AzurePipeline@wesleytrust.com
                         git config user.name AzurePipeline
                         git commit -a -m "Commit configuration changes post deployment [skip ci]"
-                        git push https://${env:GITHUBPAT}@github.com/wesley-trust/GraphAPIConfig.git HEAD:main
+                        git push https://${ENV:GITHUBPAT}@github.com/wesley-trust/GraphAPIConfig.git HEAD:main
                     }
                 }
                 else {

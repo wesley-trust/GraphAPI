@@ -253,6 +253,12 @@ function Invoke-WTCAPolicyImport {
                         if ($PolicyState) {
                             $ApplyParameters.Add("PolicyState", $PolicyState)
                         }
+                        if ($FilePath) {
+                            $ValidateParameters.Add("FilePath", $FilePath)
+                        }
+                        elseif ($Path) {
+                            $ValidateParameters.Add("Path", $Path)
+                        }
                         if ($Pipeline) {
                             $ApplyParameters.Add("Pipeline", $true)
                         }

@@ -292,9 +292,6 @@ function Invoke-WTApplyCAPolicy {
 
                     # Path to group config
                     $GroupsPath = $Path + "\..\Groups"
-                    $GroupsPath
-                    $GroupsPath = (Resolve-Path -Path $GroupsPath).Path
-                    $GroupsPath
                     
                     # Export groups
                     Export-WTCAGroups -ConditionalAccessGroups $TaggedCAIncludeGroups `
@@ -305,6 +302,11 @@ function Invoke-WTApplyCAPolicy {
                     Export-WTCAGroups -ConditionalAccessGroups $TaggedCAExcludeGroups `
                         -Path $GroupsPath `
                         -ExcludeExportCleanup
+                    
+                    Write-Host "Recurse at route"
+                    Get-ChildItem -Path $Path -Recurse
+                    Write-Host "Recurse at subfolder"
+                    Get-ChildItem -Path $GroupsPath -Recurse
                     
                     # If executing in a pipeline, commit and push the changes back to the repo
                     if ($Pipeline) {

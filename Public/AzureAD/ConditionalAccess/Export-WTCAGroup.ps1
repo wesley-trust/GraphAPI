@@ -217,7 +217,7 @@ function Export-WTCAGroups {
                 }
                 else {
                     foreach ($Group in $ConditionalAccessGroups) {
-                        $Path
+
                         # Remove characters not supported in Windows file names
                         $GroupDisplayName = $Group.displayname -replace $UnsupportedCharactersRegEx, "_"
                             

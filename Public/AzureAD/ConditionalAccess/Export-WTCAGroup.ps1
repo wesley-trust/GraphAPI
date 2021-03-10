@@ -132,7 +132,8 @@ function Export-WTCAGroups {
                 "modifiedDateTime"
             )
             $UnsupportedCharactersRegEx = '[\\\/:*?"<>|]'
-            $Tags = @("SVC","ENV")
+            $Tag = @("SVC")
+            $Delimiter = "-"
             $Counter = 1
         }
         catch {
@@ -220,13 +221,15 @@ function Export-WTCAGroups {
 
                         # Remove characters not supported in Windows file names
                         $GroupDisplayName = $Group.displayname -replace $UnsupportedCharactersRegEx, "_"
-                            
+                        
+                        $Directory = "$Tag$Delimiter$Group.$Tag"
+
                         # Output current status
                         Write-Host "Processing Group $Counter with file name: $GroupDisplayName.json"
                             
                         # Output individual Group JSON file
                         $Group | ConvertTo-Json -Depth 10 `
-                        | Out-File -Force:$true -FilePath "$Path\$GroupDisplayName.json"
+                        | Out-File -Force:$true -FilePath "$Path\$Directory\$GroupDisplayName.json"
 
                         # Increment counter
                         $Counter++

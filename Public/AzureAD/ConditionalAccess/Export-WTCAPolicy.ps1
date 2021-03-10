@@ -133,7 +133,8 @@ function Export-WTCAPolicy {
             )
             $UnsupportedCharactersRegEx = '[\\\/:*?"<>|]'
             $Counter = 1
-            $Tags = @("ENV")
+            $Tag = @("ENV")
+            $Delimiter = "-"
         }
         catch {
             Write-Error -Message $_.Exception
@@ -220,13 +221,15 @@ function Export-WTCAPolicy {
 
                         # Remove characters not supported in Windows file names
                         $PolicyDisplayName = $Policy.displayname -replace $UnsupportedCharactersRegEx, "_"
-                            
+
+                        $Directory = "$Tag$Delimiter$Policy.$Tag"
+
                         # Output current status
                         Write-Host "Processing Policy $Counter with file name: $PolicyDisplayName.json"
-                            
+                        
                         # Output individual policy JSON file
                         $Policy | ConvertTo-Json -Depth 10 `
-                        | Out-File -Force:$true -FilePath "$Path\$PolicyDisplayName.json"
+                        | Out-File -Force:$true -FilePath "$Path\$Directory\$PolicyDisplayName.json"
 
                         # Increment counter
                         $Counter++

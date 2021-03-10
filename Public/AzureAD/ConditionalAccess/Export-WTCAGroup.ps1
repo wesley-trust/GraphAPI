@@ -4,8 +4,8 @@
 .Description
     This function exports the Conditional Access groups to JSON using the Microsoft Graph API.
     The following Microsoft Graph API permissions are required for the service principal used for authentication:
-        Policy.ReadWrite.ConditionalAccess
-        Policy.Read.All
+        Group.ReadWrite.ConditionalAccess
+        Group.Read.All
         Directory.Read.All
         Agreement.Read.All
         Application.Read.All
@@ -36,8 +36,8 @@
                 TenantDomain = ""
                 FilePath = ""
     }
-    Export-WTCAPolicy @Parameters
-    $AccessToken | Export-WTCAPolicy
+    Export-WTCAGroup @Parameters
+    $AccessToken | Export-WTCAGroup
 #>
 
 function Export-WTCAGroups {
@@ -102,7 +102,7 @@ function Export-WTCAGroups {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The Conditional Access groups to get, this must contain valid id(s), when not specified, all groups are returned"
         )]
-        [Alias("policy", "ConditionalAccessPolicy")]
+        [Alias("Group", "ConditionalAccessGroup")]
         [pscustomobject]$ConditionalAccessGroups,
         [parameter(
             Mandatory = $false,
@@ -217,14 +217,14 @@ function Export-WTCAGroups {
                 }
                 else {
                     foreach ($Group in $ConditionalAccessGroups) {
-
+                        $Path
                         # Remove characters not supported in Windows file names
                         $GroupDisplayName = $Group.displayname -replace $UnsupportedCharactersRegEx, "_"
                             
                         # Output current status
-                        Write-Host "Processing Policy $Counter with file name: $GroupDisplayName.json"
+                        Write-Host "Processing Group $Counter with file name: $GroupDisplayName.json"
                             
-                        # Output individual policy JSON file
+                        # Output individual Group JSON file
                         $Group | ConvertTo-Json -Depth 10 `
                         | Out-File -Force:$true -FilePath "$Path\$GroupDisplayName.json"
 

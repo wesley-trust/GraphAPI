@@ -232,7 +232,7 @@ function Invoke-WTCAPolicyImport {
 
                 if ($Stage -eq "Apply") {
                     if ($PlanCAPolicies) {
-
+                        
                         # Build Parameters
                         $ApplyParameters = @{
                             AccessToken               = $AccessToken
@@ -254,10 +254,10 @@ function Invoke-WTCAPolicyImport {
                             $ApplyParameters.Add("PolicyState", $PolicyState)
                         }
                         if ($FilePath) {
-                            $ValidateParameters.Add("FilePath", $FilePath)
+                            $ApplyParameters.Add("FilePath", $FilePath)
                         }
                         elseif ($Path) {
-                            $ValidateParameters.Add("Path", $Path)
+                            $ApplyParameters.Add("Path", $Path)
                         }
                         if ($Pipeline) {
                             $ApplyParameters.Add("Pipeline", $true)

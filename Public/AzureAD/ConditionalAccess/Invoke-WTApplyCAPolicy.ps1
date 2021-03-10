@@ -137,18 +137,19 @@ function Invoke-WTApplyCAPolicy {
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
                 "Toolkit\Public\Invoke-WTPropertyTagging.ps1",
                 "GraphAPI\Public\AzureAD\ConditionalAccess\Remove-WTCAPolicy.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\New-WTCAPolicy.ps1"
-                "GraphAPI\Public\AzureAD\ConditionalAccess\New-WTCAGroup.ps1"
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Edit-WTCAPolicy.ps1"
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Export-WTCAPolicy.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\New-WTCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\New-WTCAGroup.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Edit-WTCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Export-WTCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Export-WTCAGroup.ps1",
                 "GraphAPI\Public\AzureAD\ConditionalAccess\Remove-WTCAGroup.ps1"
             )
-
+            
             # Function dot source
             foreach ($Function in $Functions) {
                 . $Function
             }
-
+            
             # Variables
             $Tags = @("REF", "ENV")
             $PropertyToTag = "DisplayName"
@@ -251,7 +252,7 @@ function Invoke-WTApplyCAPolicy {
                     # Tag groups
                     $TaggedCAIncludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessIncludeGroups -PropertyToTag $PropertyToTag
                     $TaggedCAExcludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessExcludeGroups -PropertyToTag $PropertyToTag
-                        
+
                     # For each policy, find the matching group
                     $CreatePolicies = foreach ($Policy in $TaggedPolicies) {
                             
@@ -283,10 +284,25 @@ function Invoke-WTApplyCAPolicy {
                         -PolicyState $PolicyState
                         
                     # Update configuration files
+                    
+                    # Export policies
                     Export-WTCAPolicy -ConditionalAccessPolicies $CreatedPolicies `
                         -Path $Path `
                         -ExcludeExportCleanup
 
+                    # Path to group config
+                    $GroupsPath = $Path + "\..\Groups"
+                    
+                    # Export groups
+                    Export-WTCAGroups -ConditionalAccessGroups $TaggedCAIncludeGroups `
+                        -Path $GroupsPath `
+                        -ExcludeExportCleanup
+
+                    # Export groups
+                    Export-WTCAGroups -ConditionalAccessGroups $TaggedCAExcludeGroups `
+                        -Path $GroupsPath `
+                        -ExcludeExportCleanup
+                    
                     # If executing in a pipeline, commit and push the changes back to the repo
                     if ($Pipeline) {
                         Set-Location ${ENV:REPOHOME}

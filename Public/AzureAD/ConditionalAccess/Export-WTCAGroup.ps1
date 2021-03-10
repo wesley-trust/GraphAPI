@@ -1,8 +1,8 @@
 <#
 .Synopsis
-    Export all Conditional Access policies to JSON
+    Export all Conditional Access groups to JSON
 .Description
-    This function exports the Conditional Access policies to JSON using the Microsoft Graph API.
+    This function exports the Conditional Access groups to JSON using the Microsoft Graph API.
     The following Microsoft Graph API permissions are required for the service principal used for authentication:
         Policy.ReadWrite.ConditionalAccess
         Policy.Read.All
@@ -22,11 +22,11 @@
 .PARAMETER ExcludePreviewFeatures
     Specify whether to exclude features in preview, a production API version will then be used instead
 .PARAMETER ExcludeExportCleanup
-    Specify whether to exclude the cleanup operations of the policies to be exported
+    Specify whether to exclude the cleanup operations of the groups to be exported
 .INPUTS
     None
 .OUTPUTS
-    JSON file with all Conditional Access policies
+    JSON file with all Conditional Access groups
 .NOTES
 
 .Example
@@ -40,7 +40,7 @@
     $AccessToken | Export-WTCAPolicy
 #>
 
-function Export-WTCAPolicy {
+function Export-WTCAGroups {
     [cmdletbinding()]
     param (
         [parameter(
@@ -88,36 +88,36 @@ function Export-WTCAPolicy {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Specify whether to exclude the cleanup operations of the policies to be exported"
+            HelpMessage = "Specify whether to exclude the cleanup operations of the groups to be exported"
         )]
         [switch]$ExcludeExportCleanup,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Specify whether to exclude tag processing of policies"
+            HelpMessage = "Specify whether to exclude tag processing of groups"
         )]
         [switch]$ExcludeTagEvaluation,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The Conditional Access policies to get, this must contain valid id(s), when not specified, all policies are returned"
+            HelpMessage = "The Conditional Access groups to get, this must contain valid id(s), when not specified, all groups are returned"
         )]
         [Alias("policy", "ConditionalAccessPolicy")]
-        [pscustomobject]$ConditionalAccessPolicies,
+        [pscustomobject]$ConditionalAccessGroups,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The Conditional Access policies to get, this must contain valid id(s), when not specified, all policies are returned"
+            HelpMessage = "The Conditional Access groups to get, this must contain valid id(s), when not specified, all groups are returned"
         )]
-        [Alias("id", "PolicyID")]
-        [string[]]$PolicyIDs
+        [Alias("id", "GroupID")]
+        [string[]]$GroupIDs
     )
     Begin {
         try {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAPolicy.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAGroup.ps1"
             )
 
             # Function dot source
@@ -132,8 +132,8 @@ function Export-WTCAPolicy {
                 "modifiedDateTime"
             )
             $UnsupportedCharactersRegEx = '[\\\/:*?"<>|]'
+            $Tags = @("SVC","ENV")
             $Counter = 1
-            $Tags = @("ENV")
         }
         catch {
             Write-Error -Message $_.Exception
@@ -143,8 +143,8 @@ function Export-WTCAPolicy {
     Process {
         try {
             
-            # If there are no policies to export, get policies based on specified parameters
-            if (!$ConditionalAccessPolicies) {
+            # If there are no groups to export, get groups based on specified parameters
+            if (!$ConditionalAccessGroups) {
                 
                 # If there is no access token, obtain one
                 if (!$AccessToken) {
@@ -170,16 +170,16 @@ function Export-WTCAPolicy {
                             ExcludePreviewFeatures = $true
                         }
                     }
-                    if ($PolicyIDs) {
+                    if ($GroupIDs) {
                         $Parameters += @{
-                            PolicyIDs = $PolicyIDs
+                            GroupIDs = $GroupIDs
                         }
                     }
                     
-                    # Get all Conditional Access policies
-                    $ConditionalAccessPolicies = Get-WTCAPolicy @Parameters
+                    # Get all Conditional Access groups
+                    $ConditionalAccessGroups = Get-WTCAGroup @Parameters
 
-                    if (!$ConditionalAccessPolicies) {
+                    if (!$ConditionalAccessGroups) {
                         $ErrorMessage = "Microsoft Graph did not return a valid response"
                         Write-Error $ErrorMessage
                         throw $ErrorMessage
@@ -192,13 +192,13 @@ function Export-WTCAPolicy {
                 }
             }
 
-            # If there are policies
-            if ($ConditionalAccessPolicies) {
+            # If there are groups
+            if ($ConditionalAccessGroups) {
                     
-                # Sort and filter (if applicable) policies
-                $ConditionalAccessPolicies = $ConditionalAccessPolicies | Sort-Object displayName
+                # Sort and filter (if applicable) groups
+                $ConditionalAccessGroups = $ConditionalAccessGroups | Sort-Object displayName
                 if (!$ExcludeExportCleanup) {
-                    $ConditionalAccessPolicies | Foreach-object {
+                    $ConditionalAccessGroups | Foreach-object {
                             
                         # Cleanup properties for export
                         foreach ($Property in $CleanUpProperties) {
@@ -208,25 +208,25 @@ function Export-WTCAPolicy {
                 }
 
                 # Export to JSON
-                Write-Host "Exporting Conditional Access Policies (Count: $($ConditionalAccessPolicies.count))"
-                    
-                # If a file path is specified, output all policies in one JSON formatted file
+                Write-Host "Exporting Conditional Access groups (Count: $($ConditionalAccessGroups.count))"
+
+                # If a file path is specified, output all groups in one JSON formatted file
                 if ($FilePath) {
-                    $ConditionalAccessPolicies | ConvertTo-Json -Depth 10 `
+                    $ConditionalAccessGroups | ConvertTo-Json -Depth 10 `
                     | Out-File -Force:$true -FilePath $FilePath
                 }
                 else {
-                    foreach ($Policy in $ConditionalAccessPolicies) {
+                    foreach ($Group in $ConditionalAccessGroups) {
 
                         # Remove characters not supported in Windows file names
-                        $PolicyDisplayName = $Policy.displayname -replace $UnsupportedCharactersRegEx, "_"
+                        $GroupDisplayName = $Group.displayname -replace $UnsupportedCharactersRegEx, "_"
                             
                         # Output current status
-                        Write-Host "Processing Policy $Counter with file name: $PolicyDisplayName.json"
+                        Write-Host "Processing Policy $Counter with file name: $GroupDisplayName.json"
                             
                         # Output individual policy JSON file
-                        $Policy | ConvertTo-Json -Depth 10 `
-                        | Out-File -Force:$true -FilePath "$Path\$PolicyDisplayName.json"
+                        $Group | ConvertTo-Json -Depth 10 `
+                        | Out-File -Force:$true -FilePath "$Path\$GroupDisplayName.json"
 
                         # Increment counter
                         $Counter++
@@ -234,7 +234,7 @@ function Export-WTCAPolicy {
                 }
             }
             else {
-                $WarningMessage = "There are no Conditional Access Policies to export"
+                $WarningMessage = "There are no Conditional Access groups to export"
                 Write-Warning $WarningMessage
             }
         }

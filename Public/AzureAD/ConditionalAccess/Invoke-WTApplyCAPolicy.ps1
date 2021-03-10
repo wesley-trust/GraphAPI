@@ -303,11 +303,6 @@ function Invoke-WTApplyCAPolicy {
                         -Path $GroupsPath `
                         -ExcludeExportCleanup
                     
-                    Write-Host "Recurse at route"
-                    Get-ChildItem -Path $Path -Recurse
-                    Write-Host "Recurse at subfolder"
-                    Get-ChildItem -Path $GroupsPath -Recurse
-                    
                     # If executing in a pipeline, commit and push the changes back to the repo
                     if ($Pipeline) {
                         Set-Location ${ENV:REPOHOME}

@@ -232,7 +232,7 @@ function Invoke-WTApplyCAPolicy {
                             $_.PSObject.Properties.Remove($Tag)
                         }
                     }
-                        
+
                     # Evaluate the tags on the policies to be created
                     $TaggedPolicies = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $CreatePolicies -PropertyToTag $PropertyToTag
 
@@ -294,12 +294,12 @@ function Invoke-WTApplyCAPolicy {
                     $GroupsPath = $Path + "\..\Groups"
                     
                     # Export groups
-                    Export-WTCAGroups -ConditionalAccessGroups $TaggedCAIncludeGroups `
+                    Export-WTCAGroups -ConditionalAccessGroups $ConditionalAccessIncludeGroups `
                         -Path $GroupsPath `
                         -ExcludeExportCleanup
 
                     # Export groups
-                    Export-WTCAGroups -ConditionalAccessGroups $TaggedCAExcludeGroups `
+                    Export-WTCAGroups -ConditionalAccessGroups $ConditionalAccessExcludeGroups `
                         -Path $GroupsPath `
                         -ExcludeExportCleanup
                     

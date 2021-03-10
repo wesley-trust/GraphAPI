@@ -132,7 +132,9 @@ function Export-WTCAGroups {
                 "modifiedDateTime"
             )
             $UnsupportedCharactersRegEx = '[\\\/:*?"<>|]'
-            $Tag = @("SVC")
+            $Tags = @("SVC", "REF", "ENV")
+            $PropertyToTag = "DisplayName"
+            $DirectoryTag = "SVC"
             $Delimiter = "-"
             $Counter = 1
         }
@@ -208,6 +210,11 @@ function Export-WTCAGroups {
                     }
                 }
 
+                # Evaluate the tags on the policies to be created, if not set to exclude
+                if (!$ExcludeTagEvaluation) {
+                    $ConditionalAccessGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessGroups -PropertyToTag $PropertyToTag
+                }
+
                 # Export to JSON
                 Write-Host "Exporting Conditional Access groups (Count: $($ConditionalAccessGroups.count))"
 
@@ -222,8 +229,13 @@ function Export-WTCAGroups {
                         # Remove characters not supported in Windows file names
                         $GroupDisplayName = $Group.displayname -replace $UnsupportedCharactersRegEx, "_"
                         
-                        # Concatenate directory
-                        $Directory = "$Tag$Delimiter$($Group.$Tag)"
+                        # Concatenate directory, if not set to exclude, else, append tag
+                        if (!$ExcludeTagEvaluation){
+                            $Directory = "$DirectoryTag$Delimiter$($Group.$DirectoryTag)"
+                        }
+                        else {
+                            $Directory = "$DirectoryTag"
+                        }
 
                         # Output current status
                         Write-Host "Processing Group $Counter with file name: $GroupDisplayName.json"

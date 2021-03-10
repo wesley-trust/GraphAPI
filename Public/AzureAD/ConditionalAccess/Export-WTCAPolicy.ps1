@@ -117,7 +117,8 @@ function Export-WTCAPolicy {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAPolicy.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAPolicy.ps1",
+                "Toolkit\Public\Invoke-WTPropertyTagging.ps1"
             )
 
             # Function dot source
@@ -133,7 +134,9 @@ function Export-WTCAPolicy {
             )
             $UnsupportedCharactersRegEx = '[\\\/:*?"<>|]'
             $Counter = 1
-            $Tag = @("ENV")
+            $Tags = @("REF", "VER", "ENV")
+            $PropertyToTag = "DisplayName"
+            $DirectoryTag = "ENV"
             $Delimiter = "-"
         }
         catch {
@@ -208,6 +211,11 @@ function Export-WTCAPolicy {
                     }
                 }
 
+                # Evaluate the tags on the policies to be created, if not set to exclude
+                if (!$ExcludeTagEvaluation) {
+                    $ConditionalAccessPolicies = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessPolicies -PropertyToTag $PropertyToTag
+                }
+
                 # Export to JSON
                 Write-Host "Exporting Conditional Access Policies (Count: $($ConditionalAccessPolicies.count))"
                     
@@ -222,8 +230,13 @@ function Export-WTCAPolicy {
                         # Remove characters not supported in Windows file names
                         $PolicyDisplayName = $Policy.displayname -replace $UnsupportedCharactersRegEx, "_"
 
-                        # Concatenate directory
-                        $Directory = "$Tag$Delimiter$($Policy.$Tag)"
+                        # Concatenate directory, if not set to exclude, else, append tag
+                        if (!$ExcludeTagEvaluation){
+                            $Directory = "$DirectoryTag$Delimiter$($Policy.$DirectoryTag)"
+                        }
+                        else {
+                            $Directory = "$DirectoryTag"
+                        }
 
                         # Output current status
                         Write-Host "Processing Policy $Counter with file name: $PolicyDisplayName.json"

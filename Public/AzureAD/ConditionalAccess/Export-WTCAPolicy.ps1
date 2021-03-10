@@ -241,7 +241,7 @@ function Export-WTCAPolicy {
                         # If directory path does not exist for export, create it
                         $TestPath = Test-Path $Path\$Directory -PathType Container
                         if (!$TestPath){
-                            New-Item -Path $Path\$Directory -ItemType Directory
+                            New-Item -Path $Path\$Directory -ItemType Directory | Out-Null
                         }
 
                         # Output current status

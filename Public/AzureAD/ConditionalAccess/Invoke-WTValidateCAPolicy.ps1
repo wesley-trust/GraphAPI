@@ -75,7 +75,7 @@ function Invoke-WTValidateCAPolicy {
                 $PathExists = Test-Path -Path $Path
                 if ($PathExists) {
                     $FilePath = foreach ($Directory in $Path) {
-                        (Get-ChildItem -Path $Directory -Filter "*.json").FullName
+                        (Get-ChildItem -Path $Directory -Filter "*.json" -Recurse).FullName
                     }
                 }
             }

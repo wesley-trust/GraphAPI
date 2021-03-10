@@ -292,6 +292,7 @@ function Invoke-WTApplyCAPolicy {
 
                     # Path to group config
                     $GroupsPath = $Path + "\..\Groups"
+                    $GroupsPath = (Resolve-Path -Path $GroupsPath).Path
                     
                     # Export groups
                     Export-WTCAGroups -ConditionalAccessGroups $TaggedCAIncludeGroups `

@@ -238,6 +238,12 @@ function Export-WTCAPolicy {
                             $Directory = "$DirectoryTag"
                         }
 
+                        # If directory path does not exist for export, create it
+                        $TestPath = Test-Path $Path\$Directory -PathType Container
+                        if (!$TestPath){
+                            New-Item -Path $Path\$Directory -ItemType Directory
+                        }
+
                         # Output current status
                         Write-Host "Processing Policy $Counter with file name: $PolicyDisplayName.json"
                         

@@ -230,11 +230,17 @@ function Export-WTCAGroups {
                         $GroupDisplayName = $Group.displayname -replace $UnsupportedCharactersRegEx, "_"
                         
                         # Concatenate directory, if not set to exclude, else, append tag
-                        if (!$ExcludeTagEvaluation){
+                        if (!$ExcludeTagEvaluation) {
                             $Directory = "$DirectoryTag$Delimiter$($Group.$DirectoryTag)"
                         }
                         else {
                             $Directory = "$DirectoryTag"
+                        }
+
+                        # If directory path does not exist for export, create it
+                        $TestPath = Test-Path $Path\$Directory -PathType Container
+                        if (!$TestPath) {
+                            New-Item -Path $Path\$Directory -ItemType Directory
                         }
 
                         # Output current status

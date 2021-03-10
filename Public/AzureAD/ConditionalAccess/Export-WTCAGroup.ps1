@@ -234,7 +234,7 @@ function Export-WTCAGroups {
                             $Directory = "$DirectoryTag$Delimiter$($Group.$DirectoryTag)"
                         }
                         else {
-                            $Directory = "$DirectoryTag"
+                            $Directory = ".."
                         }
 
                         # If directory path does not exist for export, create it

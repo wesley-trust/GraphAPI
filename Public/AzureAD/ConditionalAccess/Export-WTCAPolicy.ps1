@@ -235,7 +235,7 @@ function Export-WTCAPolicy {
                             $Directory = "$DirectoryTag$Delimiter$($Policy.$DirectoryTag)"
                         }
                         else {
-                            $Directory = "$DirectoryTag"
+                            $Directory = ".."
                         }
 
                         # If directory path does not exist for export, create it

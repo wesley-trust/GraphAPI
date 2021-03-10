@@ -222,7 +222,8 @@ function Export-WTCAPolicy {
                         # Remove characters not supported in Windows file names
                         $PolicyDisplayName = $Policy.displayname -replace $UnsupportedCharactersRegEx, "_"
 
-                        $Directory = "$Tag$Delimiter$Policy.$Tag"
+                        # Concatenate directory
+                        $Directory = "$Tag$Delimiter$($Policy.$Tag)"
 
                         # Output current status
                         Write-Host "Processing Policy $Counter with file name: $PolicyDisplayName.json"

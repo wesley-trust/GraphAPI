@@ -222,7 +222,8 @@ function Export-WTCAGroups {
                         # Remove characters not supported in Windows file names
                         $GroupDisplayName = $Group.displayname -replace $UnsupportedCharactersRegEx, "_"
                         
-                        $Directory = "$Tag$Delimiter$Group.$Tag"
+                        # Concatenate directory
+                        $Directory = "$Tag$Delimiter$($Group.$Tag)"
 
                         # Output current status
                         Write-Host "Processing Group $Counter with file name: $GroupDisplayName.json"

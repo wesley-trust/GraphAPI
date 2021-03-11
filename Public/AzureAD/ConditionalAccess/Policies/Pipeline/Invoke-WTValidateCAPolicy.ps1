@@ -185,7 +185,7 @@ function Invoke-WTValidateCAPolicy {
                         # Return validation result for each policy
                         if ($InvalidPolicies) {
                             foreach ($Policy in $InvalidPolicies) {
-                                Write-Warning "Validation failed for $($Policy.displayName)"
+                                Write-Warning "Invalid: Policy Name: $($Policy.displayName)"
                                 if ($Policy.MissingProperties) {
                                     Write-Warning "Required properties not present: $($Policy.MissingProperties)"
                                 }

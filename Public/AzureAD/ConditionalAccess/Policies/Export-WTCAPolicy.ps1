@@ -117,7 +117,7 @@ function Export-WTCAPolicy {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Get-WTCAPolicy.ps1",
                 "Toolkit\Public\Invoke-WTPropertyTagging.ps1"
             )
 

@@ -136,13 +136,13 @@ function Invoke-WTApplyCAPolicy {
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
                 "Toolkit\Public\Invoke-WTPropertyTagging.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Remove-WTCAPolicy.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\New-WTCAPolicy.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\New-WTCAGroup.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Edit-WTCAPolicy.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Export-WTCAPolicy.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Export-WTCAGroup.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Remove-WTCAGroup.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Remove-WTCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\New-WTCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Groups\New-WTCAGroup.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Edit-WTCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Export-WTCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Groups\Export-WTCAGroup.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Groups\Remove-WTCAGroup.ps1"
             )
             
             # Function dot source

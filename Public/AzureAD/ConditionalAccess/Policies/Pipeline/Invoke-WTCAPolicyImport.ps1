@@ -142,9 +142,9 @@ function Invoke-WTCAPolicyImport {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Invoke-WTValidateCAPolicy.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Invoke-WTPlanCAPolicy.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Invoke-WTApplyCAPolicy.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Invoke-WTValidateCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Invoke-WTPlanCAPolicy.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Invoke-WTApplyCAPolicy.ps1"
             )
 
             # Function dot source

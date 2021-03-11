@@ -1,8 +1,8 @@
 <#
 .Synopsis
-    Get Azure AD groups deployed in the Azure AD tenant
+    Remove Conditional Access policies deployed in the Azure AD tenant
 .Description
-    This function gets the Azure AD groups from Azure AD using the Microsoft Graph API.
+    This function gets the Conditional Access policies from Azure AD using the Microsoft Graph API.
     The following Microsoft Graph API permissions are required for the service principal used for authentication:
         Policy.ReadWrite.ConditionalAccess
         Policy.Read.All
@@ -10,19 +10,21 @@
         Agreement.Read.All
         Application.Read.All
 .PARAMETER ClientID
-    Client ID for the Azure AD service principal with Azure AD group Graph permissions
+    Client ID for the Azure AD service principal with Conditional Access Graph permissions
 .PARAMETER ClientSecret
-    Client secret for the Azure AD service principal with Azure AD group Graph permissions
+    Client secret for the Azure AD service principal with Conditional Access Graph permissions
 .PARAMETER TenantName
     The initial domain (onmicrosoft.com) of the tenant
 .PARAMETER AccessToken
     The access token, obtained from executing Get-WTGraphAccessToken
+.PARAMETER RemoveAllExistingPolicies
+    Specify whether all existing policies deployed in the tenant will be removed
 .PARAMETER ExcludePreviewFeatures
     Specify whether to exclude features in preview, a production API version will then be used instead
-.PARAMETER ExcludeTagEvaluation
-    Specify whether to exclude features in preview, a production API version will then be used instead
+.PARAMETER ConditionalAccessPolicies
+    The Conditional Access policies to remove, a policy must have a valid id
 .INPUTS
-    JSON file with all Azure AD groups
+    None
 .OUTPUTS
     None
 .NOTES
@@ -33,23 +35,23 @@
                 ClientSecret = ""
                 TenantDomain = ""
     }
-    Get-WTAzureADGroup @Parameters
-    Get-WTAzureADGroup -AccessToken $AccessToken
+    Remove-WTCAPolicy @Parameters -RemoveAllExistingPolicies
+    Remove-WTCAPolicy -AccessToken $AccessToken -RemoveAllExistingPolicies
 #>
 
-function Remove-WTCAGroup {
+function Remove-WTCAPolicy {
     [cmdletbinding()]
     param (
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client ID for the Azure AD service principal with Azure AD group Graph permissions"
+            HelpMessage = "Client ID for the Azure AD service principal with Conditional Access Graph permissions"
         )]
         [string]$ClientID,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client secret for the Azure AD service principal with Azure AD group Graph permissions"
+            HelpMessage = "Client secret for the Azure AD service principal with Conditional Access Graph permissions"
         )]
         [string]$ClientSecret,
         [parameter(
@@ -64,6 +66,13 @@ function Remove-WTCAGroup {
             HelpMessage = "The access token, obtained from executing Get-WTGraphAccessToken"
         )]
         [string]$AccessToken,
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "Specify whether all existing policies deployed in the tenant will be removed"
+        )]
+        [switch]
+        $RemoveAllExistingPolicies,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
@@ -73,9 +82,10 @@ function Remove-WTCAGroup {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The Conditional Access groups to get, this must contain valid id(s)"
+            ValueFromPipeLine = $true,
+            HelpMessage = "The Conditional Access policies to remove, this must contain valid id(s)"
         )]
-        [Alias("id", "GroupID", "GroupIDs")]
+        [Alias("id", "PolicyID", "PolicyIDs")]
         [string[]]$IDs
     )
     Begin {
@@ -83,14 +93,18 @@ function Remove-WTCAGroup {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAGroup.ps1"
-                "GraphAPI\Public\AzureAD\Groups\Remove-WTAzureADGroup.ps1"
+                "GraphAPI\Private\Invoke-WTGraphDelete.ps1",
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Get-WTCAPolicy.ps1"
             )
 
             # Function dot source
             foreach ($Function in $Functions) {
                 . $Function
             }
+
+            # Variables
+            $Activity = "Removing Conditional Access Policies"
+            $Uri = "identity/conditionalAccess/policies"
 
         }
         catch {
@@ -112,27 +126,31 @@ function Remove-WTCAGroup {
                 
                 # Build Parameters
                 $Parameters = @{
-                    AccessToken = $AccessToken
+                    AccessToken       = $AccessToken
+                    Uri               = $Uri
+                    Activity          = $Activity
                 }
+                
                 if ($ExcludePreviewFeatures) {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
-                
-                # Pass IDs to function, and return only Conditional Access groups
-                if ($IDs){
-                    $CAGroups = Get-WTCAGroup @Parameters -IDs $IDs
-                }
 
-                # Return response if the filtered objects contain the specified service
-                if ($CAGroups) {
-                    if ($CAGroups.id.count -lt $IDs.count) {
-                        $WarningMessage = "There are groups marked for removal, that are not CA groups, these will be ignored and will not be removed"
-                        Write-Warning $WarningMessage
-                    }
-                    Remove-WTAzureADGroup @Parameters -IDs $CAGroups.id
+                # Get all existing policies to be removed if specified
+                if ($RemoveAllExistingPolicies) {
+                    $ConditionalAccessPolicies = Get-WTCAPolicy @Parameters -ExcludeTagEvaluation
+
+                    # Filter object to get the policy id(s) only
+                    $IDs = $ConditionalAccessPolicies.id
+                }
+                
+                # If there are policies to be removed,  remove them
+                if ($IDs) {
+                    Invoke-WTGraphDelete `
+                        @Parameters `
+                        -IDs $IDs
                 }
                 else {
-                    $WarningMessage = "No Conditional Access groups to be removed in Azure AD"
+                    $WarningMessage = "No Conditional Access policies to be removed"
                     Write-Warning $WarningMessage
                 }
             }

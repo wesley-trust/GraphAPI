@@ -117,7 +117,7 @@ function Export-WTCAGroups {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Get-WTCAGroup.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Groups\Get-WTCAGroup.ps1"
             )
 
             # Function dot source

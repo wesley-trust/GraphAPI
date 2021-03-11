@@ -172,6 +172,9 @@ function Invoke-WTApplyCAPolicy {
 
             if ($AccessToken) {
                 
+                # Output current action
+                Write-Host "Deploying Conditional Access Policies"
+                                
                 # Build Parameters
                 $Parameters = @{
                     AccessToken = $AccessToken

@@ -176,7 +176,7 @@ function Invoke-WTCAPolicyImport {
             
                 # Import and validate policies
                 Write-Host "Stage 1: Validate"
-                $ValidateCAPolicies = Invoke-WTValidateCAPolicy @ValidateParameters
+                Invoke-WTValidateCAPolicy @ValidateParameters | Tee-Object -Variable ValidateCAPolicies
             
                 # If there are no policies to import, but existing policies should be removed, for safety, "Force" is required
                 if (!$ValidateCAPolicies) {
@@ -221,7 +221,7 @@ function Invoke-WTCAPolicyImport {
                 
                     # Create plan evaluating whether to create, update or remove policies
                     Write-Host "Stage 2: Plan"
-                    $PlanCAPolicies = Invoke-WTPlanCAPolicy @PlanParameters
+                    Invoke-WTPlanCAPolicy @PlanParameters | Tee-Object -Variable PlanCAPolicies
 
                 }
                 else {

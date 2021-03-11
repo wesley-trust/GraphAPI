@@ -306,7 +306,7 @@ function Invoke-WTApplyCAPolicy {
                         -Path $GroupsPath `
                         -ExcludeExportCleanup
                     
-                    # If executing in a pipeline, commit and push the changes back to the repo
+                    # If executing in a pipeline, stage, commit and push the changes back to the repo
                     if ($Pipeline) {
                         Set-Location ${ENV:REPOHOME}
                         git config user.email AzurePipeline@wesleytrust.com

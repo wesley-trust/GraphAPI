@@ -262,7 +262,7 @@ function Invoke-WTPlanCAPolicy {
                 }
 
                 # If there are policies, return PS object
-                if ($PlanCAPolicies) {
+                if ($PlanCAPolicies.value) {
                     $PlanCAPolicies = [pscustomobject]$PlanCAPolicies
                     $PlanCAPolicies
                 }

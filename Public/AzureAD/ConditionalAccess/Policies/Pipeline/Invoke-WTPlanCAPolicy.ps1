@@ -251,7 +251,7 @@ function Invoke-WTPlanCAPolicy {
                     $PlanCAPolicies.Add("CreatePolicies", $CreatePolicies)
                                         
                     # Output current action
-                    Write-Host "Policies to create: $($CreatePolicies.count)"
+                    Write-Host "Policies to create: $($CreatePolicies.count) (CA Groups will be created as appropriate)"
 
                     foreach ($Policy in $CreatePolicies) {
                         Write-Host "Create: Policy Name: $($Policy.displayName)" -ForegroundColor DarkGreen

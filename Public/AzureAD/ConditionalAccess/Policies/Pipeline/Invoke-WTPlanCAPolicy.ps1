@@ -228,7 +228,7 @@ function Invoke-WTPlanCAPolicy {
                     Write-Host "Policies to remove: $($RemovePolicies.count)"
 
                     foreach ($Policy in $RemovePolicies) {
-                        Write-Host "Remove: Policy ID: $($Policy.id)" -ForegroundColor DarkRed
+                        Write-Host "Remove: Policy ID: $($Policy.id) (CA Groups will be removed as appropriate)" -ForegroundColor DarkRed
                     }
                 }
                 else {

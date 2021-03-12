@@ -262,12 +262,9 @@ function Invoke-WTPlanCAPolicy {
                 }
 
                 # If there are policies, return PS object
-                if ($PlanCAPolicies) {
+                if ($PlanCAPolicies.value) {
                     $PlanCAPolicies = [pscustomobject]$PlanCAPolicies
                     $PlanCAPolicies
-                }
-                else {
-                    Write-Host = "No policies will be created, updated or removed, as none exist that are different to the import"
                 }
             }
             else {

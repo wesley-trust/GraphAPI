@@ -104,7 +104,15 @@ function Invoke-WTValidateCAPolicy {
                 Write-Host "Policies: $($ConditionalAccessPolicies.count)"
                 
                 foreach ($Policy in $ConditionalAccessPolicies) {
-                    Write-Host "Import: Policy Name: $($Policy.displayName)"
+                    if ($Policy.displayName) {
+                        Write-Host "Import: Policy Name: $($Policy.displayName)"
+                    }
+                    elseif ($Policy.id) {
+                        Write-Host "Import: Policy Id: $($Policy.id)"
+                    }
+                    else {
+                        Write-Host "Import: Policy Invalid"
+                    }
                 }
 
                 # If there are policies imported, run validation checks
@@ -166,7 +174,12 @@ function Invoke-WTValidateCAPolicy {
                             # Build and return object
                             if ($PropertyCheck -or $ControlsCheck -or $ConditionsCheck) {
                                 $PolicyValidate = [ordered]@{}
-                                $PolicyValidate.Add("DisplayName", $Policy.displayName)
+                                if ($Policy.displayName) {
+                                    $PolicyValidate.Add("DisplayName", $Policy.displayName)
+                                }
+                                elseif ($Policy.id) {
+                                    $PolicyValidate.Add("Id", $Policy.id)
+                                }
                             }
                             if ($PropertyCheck) {
                                 $PolicyValidate.Add("MissingProperties", $PropertyCheck)
@@ -184,8 +197,17 @@ function Invoke-WTValidateCAPolicy {
 
                         # Return validation result for each policy
                         if ($InvalidPolicies) {
+                            Write-Host "Invalid Policies: $($InvalidPolicies.count) out of $($ConditionalAccessPolicies.count) imported"
                             foreach ($Policy in $InvalidPolicies) {
-                                Write-Warning "Invalid: Policy Name: $($Policy.displayName)"
+                                if ($Policy.displayName) {
+                                    Write-Host "INVALID: Policy Name: $($Policy.displayName)" -ForegroundColor Yellow
+                                }
+                                elseif ($Policy.id) {
+                                    Write-Host "INVALID: Policy Id: $($Policy.id)" -ForegroundColor Yellow
+                                }
+                                else {
+                                    Write-Host "INVALID: No displayName or Id for policy" -ForegroundColor Yellow
+                                }
                                 if ($Policy.MissingProperties) {
                                     Write-Warning "Required properties not present: $($Policy.MissingProperties)"
                                 }

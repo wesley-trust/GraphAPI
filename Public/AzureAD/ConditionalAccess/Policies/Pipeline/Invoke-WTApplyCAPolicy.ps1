@@ -308,6 +308,7 @@ function Invoke-WTApplyCAPolicy {
                     
                     # If executing in a pipeline, stage, commit and push the changes back to the repo
                     if ($Pipeline) {
+                        Write-Host "Commit configuration changes post pipeline deployment"
                         Set-Location ${ENV:REPOHOME}
                         git config user.email AzurePipeline@wesleytrust.com
                         git config user.name AzurePipeline

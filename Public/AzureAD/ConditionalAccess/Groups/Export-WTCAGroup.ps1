@@ -216,7 +216,7 @@ function Export-WTCAGroups {
                 }
 
                 # Export to JSON
-                Write-Host "Exporting Conditional Access groups (Count: $($ConditionalAccessGroups.count))"
+                Write-Host "Exporting Conditional Access Groups (Count: $($ConditionalAccessGroups.count))"
 
                 # If a file path is specified, output all groups in one JSON formatted file
                 if ($FilePath) {

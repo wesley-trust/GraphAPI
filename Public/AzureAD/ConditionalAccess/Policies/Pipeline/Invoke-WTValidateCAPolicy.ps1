@@ -209,7 +209,7 @@ function Invoke-WTValidateCAPolicy {
                                     Write-Host "INVALID: No displayName or Id for policy" -ForegroundColor Yellow
                                 }
                                 if ($Policy.MissingProperties) {
-                                    Write-Warning "Required properties not present: $($Policy.MissingProperties)"
+                                    Write-Warning "Required properties not present ($($Policy.MissingProperties.count)): $($Policy.MissingProperties)"
                                 }
                                 if ($Policy.MissingControls) {
                                     Write-Warning "$($Policy.MissingControls)"

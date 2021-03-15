@@ -146,6 +146,15 @@ function Export-WTCAPolicy {
     }
     Process {
         try {
+
+            # If group object is provided, tag these
+            if ($ConditionalAccessPolicies) {
+
+                # Evaluate the tags on the policies to be created, if not set to exclude
+                if (!$ExcludeTagEvaluation) {
+                    $ConditionalAccessPolicies = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessPolicies -PropertyToTag $PropertyToTag
+                }
+            }
             
             # If there are no policies to export, get policies based on specified parameters
             if (!$ConditionalAccessPolicies) {
@@ -231,7 +240,7 @@ function Export-WTCAPolicy {
                         $PolicyDisplayName = $Policy.displayname -replace $UnsupportedCharactersRegEx, "_"
 
                         # Concatenate directory, if not set to exclude, else, append tag
-                        if (!$ExcludeTagEvaluation){
+                        if (!$ExcludeTagEvaluation) {
                             $Directory = "$DirectoryTag$Delimiter$($Policy.$DirectoryTag)"
                         }
                         else {
@@ -240,7 +249,7 @@ function Export-WTCAPolicy {
 
                         # If directory path does not exist for export, create it
                         $TestPath = Test-Path $Path\$Directory -PathType Container
-                        if (!$TestPath){
+                        if (!$TestPath) {
                             New-Item -Path $Path\$Directory -ItemType Directory | Out-Null
                         }
 

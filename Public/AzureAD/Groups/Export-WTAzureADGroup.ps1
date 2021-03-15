@@ -1,8 +1,8 @@
 <#
 .Synopsis
-    Export all Conditional Access groups to JSON
+    Export all AzureAD groups to JSON
 .Description
-    This function exports the Conditional Access groups to JSON using the Microsoft Graph API.
+    This function exports the AzureAD groups to JSON using the Microsoft Graph API.
     The following Microsoft Graph API permissions are required for the service principal used for authentication:
         Group.ReadWrite.ConditionalAccess
         Group.Read.All
@@ -10,9 +10,9 @@
         Agreement.Read.All
         Application.Read.All
 .PARAMETER ClientID
-    Client ID for the Azure AD service principal with Conditional Access Graph permissions
+    Client ID for the Azure AD service principal with AzureAD Graph permissions
 .PARAMETER ClientSecret
-    Client secret for the Azure AD service principal with Conditional Access Graph permissions
+    Client secret for the Azure AD service principal with AzureAD Graph permissions
 .PARAMETER TenantName
     The initial domain (onmicrosoft.com) of the tenant
 .PARAMETER AccessToken
@@ -26,7 +26,7 @@
 .INPUTS
     None
 .OUTPUTS
-    JSON file with all Conditional Access groups
+    JSON file with all AzureAD groups
 .NOTES
 
 .Example
@@ -36,23 +36,23 @@
                 TenantDomain = ""
                 FilePath = ""
     }
-    Export-WTCAGroup @Parameters
-    $AccessToken | Export-WTCAGroup
+    Export-WTAzureADGroup @Parameters
+    $AccessToken | Export-WTAzureADGroup
 #>
 
-function Export-WTCAGroups {
+function Export-WTAzureADGroup {
     [cmdletbinding()]
     param (
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client ID for the Azure AD service principal with Conditional Access Graph permissions"
+            HelpMessage = "Client ID for the Azure AD service principal with AzureAD Graph permissions"
         )]
         [string]$ClientID,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client secret for the Azure AD service principal with Conditional Access Graph permissions"
+            HelpMessage = "Client secret for the Azure AD service principal with AzureAD Graph permissions"
         )]
         [string]$ClientSecret,
         [parameter(
@@ -100,24 +100,24 @@ function Export-WTCAGroups {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The Conditional Access groups to get, this must contain valid id(s), when not specified, all groups are returned"
+            HelpMessage = "The AzureAD groups to get, this must contain valid id(s), when not specified, all groups are returned"
         )]
-        [Alias("Group", "ConditionalAccessGroup")]
-        [pscustomobject]$ConditionalAccessGroups,
+        [Alias("Group", "AzureADGroup")]
+        [pscustomobject]$AzureADGroups,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The Conditional Access groups to get, this must contain valid id(s), when not specified, all groups are returned"
+            HelpMessage = "The AzureAD groups to get, this must contain valid id(s), when not specified, all groups are returned"
         )]
-        [Alias("id", "GroupID")]
-        [string[]]$GroupIDs
+        [Alias("id", "GroupID", "GroupIDs")]
+        [string[]]$IDs
     )
     Begin {
         try {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Groups\Get-WTCAGroup.ps1",
+                "GraphAPI\Public\AzureAD\Groups\Get-WTAzureADGroup.ps1",
                 "Toolkit\Public\Invoke-WTPropertyTagging.ps1"
             )
 
@@ -148,16 +148,16 @@ function Export-WTCAGroups {
         try {
 
             # If group object is provided, tag these
-            if ($ConditionalAccessGroups) {
+            if ($AzureADGroups) {
 
                 # Evaluate the tags on the policies to be created, if not set to exclude
                 if (!$ExcludeTagEvaluation) {
-                    $ConditionalAccessGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessGroups -PropertyToTag $PropertyToTag
+                    $AzureADGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $AzureADGroups -PropertyToTag $PropertyToTag
                 }
             }
             
             # If there are no groups to export, get groups based on specified parameters
-            if (!$ConditionalAccessGroups) {
+            if (!$AzureADGroups) {
                 
                 # If there is no access token, obtain one
                 if (!$AccessToken) {
@@ -183,16 +183,16 @@ function Export-WTCAGroups {
                             ExcludePreviewFeatures = $true
                         }
                     }
-                    if ($GroupIDs) {
+                    if ($IDs) {
                         $Parameters += @{
-                            GroupIDs = $GroupIDs
+                            GroupIDs = $IDs
                         }
                     }
                     
-                    # Get all Conditional Access groups
-                    $ConditionalAccessGroups = Get-WTCAGroup @Parameters
+                    # Get all AzureAD groups
+                    $AzureADGroups = Get-WTAzureADGroup @Parameters
 
-                    if (!$ConditionalAccessGroups) {
+                    if (!$AzureADGroups) {
                         $ErrorMessage = "Microsoft Graph did not return a valid response"
                         Write-Error $ErrorMessage
                         throw $ErrorMessage
@@ -206,12 +206,12 @@ function Export-WTCAGroups {
             }
 
             # If there are groups
-            if ($ConditionalAccessGroups) {
+            if ($AzureADGroups) {
                     
                 # Sort and filter (if applicable) groups
-                $ConditionalAccessGroups = $ConditionalAccessGroups | Sort-Object displayName
+                $AzureADGroups = $AzureADGroups | Sort-Object displayName
                 if (!$ExcludeExportCleanup) {
-                    $ConditionalAccessGroups | Foreach-object {
+                    $AzureADGroups | Foreach-object {
                             
                         # Cleanup properties for export
                         foreach ($Property in $CleanUpProperties) {
@@ -220,21 +220,16 @@ function Export-WTCAGroups {
                     }
                 }
 
-                # Evaluate the tags on the policies to be created, if not set to exclude
-                if (!$ExcludeTagEvaluation) {
-                    $ConditionalAccessGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessGroups -PropertyToTag $PropertyToTag
-                }
-
                 # Export to JSON
-                Write-Host "Exporting Conditional Access Groups (Count: $($ConditionalAccessGroups.count))"
+                Write-Host "Exporting AzureAD Groups (Count: $($AzureADGroups.count))"
 
                 # If a file path is specified, output all groups in one JSON formatted file
                 if ($FilePath) {
-                    $ConditionalAccessGroups | ConvertTo-Json -Depth 10 `
+                    $AzureADGroups | ConvertTo-Json -Depth 10 `
                     | Out-File -Force:$true -FilePath $FilePath
                 }
                 else {
-                    foreach ($Group in $ConditionalAccessGroups) {
+                    foreach ($Group in $AzureADGroups) {
 
                         # Remove characters not supported in Windows file names
                         $GroupDisplayName = $Group.displayname -replace $UnsupportedCharactersRegEx, "_"
@@ -242,9 +237,6 @@ function Export-WTCAGroups {
                         # Concatenate directory, if not set to exclude, else, append tag
                         if (!$ExcludeTagEvaluation) {
                             $Directory = "$DirectoryTag$Delimiter$($Group.$DirectoryTag)"
-                        }
-                        else {
-                            $Directory = ".."
                         }
 
                         # If directory path does not exist for export, create it
@@ -266,7 +258,7 @@ function Export-WTCAGroups {
                 }
             }
             else {
-                $WarningMessage = "There are no Conditional Access groups to export"
+                $WarningMessage = "There are no AzureAD groups to export"
                 Write-Warning $WarningMessage
             }
         }

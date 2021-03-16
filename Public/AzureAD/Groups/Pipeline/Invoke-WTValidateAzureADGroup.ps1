@@ -67,7 +67,8 @@ function Invoke-WTValidateAzureADGroup {
     Begin {
         try {
             # Variables
-            $RequiredProperties = @("displayName", "grantControls", "conditions", "state", "sessionControls")
+            $RequiredProperties = @("displayName", "mailEnabled", "mailNickname", "securityEnabled")
+
         }
         catch {
             Write-Error -Message $_.Exception
@@ -143,36 +144,16 @@ function Invoke-WTValidateAzureADGroup {
                                 }
                             }
 
-                            # Check for missing grant or session controls
-                            $ControlsCheck = $null
-                            $ControlsCheck = if (!$Group.GrantControls) {
-                                if (!$Group.sessioncontrols) {
-                                    Write-Output "No grant or session controls specified, at least one must be specified"
+                            # Check whether each required property has a value, if not, return property
+                            $PropertyValueCheck = $null
+                            $PropertyValueCheck = foreach ($Property in $RequiredProperties) {
+                                if ($null -eq $Group.$Property) {
+                                    $Property
                                 }
-                            }
-
-                            # Check for missing conditions (under applications)
-                            $ApplicationsProperties = $null
-                            $ApplicationsProperties = ($Group.conditions.applications | Get-Member -MemberType NoteProperty).name
-                            $ConditionsCheck = $null
-
-                            # For each condition, return true if a value exists for each condition checked
-                            $ConditionsCheck = foreach ($Condition in $ApplicationsProperties) {
-                                if ($Group.conditions.applications.$Condition) {
-                                    $true
-                                }
-                            }
-    
-                            # If true is not in the condition check variable, it means there were no conditions that had a value
-                            if ($true -notin $ConditionsCheck) {
-                                $ConditionsCheck = Write-Output "No application conditions specified, at least one must be specified"
-                            }
-                            else {
-                                $ConditionsCheck = $null
                             }
 
                             # Build and return object
-                            if ($PropertyCheck -or $ControlsCheck -or $ConditionsCheck) {
+                            if ($PropertyCheck -or $PropertyValueCheck) {
                                 $GroupValidate = [ordered]@{}
                                 if ($Group.displayName) {
                                     $GroupValidate.Add("DisplayName", $Group.displayName)
@@ -184,11 +165,8 @@ function Invoke-WTValidateAzureADGroup {
                             if ($PropertyCheck) {
                                 $GroupValidate.Add("MissingProperties", $PropertyCheck)
                             }
-                            if ($ControlsCheck) {
-                                $GroupValidate.Add("MissingControls", $ControlsCheck)
-                            }
-                            if ($ConditionsCheck) {
-                                $GroupValidate.Add("MissingConditions", $ConditionsCheck)
+                            if ($PropertyValueCheck) {
+                                $GroupValidate.Add("MissingPropertyValues", $PropertyValueCheck)
                             }
                             if ($GroupValidate) {
                                 [pscustomobject]$GroupValidate
@@ -211,11 +189,8 @@ function Invoke-WTValidateAzureADGroup {
                                 if ($Group.MissingProperties) {
                                     Write-Warning "Required properties not present ($($Group.MissingProperties.count)): $($Group.MissingProperties)"
                                 }
-                                if ($Group.MissingControls) {
-                                    Write-Warning "$($Group.MissingControls)"
-                                }
-                                if ($Group.MissingConditions) {
-                                    Write-Warning "$($Group.MissingConditions)"
+                                if ($Group.MissingPropertyValues) {
+                                    Write-Warning "Required property values not present ($($Group.MissingPropertyValues.count)): $($Group.MissingPropertyValues)"
                                 }
                             }
     
@@ -227,7 +202,7 @@ function Invoke-WTValidateAzureADGroup {
                         else {
 
                             # Return validated groups
-                            Write-Host "All groups have passed validation for required properties, controls and conditions"
+                            Write-Host "All groups have passed validation for required properties and values"
                             $ValidGroups = $AzureADGroups
                             $ValidGroups
                         }

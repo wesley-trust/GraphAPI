@@ -231,15 +231,15 @@ function Export-WTAzureADGroup {
                         # Concatenate directory, if not set to exclude, else, append tag
                         if (!$ExcludeTagEvaluation) {
                             $Directory = "$DirectoryTag$Delimiter$($Group.$DirectoryTag)"
-
-                            # If directory path does not exist for export, create it
-                            $TestPath = Test-Path $Path\$Directory -PathType Container
-                            if (!$TestPath) {
-                                New-Item -Path $Path\$Directory -ItemType Directory | Out-Null
-                            }
+                        }
+                        else {
+                            $Directory = "\"
+                        }
                             
-                            # Concatenate
-                            $Path = $Path + "\" + $Directory
+                        # If directory path does not exist for export, create it
+                        $TestPath = Test-Path $Path\$Directory -PathType Container
+                        if (!$TestPath) {
+                            New-Item -Path $Path\$Directory -ItemType Directory | Out-Null
                         }
 
                         # Output current status
@@ -247,7 +247,7 @@ function Export-WTAzureADGroup {
                             
                         # Output individual Group JSON file
                         $Group | ConvertTo-Json -Depth 10 `
-                        | Out-File -Force -FilePath "$Path\$GroupDisplayName.json"
+                        | Out-File -Force -FilePath "$Path\$Directory\$GroupDisplayName.json"
 
                         # Increment counter
                         $Counter++

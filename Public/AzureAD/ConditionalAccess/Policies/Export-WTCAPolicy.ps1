@@ -230,16 +230,16 @@ function Export-WTCAPolicy {
 
                         # Concatenate directory, if not set to exclude, else, append tag
                         if (!$ExcludeTagEvaluation) {
-                            $Directory = "$DirectoryTag$Delimiter$($Group.$DirectoryTag)"
+                            $Directory = "$DirectoryTag$Delimiter$($Policy.$DirectoryTag)"
+                        }
+                        else {
+                            $Directory = "\"
+                        }
 
-                            # If directory path does not exist for export, create it
-                            $TestPath = Test-Path $Path\$Directory -PathType Container
-                            if (!$TestPath) {
-                                New-Item -Path $Path\$Directory -ItemType Directory | Out-Null
-                            }
-                            
-                            # Concatenate
-                            $Path = $Path + "\" + $Directory
+                        # If directory path does not exist for export, create it
+                        $TestPath = Test-Path $Path\$Directory -PathType Container
+                        if (!$TestPath) {
+                            New-Item -Path $Path\$Directory -ItemType Directory | Out-Null
                         }
 
                         # Output current status
@@ -247,7 +247,7 @@ function Export-WTCAPolicy {
                         
                         # Output individual policy JSON file
                         $Policy | ConvertTo-Json -Depth 10 `
-                        | Out-File -Force -FilePath "$Path\$PolicyDisplayName.json"
+                        | Out-File -Force:$true -FilePath "$Path\$Directory\$PolicyDisplayName.json"
 
                         # Increment counter
                         $Counter++

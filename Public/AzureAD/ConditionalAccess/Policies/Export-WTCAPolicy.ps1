@@ -214,11 +214,6 @@ function Export-WTCAPolicy {
                     }
                 }
 
-                # Evaluate the tags on the policies to be created, if not set to exclude
-                if (!$ExcludeTagEvaluation) {
-                    $ConditionalAccessPolicies = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessPolicies -PropertyToTag $PropertyToTag
-                }
-
                 # Export to JSON
                 Write-Host "Exporting Conditional Access Policies (Count: $($ConditionalAccessPolicies.count))"
                     

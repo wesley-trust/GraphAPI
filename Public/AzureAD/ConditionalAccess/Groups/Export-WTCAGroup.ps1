@@ -231,7 +231,7 @@ function Export-WTCAGroups {
                 # If a file path is specified, output all groups in one JSON formatted file
                 if ($FilePath) {
                     $ConditionalAccessGroups | ConvertTo-Json -Depth 10 `
-                    | Out-File -Force:$true -FilePath $FilePath
+                    | Out-File -Force -FilePath $FilePath
                 }
                 else {
                     foreach ($Group in $ConditionalAccessGroups) {
@@ -258,7 +258,7 @@ function Export-WTCAGroups {
                             
                         # Output individual Group JSON file
                         $Group | ConvertTo-Json -Depth 10 `
-                        | Out-File -Force:$true -FilePath "$Path\$Directory\$GroupDisplayName.json"
+                        | Out-File -Force -FilePath "$Path\$Directory\$GroupDisplayName.json"
 
                         # Increment counter
                         $Counter++

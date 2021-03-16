@@ -174,21 +174,15 @@ function Export-WTCAPolicy {
                         AccessToken = $AccessToken
                     }
                     if ($ExcludeTagEvaluation) {
-                        $Parameters += @{
-                            ExcludeTagEvaluation = $true
-                        }
+                        $Parameters.Add("ExcludeTagEvaluation", $true)
                     }
                     if ($ExcludePreviewFeatures) {
-                        $Parameters += @{
-                            ExcludePreviewFeatures = $true
-                        }
+                        $Parameters.Add("ExcludePreviewFeatures", $true)
                     }
                     if ($PolicyIDs) {
-                        $Parameters += @{
-                            PolicyIDs = $PolicyIDs
-                        }
+                        $Parameters.Add("PolicyIDs", $IDs)
                     }
-                    
+
                     # Get all Conditional Access policies
                     $ConditionalAccessPolicies = Get-WTCAPolicy @Parameters
 
@@ -231,7 +225,7 @@ function Export-WTCAPolicy {
                 # If a file path is specified, output all policies in one JSON formatted file
                 if ($FilePath) {
                     $ConditionalAccessPolicies | ConvertTo-Json -Depth 10 `
-                    | Out-File -Force:$true -FilePath $FilePath
+                    | Out-File -Force -FilePath $FilePath
                 }
                 else {
                     foreach ($Policy in $ConditionalAccessPolicies) {
@@ -241,16 +235,16 @@ function Export-WTCAPolicy {
 
                         # Concatenate directory, if not set to exclude, else, append tag
                         if (!$ExcludeTagEvaluation) {
-                            $Directory = "$DirectoryTag$Delimiter$($Policy.$DirectoryTag)"
-                        }
-                        else {
-                            $Directory = ".."
-                        }
+                            $Directory = "$DirectoryTag$Delimiter$($Group.$DirectoryTag)"
 
-                        # If directory path does not exist for export, create it
-                        $TestPath = Test-Path $Path\$Directory -PathType Container
-                        if (!$TestPath) {
-                            New-Item -Path $Path\$Directory -ItemType Directory | Out-Null
+                            # If directory path does not exist for export, create it
+                            $TestPath = Test-Path $Path\$Directory -PathType Container
+                            if (!$TestPath) {
+                                New-Item -Path $Path\$Directory -ItemType Directory | Out-Null
+                            }
+                            
+                            # Concatenate
+                            $Path = $Path + "\" + $Directory
                         }
 
                         # Output current status
@@ -258,7 +252,7 @@ function Export-WTCAPolicy {
                         
                         # Output individual policy JSON file
                         $Policy | ConvertTo-Json -Depth 10 `
-                        | Out-File -Force:$true -FilePath "$Path\$Directory\$PolicyDisplayName.json"
+                        | Out-File -Force -FilePath "$Path\$PolicyDisplayName.json"
 
                         # Increment counter
                         $Counter++

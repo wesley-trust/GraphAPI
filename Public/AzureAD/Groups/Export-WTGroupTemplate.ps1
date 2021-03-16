@@ -87,11 +87,11 @@ function Export-WTGroupTemplate {
             # Export to JSON
             if ($FilePath) {
                 $TemplateProperties | ConvertTo-Json -Depth 10 `
-                | Out-File -Force:$true -FilePath $FilePath
+                | Out-File -Force -FilePath $FilePath
             }
             else {
                 $TemplateProperties | ConvertTo-Json -Depth 10 `
-                | Out-File -Force:$true -FilePath "$Path\GroupTemplate.json"
+                | Out-File -Force -FilePath "$Path\GroupTemplate.json"
             }
         }
         catch {

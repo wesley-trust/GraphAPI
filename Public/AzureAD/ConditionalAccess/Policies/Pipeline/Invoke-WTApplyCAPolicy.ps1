@@ -141,7 +141,7 @@ function Invoke-WTApplyCAPolicy {
                 "GraphAPI\Public\AzureAD\ConditionalAccess\Groups\New-WTCAGroup.ps1",
                 "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Edit-WTCAPolicy.ps1",
                 "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Export-WTCAPolicy.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Groups\Export-WTCAGroup.ps1",
+                "GraphAPI\Public\AzureAD\Groups\Export-WTAzureADGroup.ps1",
                 "GraphAPI\Public\AzureAD\ConditionalAccess\Groups\Remove-WTCAGroup.ps1"
             )
             
@@ -297,12 +297,12 @@ function Invoke-WTApplyCAPolicy {
                     $GroupsPath = $Path + "\..\..\Groups"
                     
                     # Export include groups
-                    Export-WTCAGroups -ConditionalAccessGroups $ConditionalAccessIncludeGroups `
+                    Export-WTAzureADGroup -AzureADGroups $ConditionalAccessIncludeGroups `
                         -Path $GroupsPath `
                         -ExcludeExportCleanup
 
                     # Export exclude groups
-                    Export-WTCAGroups -ConditionalAccessGroups $ConditionalAccessExcludeGroups `
+                    Export-WTAzureADGroup -AzureADGroups $ConditionalAccessExcludeGroups `
                         -Path $GroupsPath `
                         -ExcludeExportCleanup
                     

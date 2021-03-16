@@ -1,25 +1,3 @@
-<#
-.Synopsis
-    Function to connect to Microsoft Graph using a service principal and obtain and an access token
-.Description
-    Connects to Microsoft Graph and returns an access token object, accepts pipeline input for multiple token requests
-.PARAMETER ClientID
-    Client ID for the Azure AD service principal with Conditional Access Graph permissions
-.PARAMETER ClientSecret
-    Client secret for the Azure AD service principal with Conditional Access Graph permissions
-.PARAMETER TenantName
-    The initial domain (onmicrosoft.com) of the tenant
-.INPUTS
-    None
-.OUTPUTS
-    None
-.NOTES
-
-.Example
-    $AccessToken = Get-WTGraphAccessToken -ClientID "" -ClientSecret "" -TenantDomain ""
-    $AccessToken = $ServicePrincipalObject | Get-WTGraphAccessToken
-#>
-
 function Get-WTGraphAccessToken {
     [cmdletbinding()]
     param (

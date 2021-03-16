@@ -1,47 +1,3 @@
-<#
-.Synopsis
-    Import all Azure AD groups from JSON definition
-.Description
-    This function imports the Azure AD groups from JSON using the Microsoft Graph API.
-    The following Microsoft Graph API permissions are required for the service principal used for authentication:
-        Group.ReadWrite.ConditionalAccess
-        Group.Read.All
-        Directory.Read.All
-        Agreement.Read.All
-        Application.Read.All
-.PARAMETER ClientID
-    Client ID for the Azure AD service principal with Azure AD Graph permissions
-.PARAMETER ClientSecret
-    Client secret for the Azure AD service principal with Azure AD Graph permissions
-.PARAMETER TenantName
-    The initial domain (onmicrosoft.com) of the tenant
-.PARAMETER AccessToken
-    The access token, obtained from executing Get-WTGraphAccessToken
-.PARAMETER FilePath
-    The file path to the JSON file that will be imported
-.PARAMETER GroupState
-    Modify the group state when imported, when not specified the group will maintain state
-.PARAMETER RemoveAllExistingGroups
-    Specify whether all existing groups deployed in the tenant will be removed
-.PARAMETER ExcludePreviewFeatures
-    Specify whether to exclude features in preview, a production API version will then be used instead
-.INPUTS
-    JSON file with all Azure AD groups
-.OUTPUTS
-    None
-.NOTES
-
-.Example
-    $Parameters = @{
-                ClientID = ""
-                ClientSecret = ""
-                TenantDomain = ""
-                FilePath = ""
-    }
-    Import-WTAzureADGroup.ps1 @Parameters
-    Import-WTAzureADGroup.ps1 -AccessToken $AccessToken -FilePath ""
-#>
-
 function Invoke-WTPlanAzureADGroup {
     [cmdletbinding()]
     param (
@@ -201,7 +157,7 @@ function Invoke-WTPlanAzureADGroup {
                                     $GroupPropertyComparison = Compare-Object `
                                         -ReferenceObject $ExistingGroups `
                                         -DifferenceObject $UpdateGroups `
-                                        -Property id, displayName, state, sessionControls, conditions, grantControls
+                                        -Property id, displayName, description, membershipRule
 
                                     $UpdateGroups = $GroupPropertyComparison | Where-Object { $_.sideindicator -eq "=>" }
                                 }

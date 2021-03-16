@@ -1,27 +1,3 @@
-<#
-.Synopsis
-    Execute a Microsoft Graph query
-.Description
-    This function will execute a query against Microsoft Graph and return the result
-.PARAMETER Method
-    The HTTP method for the Graph call (GET, POST, PUT, PATCH, DELETE).
-.PARAMETER Uri
-    The Uniform Resource Identifier for the Microsoft Graph API call, for example: "v1.0/users/"
-.PARAMETER Body
-    The request body of the Microsoft Graph API call. Used with methods such as POST, PUT and PATCH. Not required for GET.
-.PARAMETER AccessToken
-    The access token, obtained from executing Get-WTGraphAccessToken
-.INPUTS
-    None
-.OUTPUTS
-    None
-.NOTES
-
-.Example
-    Invoke-WTGraphQuery -AccessToken $AccessToken -Method "GET" -Uri "v1.0/users/"
-    $AccessToken | Invoke-WTGraphQuery -Method "GET" -Uri "v1.0/users/"
-#>
-
 function Invoke-WTGraphQuery {
     [cmdletbinding()]
     param (

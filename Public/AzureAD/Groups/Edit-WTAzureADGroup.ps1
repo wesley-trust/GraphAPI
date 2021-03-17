@@ -58,7 +58,8 @@ function Edit-WTAzureADGroup {
             $Uri = "groups"
             $CleanUpProperties = (
                 "createdDateTime",
-                "modifiedDateTime"
+                "modifiedDateTime",
+                "SideIndicator"
             )
 
         }

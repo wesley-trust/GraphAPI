@@ -118,8 +118,13 @@ function Invoke-WTGraphPost {
 
                         # Output progress
                         if ($InputObject.count -gt 1) {
-                            Write-Host "Processing Query $Counter of $($InputObject.count) with Display Name: $ObjectDisplayName"
-                        
+                            if ($ObjectDisplayName) {
+                                Write-Host "Processing Query $Counter of $($InputObject.count) with Display Name: $ObjectDisplayName"
+                            }
+                            else {
+                                Write-Host "Processing Query $Counter of $($InputObject.count)"
+                            }
+
                             # Create progress bar
                             $PercentComplete = (($counter / $InputObject.count) * 100)
                             Write-Progress -Activity $Activity `
@@ -127,8 +132,12 @@ function Invoke-WTGraphPost {
                                 -CurrentOperation $ObjectDisplayName
                         }
                         else {
-                            Write-Host "Processing Query $Counter with Display Name: $ObjectDisplayName"
-                            
+                            if ($ObjectDisplayName) {
+                                Write-Host "Processing Query $Counter with Display Name: $ObjectDisplayName"
+                            }
+                            else {
+                                Write-Host "Processing Query $Counter"
+                            }
                         }
                         
                         # Increment counter

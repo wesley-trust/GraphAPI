@@ -44,7 +44,13 @@ function Get-WTAzureADGroup {
             HelpMessage = "The Azure AD groups to get, this must contain valid id(s)"
         )]
         [Alias("id", "GroupID", "GroupIDs")]
-        [string[]]$IDs
+        [string[]]$IDs,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "Comma separated list of properties, 'id' is always selected, 'displayName' will also be selected if tagging is not excluded"
+        )]
+        [string]$Select
     )
     Begin {
         try {
@@ -85,7 +91,6 @@ function Get-WTAzureADGroup {
                 # Build Parameters
                 $Parameters = @{
                     AccessToken = $AccessToken
-                    Uri         = $Uri
                     Activity    = $Activity
                 }
                 if ($ExcludePreviewFeatures) {
@@ -94,19 +99,45 @@ function Get-WTAzureADGroup {
                 if (!$ExcludeTagEvaluation) {
                     $Parameters.Add("Tags", $Tags)
                 }
-                if ($IDs) {
-                    $Parameters.Add("IDs", $IDs)
+
+                # If select is specified, a different query should be built
+                if ($Select) {
+                    
+                    # Clean up input to remove remove any spaces
+                    $Select = $Select.Replace(" ", "")
+
+                    # Adding 'id' which is required for a result, 'displayName' is also added if tagging is not excluded, as it is a dependency
+                    $Select = "id,$Select"
+                    if (!$ExcludeTagEvaluation) {
+                        $Select = "displayName,$Select"
+                    }
+
+                    # If there are Ids, get Azure AD group with selected properties only
+                    if ($IDs) {
+                        $QueryResponse = foreach ($Id in $IDs) {
+                            Invoke-WTGraphGet @Parameters -Uri "$Uri/$($Id)?`$select=$Select"
+                        }
+                    }
+                    else {
+                        $WarningMessage = "A select query requires an ID to be specified for the group"
+                        Write-Warning $WarningMessage
+                    }
                 }
-                
-                # Get Azure AD groups
-                $QueryResponse = Invoke-WTGraphGet @Parameters
-                
+                else {
+                    if ($IDs) {
+                        $Parameters.Add("IDs", $IDs)
+                    }
+
+                    # Get Azure AD groups with default properties
+                    $QueryResponse = Invoke-WTGraphGet @Parameters -Uri $Uri
+                }
+
                 # Return response if one is returned
                 if ($QueryResponse) {
                     $QueryResponse
                 }
                 else {
-                    $WarningMessage = "No Azure AD groups exist in Azure AD"
+                    $WarningMessage = "No Azure AD groups exist in Azure AD, or with parameters specified"
                     Write-Warning $WarningMessage
                 }
             }

@@ -193,13 +193,15 @@ function Invoke-WTApplyCAPolicy {
                     # Evaluate the tags on the policies to be created
                     $TaggedPolicies = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $CreatePolicies -PropertyToTag $PropertyToTag
 
-                    # Calculate the display names to be used for the CA groups
+                    # Calculate the display names to be used for the CA groups (excluding the policy that targets admin roles)
                     $CAGroupDisplayNames = foreach ($Policy in $TaggedPolicies) {
                         $DisplayName = $null
-                        foreach ($Tag in $Tags) {
-                            $DisplayName += $Tag + "-" + $Policy.$Tag + ";"
+                        if ($Policy.displayName -notlike "*administrators*") {
+                            foreach ($Tag in $Tags) {
+                                $DisplayName += $Tag + "-" + $Policy.$Tag + ";"
+                            }
+                            $DisplayName
                         }
-                        $DisplayName
                     }
 
                     # Create include and exclude groups

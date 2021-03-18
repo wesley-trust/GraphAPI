@@ -207,22 +207,44 @@ function Invoke-WTApplyCAPolicy {
                     # Create include and exclude groups
                     $ConditionalAccessIncludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAGroupDisplayNames -GroupType Include
                     $ConditionalAccessExcludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAGroupDisplayNames -GroupType Exclude
-
+                    
                     # Tag groups
                     $TaggedCAIncludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessIncludeGroups -PropertyToTag $PropertyToTag
                     $TaggedCAExcludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessExcludeGroups -PropertyToTag $PropertyToTag
 
                     # For each policy, find the matching group
                     $CreatePolicies = foreach ($Policy in $TaggedPolicies) {
-                            
+
                         # Find the matching include group
                         $CAIncludeGroup = $null
                         $CAIncludeGroup = $TaggedCAIncludeGroups | Where-Object {
                             $_.ref -eq $Policy.ref -and $_.env -eq $Policy.env
                         }
 
-                        # Update the property with the group id, which must be in an array, and return the policy
-                        $Policy.conditions.users.includeGroups = @($CAIncludeGroup.id)
+                        # If there is a group for this policy (as policies may not always have groups)
+                        if ($CAIncludeGroup) {
+                            
+                            # Filter on user/guest, adding an appropriate member id if supplied
+                            if ($Policy.displayName -like "*guests*") {
+                                if (${ENV:IncludeGuestGroupID}) {
+                                    New-WTAzureADGroupRelationship @Parameters `
+                                        -Id $CAIncludeGroup.id `
+                                        -Relationship "members" `
+                                        -RelationshipIDs ${ENV:IncludeGuestGroupID}
+                                }
+                            }
+                            else {
+                                if (${ENV:IncludeUserGroupID}) {
+                                    New-WTAzureADGroupRelationship @Parameters `
+                                        -Id $CAIncludeGroup.id `
+                                        -Relationship "members" `
+                                        -RelationshipIDs ${ENV:IncludeUserGroupID}
+                                }
+                            }
+                            
+                            # Update the policy with the parent group id (which must be in an array)
+                            $Policy.conditions.users.includeGroups = @($CAIncludeGroup.id)
+                        }
 
                         # Find the matching exclude group
                         $CAExcludeGroup = $null
@@ -230,9 +252,21 @@ function Invoke-WTApplyCAPolicy {
                             $_.ref -eq $Policy.ref -and $_.env -eq $Policy.env
                         }
 
-                        # Update the property with the group id, which must be in an array
-                        $Policy.conditions.users.excludeGroups = @($CAExcludeGroup.id)
+                        # If there is a group for this policy (as policies may not always have groups)
+                        if ($CAExcludeGroup) {
                             
+                            # Adding an appropriate member id if supplied
+                            if (${ENV:ExcludeUserGroupID}) {
+                                New-WTAzureADGroupRelationship @Parameters `
+                                    -Id $CAExcludeGroup.id `
+                                    -Relationship "members" `
+                                    -RelationshipIDs ${ENV:ExcludeUserGroupID}
+                            }
+                            
+                            # Update the policy with the parent group id (which must be in an array)
+                            $Policy.conditions.users.excludeGroups = @($CAExcludeGroup.id)
+                        }
+
                         # Return the policy
                         $Policy
                     }

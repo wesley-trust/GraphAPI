@@ -230,7 +230,7 @@ function Invoke-WTApplyCAPolicy {
                                     New-WTAzureADGroupRelationship @Parameters `
                                         -Id $CAIncludeGroup.id `
                                         -Relationship "members" `
-                                        -RelationshipIDs ${ENV:IncludeGuestGroupID}
+                                        -RelationshipIDs ${ENV:INCLUDEGUESTGROUPID}
                                 }
                             }
                             else {
@@ -238,7 +238,7 @@ function Invoke-WTApplyCAPolicy {
                                     New-WTAzureADGroupRelationship @Parameters `
                                         -Id $CAIncludeGroup.id `
                                         -Relationship "members" `
-                                        -RelationshipIDs ${ENV:IncludeUserGroupID}
+                                        -RelationshipIDs ${ENV:INCLUDEUSERGROUPID}
                                 }
                             }
                             
@@ -260,7 +260,7 @@ function Invoke-WTApplyCAPolicy {
                                 New-WTAzureADGroupRelationship @Parameters `
                                     -Id $CAExcludeGroup.id `
                                     -Relationship "members" `
-                                    -RelationshipIDs ${ENV:ExcludeUserGroupID}
+                                    -RelationshipIDs ${ENV:EXCLUDEUSERGROUPID}
                             }
                             
                             # Update the policy with the parent group id (which must be in an array)

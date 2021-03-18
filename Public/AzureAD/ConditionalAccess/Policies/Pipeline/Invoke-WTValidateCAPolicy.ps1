@@ -221,7 +221,7 @@ function Invoke-WTValidateCAPolicy {
     }
     End {
         try {
-
+            
         }
         catch {
             Write-Error -Message $_.Exception

@@ -236,6 +236,12 @@ function Invoke-WTCAPolicyImport {
         }
     }
     End {
-        
+        try {
+            
+        }
+        catch {
+            Write-Error -Message $_.Exception
+            throw $_.exception
+        }
     }
 }

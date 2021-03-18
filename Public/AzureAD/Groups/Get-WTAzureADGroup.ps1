@@ -153,6 +153,12 @@ function Get-WTAzureADGroup {
         }
     }
     End {
-        
+        try {
+            
+        }
+        catch {
+            Write-Error -Message $_.Exception
+            throw $_.exception
+        }
     }
 }

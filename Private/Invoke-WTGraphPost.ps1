@@ -168,6 +168,12 @@ function Invoke-WTGraphPost {
         }
     }
     End {
-        
+        try {
+            
+        }
+        catch {
+            Write-Error -Message $_.Exception
+            throw $_.exception
+        }
     }
 }

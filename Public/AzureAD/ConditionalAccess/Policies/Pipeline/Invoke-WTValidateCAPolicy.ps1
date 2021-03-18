@@ -197,7 +197,7 @@ function Invoke-WTValidateCAPolicy {
                         else {
 
                             # Return validated policies
-                            Write-Host "All policies have passed validation for required properties, controls and conditions"
+                            Write-Host "All policies have passed validation for required properties, values, controls and conditions"
                             $ValidPolicies = $ConditionalAccessPolicies
                             $ValidPolicies
                         }

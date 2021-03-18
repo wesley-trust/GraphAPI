@@ -194,7 +194,12 @@ function Export-WTAzureADGroup {
                         
                         # Concatenate directory, if not set to exclude, else, append tag
                         if (!$ExcludeTagEvaluation) {
-                            $Directory = "$DirectoryTag$Delimiter$($Group.$DirectoryTag)"
+                            if ($Group.$DirectoryTag) {
+                                $Directory = "$DirectoryTag$Delimiter$($Group.$DirectoryTag)"
+                            }
+                            else {
+                                $Directory = "\"
+                            }
                         }
                         else {
                             $Directory = "\"

@@ -68,7 +68,14 @@ function Export-WTAzureADGroup {
             HelpMessage = "The AzureAD groups to get, this must contain valid id(s), when not specified, all groups are returned"
         )]
         [Alias("id", "GroupID", "GroupIDs")]
-        [string[]]$IDs
+        [string[]]$IDs,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "The tag to use as the subdirectory to organise the export, default is 'SVC'"
+        )]
+        [Alias("Tag")]
+        [string]$DirectoryTag = "SVC"
     )
     Begin {
         try {
@@ -93,7 +100,6 @@ function Export-WTAzureADGroup {
             $UnsupportedCharactersRegEx = '[\\\/:*?"<>|]'
             $Tags = @("SVC", "REF", "ENV")
             $PropertyToTag = "DisplayName"
-            $DirectoryTag = "SVC"
             $Delimiter = "-"
             $Counter = 1
         }

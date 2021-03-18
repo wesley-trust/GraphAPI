@@ -156,6 +156,8 @@ function Invoke-WTGraphPatch {
             }
         }
         catch {
+            $ErrorMessage = "An exception has occurred, common reasons include patching properties that are not valid"
+            Write-Error $ErrorMessage
             Write-Error -Message $_.Exception
             throw $_.exception
         }

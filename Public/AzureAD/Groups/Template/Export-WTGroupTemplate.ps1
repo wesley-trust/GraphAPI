@@ -42,8 +42,6 @@ function Export-WTGroupTemplate {
             # If, in addition to required properties, optional properties should be included
             if ($IncludeOptionalProperties) {
                 $TemplateProperties.Add("description", $null)
-                $TemplateProperties.Add("owners", $null)
-                $TemplateProperties.Add("members", $null)
                 $TemplateProperties.Add("visibility", $null)
             }
 

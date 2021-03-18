@@ -89,7 +89,6 @@ function Remove-WTCAPolicy {
                     Uri               = $Uri
                     Activity          = $Activity
                 }
-                
                 if ($ExcludePreviewFeatures) {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }

@@ -113,9 +113,7 @@ function Invoke-WTApplyAzureADGroup {
                     AccessToken = $AccessToken
                 }
                 if ($ExcludePreviewFeatures) {
-                    $Parameters += @{
-                        ExcludePreviewFeatures = $true
-                    }
+                    $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
                 
                 if ($RemoveExistingGroups) {

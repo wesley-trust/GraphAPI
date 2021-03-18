@@ -99,9 +99,7 @@ function Invoke-WTPlanAzureADGroup {
                     AccessToken = $AccessToken
                 }
                 if ($ExcludePreviewFeatures) {
-                    $Parameters += @{
-                        ExcludePreviewFeatures = $true
-                    }
+                    $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
 
                 # Evaluate groups if parameters exist

@@ -87,7 +87,6 @@ function Edit-WTAzureADGroup {
                     CleanUpProperties = $CleanUpProperties
                     Activity          = $Activity
                 }
-
                 if ($ExcludePreviewFeatures) {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }

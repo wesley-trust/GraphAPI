@@ -95,7 +95,6 @@ function New-WTCAPolicy {
                     CleanUpProperties = $CleanUpProperties
                     Activity          = $Activity
                 }
-                
                 if ($ExcludePreviewFeatures) {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }

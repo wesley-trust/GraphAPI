@@ -94,7 +94,6 @@ function New-WTCAGroup {
                 $Parameters = @{
                     AccessToken = $AccessToken
                 }
-
                 if ($ExcludePreviewFeatures) {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }

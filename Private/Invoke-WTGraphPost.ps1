@@ -163,6 +163,8 @@ function Invoke-WTGraphPost {
             }
         }
         catch {
+            $ErrorMessage = "An exception has occurred, common reasons include posting properties that are not valid"
+            Write-Error $ErrorMessage
             Write-Error -Message $_.Exception
             throw $_.exception
         }

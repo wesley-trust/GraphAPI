@@ -99,9 +99,7 @@ function Invoke-WTPlanCAPolicy {
                     AccessToken = $AccessToken
                 }
                 if ($ExcludePreviewFeatures) {
-                    $Parameters += @{
-                        ExcludePreviewFeatures = $true
-                    }
+                    $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
 
                 # Evaluate policies if parameters exist

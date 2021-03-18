@@ -23,7 +23,7 @@ function Invoke-WTValidateCAPolicy {
     Begin {
         try {
             # Variables
-            $RequiredProperties = @("displayName", "grantControls", "conditions", "state", "sessionControls")
+            $RequiredProperties = @("displayName", "conditions", "state")
         }
         catch {
             Write-Error -Message $_.Exception
@@ -99,10 +99,18 @@ function Invoke-WTValidateCAPolicy {
                                 }
                             }
 
+                            # Check whether each required property has a value, if not, return property
+                            $PropertyValueCheck = $null
+                            $PropertyValueCheck = foreach ($Property in $RequiredProperties) {
+                                if ($null -eq $Group.$Property) {
+                                    $Property
+                                }
+                            }
+
                             # Check for missing grant or session controls
                             $ControlsCheck = $null
                             $ControlsCheck = if (!$Policy.GrantControls) {
-                                if (!$Policy.sessioncontrols) {
+                                if (!$Policy.sessionControls) {
                                     Write-Output "No grant or session controls specified, at least one must be specified"
                                 }
                             }
@@ -140,6 +148,9 @@ function Invoke-WTValidateCAPolicy {
                             if ($PropertyCheck) {
                                 $PolicyValidate.Add("MissingProperties", $PropertyCheck)
                             }
+                            if ($PropertyValueCheck) {
+                                $GroupValidate.Add("MissingPropertyValues", $PropertyValueCheck)
+                            }
                             if ($ControlsCheck) {
                                 $PolicyValidate.Add("MissingControls", $ControlsCheck)
                             }
@@ -166,6 +177,9 @@ function Invoke-WTValidateCAPolicy {
                                 }
                                 if ($Policy.MissingProperties) {
                                     Write-Warning "Required properties not present ($($Policy.MissingProperties.count)): $($Policy.MissingProperties)"
+                                }
+                                if ($Group.MissingPropertyValues) {
+                                    Write-Warning "Required property values not present ($($Group.MissingPropertyValues.count)): $($Group.MissingPropertyValues)"
                                 }
                                 if ($Policy.MissingControls) {
                                     Write-Warning "$($Policy.MissingControls)"

@@ -101,7 +101,7 @@ function Get-WTAzureADGroupRelationship {
                     $Parameters.Add("Tags", $Tags)
                 }
 
-                # Get Azure AD group members
+                # Get Azure AD group relationship
                 $QueryResponse = foreach ($Id in $IDs) {
                     Invoke-WTGraphGet @Parameters -Uri "$Uri/$Id/$Relationship"
                 }

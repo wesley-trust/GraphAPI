@@ -43,6 +43,12 @@ function Export-WTGroupTemplate {
             if ($IncludeOptionalProperties) {
                 $TemplateProperties.Add("description", $null)
                 $TemplateProperties.Add("visibility", $null)
+                $TemplateProperties.Add("membershipRule", $null)
+                $TemplateProperties.Add("membershipRuleProcessingState", $null)
+                $TemplateProperties.Add("expirationDateTime", $null)
+                $TemplateProperties.Add("groupTypes", $null)
+                $TemplateProperties.Add("isAssignableToRole", $null)
+                $TemplateProperties.Add("isManagementRestricted", $null)
             }
 
             # Export to JSON

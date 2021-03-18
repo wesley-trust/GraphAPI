@@ -119,7 +119,7 @@ function Invoke-WTGraphPatch {
                             
                             # Output progress
                             if ($InputObject.count -gt 1) {
-                                Write-Host "Processing query $Counter of $($InputObject.count) with ID: $ObjectID"
+                                Write-Host "Processing Query $Counter of $($InputObject.count) with ID: $ObjectID"
 
                                 # Create progress bar
                                 $PercentComplete = (($counter / $InputObject.count) * 100)
@@ -128,7 +128,7 @@ function Invoke-WTGraphPatch {
                                     -CurrentOperation $ObjectDisplayName
                             }
                             else {
-                                Write-Host "Processing query $Counter with ID: $ObjectID"
+                                Write-Host "Processing Query with ID: $ObjectID"
                             }
 
                             # Increment counter

@@ -108,7 +108,7 @@ function Invoke-WTGraphDelete {
                                 -CurrentOperation $ID
                         }
                         else {
-                            Write-Host "Processing Query $Counter with ID: $ID"
+                            Write-Host "Processing Query with ID: $ID"
                         }
                         
                         # Increment counter

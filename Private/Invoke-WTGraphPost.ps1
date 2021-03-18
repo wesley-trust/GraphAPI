@@ -133,10 +133,10 @@ function Invoke-WTGraphPost {
                         }
                         else {
                             if ($ObjectDisplayName) {
-                                Write-Host "Processing Query $Counter with Display Name: $ObjectDisplayName"
+                                Write-Host "Processing Query with Display Name: $ObjectDisplayName"
                             }
                             else {
-                                Write-Host "Processing Query $Counter"
+                                Write-Host "Processing Query"
                             }
                         }
                         
@@ -148,7 +148,6 @@ function Invoke-WTGraphPost {
                         $AccessToken | Invoke-WTGraphQuery `
                             @Parameters `
                             -Body $Object
-                        #| Out-Null
                     }
                 }
                 else {

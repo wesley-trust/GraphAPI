@@ -98,7 +98,8 @@ function Invoke-WTApplyCAPolicy {
                 "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Edit-WTCAPolicy.ps1",
                 "GraphAPI\Public\AzureAD\ConditionalAccess\Policies\Export-WTCAPolicy.ps1",
                 "GraphAPI\Public\AzureAD\Groups\Export-WTAzureADGroup.ps1",
-                "GraphAPI\Public\AzureAD\ConditionalAccess\Groups\Remove-WTCAGroup.ps1"
+                "GraphAPI\Public\AzureAD\ConditionalAccess\Groups\Remove-WTCAGroup.ps1",
+                "GraphAPI\Public\AzureAD\Groups\Relationship\New-WTAzureADGroupRelationship.ps1"
             )
             
             # Function dot source
@@ -194,7 +195,7 @@ function Invoke-WTApplyCAPolicy {
                     $TaggedPolicies = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $CreatePolicies -PropertyToTag $PropertyToTag
 
                     # Calculate the display names to be used for the CA groups (excluding the policy that targets admin roles)
-                    $CAGroupDisplayNames = foreach ($Policy in $TaggedPolicies) {
+                    $CAIncludeGroupDisplayNames = foreach ($Policy in $TaggedPolicies) {
                         $DisplayName = $null
                         if ($Policy.displayName -notlike "*administrators*") {
                             foreach ($Tag in $Tags) {
@@ -203,10 +204,17 @@ function Invoke-WTApplyCAPolicy {
                             $DisplayName
                         }
                     }
+                    $CAExcludeGroupDisplayNames = foreach ($Policy in $TaggedPolicies) {
+                        $DisplayName = $null
+                        foreach ($Tag in $Tags) {
+                            $DisplayName += $Tag + "-" + $Policy.$Tag + ";"
+                        }
+                        $DisplayName
+                    }
 
                     # Create include and exclude groups
-                    $ConditionalAccessIncludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAGroupDisplayNames -GroupType Include
-                    $ConditionalAccessExcludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAGroupDisplayNames -GroupType Exclude
+                    $ConditionalAccessIncludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAIncludeGroupDisplayNames -GroupType Include
+                    $ConditionalAccessExcludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAExcludeGroupDisplayNames -GroupType Exclude
                     
                     # Tag groups
                     $TaggedCAIncludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessIncludeGroups -PropertyToTag $PropertyToTag

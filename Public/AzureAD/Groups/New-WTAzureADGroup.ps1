@@ -45,7 +45,8 @@ function New-WTAzureADGroup {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "GraphAPI\Private\Invoke-WTGraphPost.ps1"
+                "GraphAPI\Private\Invoke-WTGraphPost.ps1",
+                "Toolkit\Public\New-WTRandomString.ps1"
             )
 
             # Function dot source
@@ -61,6 +62,7 @@ function New-WTAzureADGroup {
                 "createdDateTime",
                 "modifiedDateTime"
             )
+            $Service = "AD"
 
         }
         catch {
@@ -94,6 +96,18 @@ function New-WTAzureADGroup {
                 
                 # If there are groups to deploy, for each
                 if ($AzureADGroups) {
+
+                    # Foreach group, check whether the required mailNickname exists, if not, generate this, append and return group
+                    $AzureADGroups = foreach ($Group in $AzureADGroups){
+                        if (!$Group.mailNickname){
+                            $mailNickname = $null
+                            $mailNickname = $Service + "-" + (New-WTRandomString -CharacterLength 48 -Alphanumeric)
+                            $Group.Add("mailNickname",$mailNickname)
+                        }
+                        
+                        # Return group
+                        $Group
+                    }
                     
                     # Create groups
                     Invoke-WTGraphPost `

@@ -23,7 +23,7 @@ function Invoke-WTValidateAzureADGroup {
     Begin {
         try {
             # Variables
-            $RequiredProperties = @("displayName", "mailEnabled", "mailNickname", "securityEnabled")
+            $RequiredProperties = @("displayName", "mailEnabled", "securityEnabled")
 
         }
         catch {

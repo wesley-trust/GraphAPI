@@ -250,17 +250,19 @@ function Invoke-WTApplyCAPolicy {
                         -ExcludeExportCleanup
 
                     # Path to group config
-                    $GroupsPath = $Path + "\..\..\Groups"
+                    $GroupsPath = $Path + "\..\Groups"
                     
                     # Export include groups
                     Export-WTAzureADGroup -AzureADGroups $ConditionalAccessIncludeGroups `
                         -Path $GroupsPath `
-                        -ExcludeExportCleanup
+                        -ExcludeExportCleanup `
+                        -ExcludeTagEvaluation
 
                     # Export exclude groups
                     Export-WTAzureADGroup -AzureADGroups $ConditionalAccessExcludeGroups `
                         -Path $GroupsPath `
-                        -ExcludeExportCleanup
+                        -ExcludeExportCleanup `
+                        -ExcludeTagEvaluation
                     
                     # If executing in a pipeline, stage, commit and push the changes back to the repo
                     if ($Pipeline) {

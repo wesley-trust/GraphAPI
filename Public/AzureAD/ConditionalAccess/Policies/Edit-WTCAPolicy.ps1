@@ -67,7 +67,8 @@ function Edit-WTCAPolicy {
             $Uri = "identity/conditionalAccess/policies"
             $CleanUpProperties = (
                 "createdDateTime",
-                "modifiedDateTime"
+                "modifiedDateTime",
+                "SideIndicator"
             )
 
         }

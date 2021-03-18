@@ -68,7 +68,8 @@ function New-WTCAPolicy {
             $CleanUpProperties = (
                 "id",
                 "createdDateTime",
-                "modifiedDateTime"
+                "modifiedDateTime",
+                "SideIndicator"
             )
         }
         catch {

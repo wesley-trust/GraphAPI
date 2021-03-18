@@ -60,7 +60,8 @@ function New-WTAzureADGroup {
             $CleanUpProperties = (
                 "id",
                 "createdDateTime",
-                "modifiedDateTime"
+                "modifiedDateTime",
+                "SideIndicator"
             )
             $Service = "AD"
 

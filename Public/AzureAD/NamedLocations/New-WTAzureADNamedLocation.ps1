@@ -55,7 +55,7 @@ function New-WTAzureADNamedLocation {
 
             # Variables
             $Activity = "Creating Azure AD Named Locations"
-            $Uri = "conditionalAccess/namedLocations"
+            $Uri = "identity/conditionalAccess/namedLocations"
             $CleanUpProperties = (
                 "id",
                 "createdDateTime",

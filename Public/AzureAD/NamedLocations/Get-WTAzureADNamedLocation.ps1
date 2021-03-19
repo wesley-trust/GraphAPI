@@ -61,7 +61,7 @@ function Get-WTAzureADNamedLocation {
 
             # Variables
             $Activity = "Getting Azure AD Named Locations"
-            $Uri = "conditionalAccess/namedLocations"
+            $Uri = "identity/conditionalAccess/namedLocations"
 
         }
         catch {

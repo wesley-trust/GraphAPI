@@ -55,7 +55,7 @@ function Remove-WTAzureADNamedLocation {
 
             # Variables
             $Activity = "Removing Azure AD Named Locations"
-            $Uri = "conditionalAccess/namedLocations"
+            $Uri = "identity/conditionalAccess/namedLocations"
 
         }
         catch {

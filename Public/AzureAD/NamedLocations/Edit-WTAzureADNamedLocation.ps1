@@ -55,7 +55,7 @@ function Edit-WTAzureADNamedLocation {
 
             # Variables
             $Activity = "Updating Azure AD Named Locations"
-            $Uri = "conditionalAccess/namedLocations"
+            $Uri = "identity/conditionalAccess/namedLocations"
             $CleanUpProperties = (
                 "createdDateTime",
                 "modifiedDateTime",

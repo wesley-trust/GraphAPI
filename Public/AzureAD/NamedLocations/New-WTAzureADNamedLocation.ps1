@@ -1,4 +1,4 @@
-function New-WTAzureADNamedNamedLocation {
+function New-WTAzureADNamedLocation {
     [cmdletbinding()]
     param (
         [parameter(

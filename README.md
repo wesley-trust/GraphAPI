@@ -12,6 +12,8 @@ Contains code for calling the Microsoft Graph API with PowerShell
 |:---| :----: | :-----: |
 | Device Compliance: Windows 10 |  |
 | Device Configuration: Windows 10 |  |
+| App Protection: Android |  |
+| App Protection: iOS/iPadOS |  |
 ### PowerShell wrapped Microsoft Graph API calls to:
 - Import
 - Get

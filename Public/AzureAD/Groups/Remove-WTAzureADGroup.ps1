@@ -81,7 +81,6 @@ function Remove-WTAzureADGroup {
                     Uri               = $Uri
                     Activity          = $Activity
                 }
-
                 if ($ExcludePreviewFeatures) {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }

@@ -60,8 +60,7 @@ function New-WTAzureADNamedLocation {
                 "id",
                 "createdDateTime",
                 "modifiedDateTime",
-                "SideIndicator",
-                "@odata.type"
+                "SideIndicator"
             )
         }
         catch {
@@ -92,16 +91,17 @@ function New-WTAzureADNamedLocation {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
 
-                # Get Azure AD named location relationship
-                $QueryResponse = Invoke-WTGraphPost @Parameters
-
-                # Return response if one is returned
-                if ($QueryResponse) {
-                    $QueryResponse
+                # If there are named locations to deploy
+                if ($NamedLocations) {
+                    
+                    # Create Azure AD named locations
+                    Invoke-WTGraphPost `
+                        @Parameters `
+                        -InputObject $NamedLocations
                 }
                 else {
-                    $WarningMessage = "No named location exists in Azure AD for any of the named location IDs specified"
-                    Write-Warning $WarningMessage
+                    $ErrorMessage = "There are no named locations to be created"
+                    Write-Error $ErrorMessage
                 }
             }
             else {

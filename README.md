@@ -10,8 +10,8 @@ Contains code for calling the Microsoft Graph API with PowerShell
 ## Endpoint Manager (Intune)
 | Service |  Main  | Develop |
 |:---| :----: | :-----: |
-| Device Compliance Policy: Windows 10 |  |
-| Device Configuration Policy: Windows 10 |  |
+| Device Compliance: Windows 10 |  |
+| Device Configuration: Windows 10 |  |
 ### PowerShell wrapped Microsoft Graph API calls to:
 - Import
 - Get

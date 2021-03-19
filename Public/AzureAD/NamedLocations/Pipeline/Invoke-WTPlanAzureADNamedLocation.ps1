@@ -92,7 +92,7 @@ function Invoke-WTPlanAzureADNamedLocation {
             if ($AccessToken) {
 
                 # Output current action
-                Write-Host "Evaluating Azure AD NamedLocations"
+                Write-Host "Evaluating Azure AD Named Locations"
                 
                 # Build Parameters
                 $Parameters = @{
@@ -182,7 +182,7 @@ function Invoke-WTPlanAzureADNamedLocation {
                     Write-Host "Named Locations to remove: $($RemoveNamedLocations.count)"
 
                     foreach ($NamedLocation in $RemoveNamedLocations) {
-                        Write-Host "Remove: NamedLocation ID: $($NamedLocation.id)" -ForegroundColor DarkRed
+                        Write-Host "Remove: Named Location ID: $($NamedLocation.id)" -ForegroundColor DarkRed
                     }
                 }
                 else {
@@ -195,7 +195,7 @@ function Invoke-WTPlanAzureADNamedLocation {
                     Write-Host "Named Locations to update: $($UpdateNamedLocations.count)"
                     
                     foreach ($NamedLocation in $UpdateNamedLocations) {
-                        Write-Host "Update: NamedLocation ID: $($NamedLocation.id)" -ForegroundColor DarkYellow
+                        Write-Host "Update: Named Location ID: $($NamedLocation.id)" -ForegroundColor DarkYellow
                     }
                 }
                 else {
@@ -208,7 +208,7 @@ function Invoke-WTPlanAzureADNamedLocation {
                     Write-Host "Named Locations to create: $($CreateNamedLocations.count)"
 
                     foreach ($NamedLocation in $CreateNamedLocations) {
-                        Write-Host "Create: NamedLocation Name: $($NamedLocation.displayName)" -ForegroundColor DarkGreen
+                        Write-Host "Create: Named Location Name: $($NamedLocation.displayName)" -ForegroundColor DarkGreen
                     }
                 }
                 else {

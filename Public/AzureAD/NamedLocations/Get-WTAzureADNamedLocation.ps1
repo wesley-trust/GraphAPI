@@ -1,4 +1,4 @@
-function Get-WTAzureADNamedNamedLocation {
+function Get-WTAzureADNamedLocation {
     [cmdletbinding()]
     param (
         [parameter(

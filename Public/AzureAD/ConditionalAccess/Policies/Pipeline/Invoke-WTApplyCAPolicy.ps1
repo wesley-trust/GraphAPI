@@ -223,6 +223,20 @@ function Invoke-WTApplyCAPolicy {
                     # For each policy, find the matching group
                     $CreatePolicies = foreach ($Policy in $TaggedPolicies) {
 
+                        # Add exclude location to policy
+                        if ($Policy.displayName -like "*location*") {
+                            $Policy.conditions.locations.excludeLocations = @(
+
+                            # If trusted is included, add this, as well as each ID from an array of location ids (overwriting)
+                                if ($Policy.conditions.locations.excludeLocations -contains "AllTrusted"){
+                                    "AllTrusted"
+                                }
+                                foreach ($ExcludeLocation in ${ENV:EXCLUDELOCATIONID}){
+                                    $ExcludeLocation
+                                }
+                            )
+                        }
+
                         # Find the matching include group
                         $CAIncludeGroup = $null
                         $CAIncludeGroup = $TaggedCAIncludeGroups | Where-Object {

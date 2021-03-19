@@ -220,25 +220,29 @@ function Invoke-WTApplyCAPolicy {
                     $TaggedCAIncludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessIncludeGroups -PropertyToTag $PropertyToTag
                     $TaggedCAExcludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessExcludeGroups -PropertyToTag $PropertyToTag
 
-                    # For each policy, find the matching group
+                    # For each policy, perform policy specific changes
                     $CreatePolicies = foreach ($Policy in $TaggedPolicies) {
 
-                        # Add exclude location to policy
+                        # If this is a location specific policy
                         if ($Policy.displayName -like "*location*") {
-                            $Policy.conditions.locations.excludeLocations = @(
 
-                                # If the excluded locations does not contain All Trusted, continue adding specific locations
-                                if ($Policy.conditions.locations.excludeLocations -ne "AllTrusted") {
+                            # If the excluded locations does not contain All Trusted, continue adding specific locations
+                            if ($Policy.conditions.locations.excludeLocations -ne "AllTrusted") {
+                            
+                                # Build array of locations
+                                $Policy.conditions.locations.excludeLocations = @(
 
-                                    # If MFA Trusted IPs is in the list of lcoations, add this, and any additional locations from the pipeline (overwriting)
+                                    # If MFA Trusted IPs is in the list of locations, add this, and any additional locations from the pipeline (overwriting)
                                     if ("00000000-0000-0000-0000-000000000000" -in $Policy.conditions.locations.excludeLocations) {
                                         "00000000-0000-0000-0000-000000000000"
                                     }
+
+                                    # Add each location in the pipeline variable to the policy
                                     foreach ($ExcludeLocation in ${ENV:EXCLUDELOCATIONID}) {
                                         $ExcludeLocation
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
 
                         # Find the matching include group

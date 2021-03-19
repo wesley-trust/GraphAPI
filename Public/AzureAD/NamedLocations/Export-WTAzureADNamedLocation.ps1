@@ -60,7 +60,7 @@ function Export-WTAzureADNamedLocation {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The AzureAD named locations to get, this must contain valid id(s), when not specified, all named locations are returned"
         )]
-        [Alias("Named Location", "AzureADNamed Location")]
+        [Alias("NamedLocation", "NamedLocations", "AzureADNamedLocation")]
         [pscustomobject]$AzureADNamedLocations,
         [parameter(
             Mandatory = $false,

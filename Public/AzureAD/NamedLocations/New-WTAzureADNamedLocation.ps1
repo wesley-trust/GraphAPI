@@ -37,7 +37,7 @@ function New-WTAzureADNamedLocation {
             ValueFromPipeLine = $true,
             HelpMessage = "Specify the Named Location to create"
         )]
-        [Alias('NamedLocation', 'LocationDefinition')]
+        [Alias("NamedLocation", "AzureADNamedLocation", "AzureADNamedLocations")]
         [pscustomobject]$NamedLocations
     )
     Begin {

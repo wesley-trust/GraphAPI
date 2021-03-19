@@ -37,7 +37,7 @@ function Edit-WTAzureADNamedLocation {
             ValueFromPipeLine = $true,
             HelpMessage = "The Azure AD named locations to remove, a named location must have a valid id"
         )]
-        [Alias('NamedLocation', 'LocationDefinition')]
+        [Alias("NamedLocation", "NamedLocations", "AzureADNamedLocation")]
         [pscustomobject]$NamedLocations
     )
     Begin {

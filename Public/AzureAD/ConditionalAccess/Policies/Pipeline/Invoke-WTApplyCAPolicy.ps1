@@ -227,11 +227,11 @@ function Invoke-WTApplyCAPolicy {
                         if ($Policy.displayName -like "*location*") {
                             $Policy.conditions.locations.excludeLocations = @(
 
-                                # If all trusted is included, skip adding locations
-                                if (!$Policy.conditions.locations.excludeLocations -contains "AllTrusted") {
+                                # If all trusted is not in the list of defined locations, continue adding locations
+                                if ("AllTrusted" -notin $Policy.conditions.locations.excludeLocations) {
 
-                                    # If MFA Trusted IPs is included, add this, and any additional locations from the pipeline (overwriting)
-                                    if ($Policy.conditions.locations.excludeLocations -contains "00000000-0000-0000-0000-000000000000") {
+                                    # If MFA Trusted IPs is in the list of lcoations, add this, and any additional locations from the pipeline (overwriting)
+                                    if ("00000000-0000-0000-0000-000000000000" -in $Policy.conditions.locations.excludeLocations) {
                                         "00000000-0000-0000-0000-000000000000"
                                     }
                                     foreach ($ExcludeLocation in ${ENV:EXCLUDELOCATIONID}) {

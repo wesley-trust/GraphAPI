@@ -60,7 +60,8 @@ function New-WTAzureADNamedLocation {
                 "id",
                 "createdDateTime",
                 "modifiedDateTime",
-                "SideIndicator"
+                "SideIndicator",
+                "@odata.type"
             )
         }
         catch {

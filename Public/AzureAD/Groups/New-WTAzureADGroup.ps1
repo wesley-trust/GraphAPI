@@ -64,7 +64,10 @@ function New-WTAzureADGroup {
                 "SideIndicator",
                 "securityIdentifier",
                 "createdByAppId",
-                "renewedDateTime"
+                "renewedDateTime",
+                "SVC",
+                "REF",
+                "ENV"
             )
             $Service = "AD"
 

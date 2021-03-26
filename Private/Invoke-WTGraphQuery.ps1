@@ -87,7 +87,7 @@ function Invoke-WTGraphQuery {
                         -Body $Body
                 }
                 
-                # Check if a value is returned, and if not, whether an ID is, and add either to the query result, ignoring null objects returned
+                # Check if a value is returned, and if not, if an ID is, and add either to the query result, ignoring null objects returned
                 if ($QueryRequest.value) {
                     $QueryResult += $QueryRequest.value
                 }

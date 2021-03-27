@@ -4,31 +4,13 @@ function Invoke-WTGraphDelete {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client ID for the Azure AD service principal with Conditional Access Graph permissions"
-        )]
-        [string]$ClientID,
-        [parameter(
-            Mandatory = $false,
-            ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client secret for the Azure AD service principal with Conditional Access Graph permissions"
-        )]
-        [string]$ClientSecret,
-        [parameter(
-            Mandatory = $false,
-            ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The initial domain (onmicrosoft.com) of the tenant"
-        )]
-        [string]$TenantDomain,
-        [parameter(
-            Mandatory = $false,
-            ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The access token, obtained from executing Get-WTGraphAccessToken"
         )]
         [string]$AccessToken,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Specify whether to exclude features in preview, a production API version will then be used instead"
+            HelpMessage = "Specify whether to exclude features in preview, a production API version will be used instead"
         )]
         [switch]$ExcludePreviewFeatures,
         [parameter(
@@ -57,7 +39,6 @@ function Invoke-WTGraphDelete {
 
             # Function definitions
             $Functions = @(
-                "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
                 "GraphAPI\Private\Invoke-WTGraphQuery.ps1"
             )
 
@@ -87,8 +68,6 @@ function Invoke-WTGraphDelete {
                 $Parameters = @{
                     Method = $Method
                 }
-
-                # Change the API version if features in preview are to be excluded
                 if ($ExcludePreviewFeatures) {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }

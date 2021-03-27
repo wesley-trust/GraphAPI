@@ -28,7 +28,7 @@ function New-WTCAGroup {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Specify whether to exclude features in preview, a production API version will then be used instead"
+            HelpMessage = "Specify whether to exclude features in preview, a production API version will be used instead"
         )]
         [switch]$ExcludePreviewFeatures,
         [parameter(

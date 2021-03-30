@@ -104,7 +104,7 @@ function New-WTCAGroup {
                             [PSCustomObject]@{
                                 displayName     = $Tag + "-" + $Service + ";" + $DisplayName + " Include in Conditional Access Policy"
                                 mailEnabled     = $False
-                                mailNickname    = $Service + "-" + (New-WTRandomString -CharacterLength 48 -Alphanumeric)
+                                mailNickname    = $Service + "-" + (New-WTRandomString -CharacterLength 24 -Alphanumeric)
                                 securityEnabled = $true
                             }
                         }
@@ -114,7 +114,7 @@ function New-WTCAGroup {
                             [PSCustomObject]@{
                                 displayName     = $Tag + "-" + $Service + ";" + $DisplayName + " Exclude from Conditional Access Policy"
                                 mailEnabled     = $False
-                                mailNickname    = $Service + "-" + (New-WTRandomString -CharacterLength 48 -Alphanumeric)
+                                mailNickname    = $Service + "-" + (New-WTRandomString -CharacterLength 24 -Alphanumeric)
                                 securityEnabled = $true
                             }
                         }

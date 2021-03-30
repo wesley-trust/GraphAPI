@@ -107,7 +107,7 @@ function New-WTAzureADGroup {
                     $AzureADGroups = foreach ($Group in $AzureADGroups){
                         if (!$Group.mailNickname){
                             $mailNickname = $null
-                            $mailNickname = $Service + "-" + (New-WTRandomString -CharacterLength 48 -Alphanumeric)
+                            $mailNickname = $Service + "-" + (New-WTRandomString -CharacterLength 24 -Alphanumeric)
                             $Group | Add-Member -MemberType NoteProperty -Name "mailNickname" -Value $mailNickname
                         }
                         

@@ -65,7 +65,6 @@ function Invoke-WTGraphPatch {
     }
     Process {
         try {
-
             if ($AccessToken) {
 
                 # Build parameters
@@ -122,10 +121,15 @@ function Invoke-WTGraphPatch {
                             | Out-Null
                         }
                         else {
-                            $ErrorMessage = "The Conditional Access query does not contain an id, so cannot be updated"
+                            $ErrorMessage = "No IDs are specified, to update an object, an ID is required"
                             Write-Error $ErrorMessage
                         }
                     }
+                }
+                else {
+                    $ErrorMessage = "There are no objects to be updated, to update an object, one must be supplied"
+                    Write-Error $ErrorMessage
+                    throw $ErrorMessage
                 }
             }
             else {

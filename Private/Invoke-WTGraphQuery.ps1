@@ -51,7 +51,6 @@ function Invoke-WTGraphQuery {
     }
     Process {
         try {
-
             if ($AccessToken) {
 
                 # Change the API version if features in preview are to be excluded

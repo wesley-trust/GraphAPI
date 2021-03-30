@@ -72,7 +72,7 @@ function Invoke-WTGraphDelete {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
 
-                # If there are policies to be removed, 
+                # If there are objects to be removed, 
                 if ($IDs) {
                     foreach ($ID in $IDs) {
 
@@ -100,6 +100,11 @@ function Invoke-WTGraphDelete {
                             -Uri $Uri/$ID `
                         | Out-Null
                     }
+                }
+                else {
+                    $ErrorMessage = "No IDs are specified, to remove an object, an ID is required"
+                    Write-Error $ErrorMessage
+                    throw $ErrorMessage
                 }
             }
             else {

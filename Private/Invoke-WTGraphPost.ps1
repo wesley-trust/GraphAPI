@@ -130,8 +130,9 @@ function Invoke-WTGraphPost {
                     }
                 }
                 else {
-                    $ErrorMessage = "There are no records to be created"
+                    $ErrorMessage = "There are no objects to be created, to create an object, one must be supplied"
                     Write-Error $ErrorMessage
+                    throw $ErrorMessage
                 }
             }
             else {

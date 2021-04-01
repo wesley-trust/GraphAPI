@@ -92,8 +92,8 @@ function Remove-WTAzureADGroup {
                         -IDs $IDs
                 }
                 else {
-                    $WarningMessage = "No Azure AD groups to be removed"
-                    Write-Warning $WarningMessage
+                    $ErrorMessage = "There are no Ids specified which are required to remove groups"
+                    Write-Error $ErrorMessage
                 }
             }
             else {

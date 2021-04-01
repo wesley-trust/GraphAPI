@@ -111,7 +111,7 @@ function Get-WTAzureADGroupRelationship {
                     $QueryResponse
                 }
                 else {
-                    $WarningMessage = "No group relationship exists in Azure AD for any of the group IDs specified"
+                    $WarningMessage = "No group $Relationship exist in Azure AD for any of the group IDs specified"
                     Write-Warning $WarningMessage
                 }
             }

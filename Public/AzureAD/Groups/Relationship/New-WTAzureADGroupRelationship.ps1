@@ -70,12 +70,6 @@ function New-WTAzureADGroupRelationship {
             # Variables
             $Activity = "Adding Azure AD group $Relationship"
             $Uri = "groups"
-            $CleanUpProperties = (
-                "id",
-                "createdDateTime",
-                "modifiedDateTime"
-            )
-
         }
         catch {
             Write-Error -Message $_.Exception

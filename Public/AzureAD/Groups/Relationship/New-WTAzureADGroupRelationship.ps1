@@ -92,7 +92,6 @@ function New-WTAzureADGroupRelationship {
                 $Parameters = @{
                     AccessToken       = $AccessToken
                     Uri               = "$Uri/$Id/$Relationship/`$ref"
-                    CleanUpProperties = $CleanUpProperties
                     Activity          = $Activity
                 }
                 if ($ExcludePreviewFeatures) {

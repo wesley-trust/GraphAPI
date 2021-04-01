@@ -42,14 +42,14 @@ function Remove-WTAzureADGroupRelationship {
         [parameter(
             Mandatory = $true,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The group relationship to add, such as group members or owners"
+            HelpMessage = "The group relationship to remove, such as group members or owners"
         )]
         [ValidateSet("members", "owners")]
         [string]$Relationship,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The relationship ids of the objects to add to the group"
+            HelpMessage = "The relationship ids of the objects to remove from the group"
         )]
         [Alias('RelationshipID', 'GroupRelationshipID', 'GroupRelationshipIDs')]
         [string[]]$RelationshipIDs

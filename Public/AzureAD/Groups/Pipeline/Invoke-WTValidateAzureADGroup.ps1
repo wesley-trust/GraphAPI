@@ -16,6 +16,14 @@ function Invoke-WTValidateAzureADGroup {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
+            ValueFromPipe = $true,
+            HelpMessage = "The Azure AD Groups to be validated if not imported from a JSON file"
+        )]
+        [Alias('AzureADGroup', 'GroupDefinition')]
+        [PSCustomObject]$AzureADGroups,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "Specify whether files should be imported only, and not validated"
         )]
         [switch]$ImportOnly
@@ -41,20 +49,43 @@ function Invoke-WTValidateAzureADGroup {
                     $FilePath = foreach ($Directory in $Path) {
                         (Get-ChildItem -Path $Directory -Filter "*.json" -Recurse).FullName
                     }
+                    if (!$FilePath) {
+                        $ErrorMessage = "No JSON files were found in the location specified $Path, please check the path is correct"
+                        throw $ErrorMessage
+                    }
+                }
+                else {
+                    $ErrorMessage = "The provided path does not exist $Path, please check the path is correct"
+                    throw $ErrorMessage
                 }
             }
 
-            # Import groups from JSON file
+            # Import groups from JSON file, if the files exist
             if ($FilePath) {
-                $AzureADGroups = foreach ($File in $FilePath) {
-                    Get-Content -Raw -Path $File
+                $AzureADGroupImport = foreach ($File in $FilePath) {
+                    $FilePathExists = $null
+                    $FilePathExists = Test-Path -Path $File
+                    if ($FilePathExists) {
+                        Get-Content -Raw -Path $File
+                    }
+                    else {
+                        $ErrorMessage = "The provided filepath $File does not exist, please check the path is correct"
+                        throw $ErrorMessage
+                    }
+                }
+                
+                # If import was successful, convert from JSON
+                if ($AzureADGroupImport) {
+                    $AzureADGroups = $AzureADGroupImport | ConvertFrom-Json
+                }
+                else {
+                    $ErrorMessage = "No JSON files could be imported, please check the filepath is correct"
+                    throw $ErrorMessage
                 }
             }
 
-            # If a file has been imported, convert from JSON to an object for deployment
+            # If a file has been imported, or objects provided in the parameter
             if ($AzureADGroups) {
-
-                $AzureADGroups = $AzureADGroups | ConvertFrom-Json
                 
                 # Output current action
                 Write-Host "Importing Azure AD Groups"
@@ -72,108 +103,99 @@ function Invoke-WTValidateAzureADGroup {
                     }
                 }
 
-                # If there are groups imported, run validation checks
-                if ($AzureADGroups) {
-
-                    # If import only is set, return groups without validating
-                    if ($ImportOnly) {
-                        $AzureADGroups
-                    }
-                    else {
-                        
-                        # Output current action
-                        Write-Host "Validating Azure AD Groups"
-    
-                        # For each group, run validation checks
-                        $InvalidGroups = foreach ($Group in $AzureADGroups) {
-                            $GroupValidate = $null
-    
-                            # Check for missing properties
-                            $GroupProperties = $null
-                            $GroupProperties = ($Group | Get-Member -MemberType NoteProperty).name
-                            $PropertyCheck = $null
-
-                            # Check whether each required property, exists in the list of properties for the object
-                            $PropertyCheck = foreach ($Property in $RequiredProperties) {
-                                if ($Property -notin $GroupProperties) {
-                                    $Property
-                                }
-                            }
-
-                            # Check whether each required property has a value, if not, return property
-                            $PropertyValueCheck = $null
-                            $PropertyValueCheck = foreach ($Property in $RequiredProperties) {
-                                if ($null -eq $Group.$Property) {
-                                    $Property
-                                }
-                            }
-
-                            # Build and return object
-                            if ($PropertyCheck -or $PropertyValueCheck) {
-                                $GroupValidate = [ordered]@{}
-                                if ($Group.displayName) {
-                                    $GroupValidate.Add("DisplayName", $Group.displayName)
-                                }
-                                elseif ($Group.id) {
-                                    $GroupValidate.Add("Id", $Group.id)
-                                }
-                            }
-                            if ($PropertyCheck) {
-                                $GroupValidate.Add("MissingProperties", $PropertyCheck)
-                            }
-                            if ($PropertyValueCheck) {
-                                $GroupValidate.Add("MissingPropertyValues", $PropertyValueCheck)
-                            }
-                            if ($GroupValidate) {
-                                [pscustomobject]$GroupValidate
-                            }
-                        }
-
-                        # Return validation result for each group
-                        if ($InvalidGroups) {
-                            Write-Host "Invalid Groups: $($InvalidGroups.count) out of $($AzureADGroups.count) imported"
-                            foreach ($Group in $InvalidGroups) {
-                                if ($Group.displayName) {
-                                    Write-Host "INVALID: Group Name: $($Group.displayName)" -ForegroundColor Yellow
-                                }
-                                elseif ($Group.id) {
-                                    Write-Host "INVALID: Group Id: $($Group.id)" -ForegroundColor Yellow
-                                }
-                                else {
-                                    Write-Host "INVALID: No displayName or Id for group" -ForegroundColor Yellow
-                                }
-                                if ($Group.MissingProperties) {
-                                    Write-Warning "Required properties not present ($($Group.MissingProperties.count)): $($Group.MissingProperties)"
-                                }
-                                if ($Group.MissingPropertyValues) {
-                                    Write-Warning "Required property values not present ($($Group.MissingPropertyValues.count)): $($Group.MissingPropertyValues)"
-                                }
-                            }
-    
-                            # Abort import
-                            $ErrorMessage = "Validation of groups was not successful, review configuration files and any warnings generated"
-                            Write-Error $ErrorMessage
-                            throw $ErrorMessage
-                        }
-                        else {
-
-                            # Return validated groups
-                            Write-Host "All groups have passed validation for required properties and values"
-                            $ValidGroups = $AzureADGroups
-                            $ValidGroups
-                        }
-                    }
+                # If import only is set, return groups without validating
+                if ($ImportOnly) {
+                    $AzureADGroups
                 }
                 else {
-                    $WarningMessage = "No Azure AD groups to be imported, import may have failed or none may exist"
-                    Write-Warning $WarningMessage
+                        
+                    # Output current action
+                    Write-Host "Validating Azure AD Groups"
+    
+                    # For each group, run validation checks
+                    $InvalidGroups = foreach ($Group in $AzureADGroups) {
+                        $GroupValidate = $null
+    
+                        # Check for missing properties
+                        $GroupProperties = $null
+                        $GroupProperties = ($Group | Get-Member -MemberType NoteProperty).name
+                        $PropertyCheck = $null
+
+                        # Check whether each required property, exists in the list of properties for the object
+                        $PropertyCheck = foreach ($Property in $RequiredProperties) {
+                            if ($Property -notin $GroupProperties) {
+                                $Property
+                            }
+                        }
+
+                        # Check whether each required property has a value, if not, return property
+                        $PropertyValueCheck = $null
+                        $PropertyValueCheck = foreach ($Property in $RequiredProperties) {
+                            if ($null -eq $Group.$Property) {
+                                $Property
+                            }
+                        }
+
+                        # Build and return object
+                        if ($PropertyCheck -or $PropertyValueCheck) {
+                            $GroupValidate = [ordered]@{}
+                            if ($Group.displayName) {
+                                $GroupValidate.Add("DisplayName", $Group.displayName)
+                            }
+                            elseif ($Group.id) {
+                                $GroupValidate.Add("Id", $Group.id)
+                            }
+                        }
+                        if ($PropertyCheck) {
+                            $GroupValidate.Add("MissingProperties", $PropertyCheck)
+                        }
+                        if ($PropertyValueCheck) {
+                            $GroupValidate.Add("MissingPropertyValues", $PropertyValueCheck)
+                        }
+                        if ($GroupValidate) {
+                            [pscustomobject]$GroupValidate
+                        }
+                    }
+
+                    # Return validation result for each group
+                    if ($InvalidGroups) {
+                        Write-Host "Invalid Groups: $($InvalidGroups.count) out of $($AzureADGroups.count) imported"
+                        foreach ($Group in $InvalidGroups) {
+                            if ($Group.displayName) {
+                                Write-Host "INVALID: Group Name: $($Group.displayName)" -ForegroundColor Yellow
+                            }
+                            elseif ($Group.id) {
+                                Write-Host "INVALID: Group Id: $($Group.id)" -ForegroundColor Yellow
+                            }
+                            else {
+                                Write-Host "INVALID: No displayName or Id for group" -ForegroundColor Yellow
+                            }
+                            if ($Group.MissingProperties) {
+                                Write-Warning "Required properties not present ($($Group.MissingProperties.count)): $($Group.MissingProperties)"
+                            }
+                            if ($Group.MissingPropertyValues) {
+                                Write-Warning "Required property values not present ($($Group.MissingPropertyValues.count)): $($Group.MissingPropertyValues)"
+                            }
+                        }
+    
+                        # Abort import
+                        $ErrorMessage = "Validation of groups was not successful, review configuration files and any warnings generated"
+                        throw $ErrorMessage
+                    }
+                    else {
+
+                        # Return validated groups
+                        Write-Host "All groups have passed validation for required properties and values"
+                        $ValidGroups = $AzureADGroups
+                        $ValidGroups
+                    }
                 }
+                
             }
             else {
-                $WarningMessage = "No Azure AD groups to be imported, import may have failed or none may exist"
-                Write-Warning $WarningMessage
+                $ErrorMessage = "No Azure AD groups to be imported, import may have failed or none may exist"
+                throw $ErrorMessage
             }
-            
         }
         catch {
             Write-Error -Message $_.Exception

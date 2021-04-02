@@ -16,7 +16,7 @@ function Invoke-WTValidateAzureADGroup {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            ValueFromPipe = $true,
+            ValueFromPipeLine = $true,
             HelpMessage = "The Azure AD Groups to be validated if not imported from a JSON file"
         )]
         [Alias('AzureADGroup', 'GroupDefinition')]

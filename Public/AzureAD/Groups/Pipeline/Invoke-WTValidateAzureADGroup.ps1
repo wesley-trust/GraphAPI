@@ -190,7 +190,6 @@ function Invoke-WTValidateAzureADGroup {
                         $ValidGroups
                     }
                 }
-                
             }
             else {
                 $ErrorMessage = "No Azure AD groups to be imported, import may have failed or none may exist"

@@ -28,8 +28,10 @@ function Invoke-WTPlanCAPolicy {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
+            ValueFromPipeLine = $true,
             HelpMessage = "The Conditional Access policy object"
         )]
+        [Alias('ConditionalAccessPolicy', 'PolicyDefinition')]
         [pscustomobject]$ConditionalAccessPolicies,
         [Parameter(
             Mandatory = $false,

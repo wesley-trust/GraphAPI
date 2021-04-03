@@ -28,8 +28,10 @@ function Invoke-WTPlanAzureADGroup {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
+            ValueFromPipeLine = $true,
             HelpMessage = "The Azure AD group object"
         )]
+        [Alias('AzureADGroup', 'GroupDefinition')]
         [pscustomobject]$AzureADGroups,
         [Parameter(
             Mandatory = $false,

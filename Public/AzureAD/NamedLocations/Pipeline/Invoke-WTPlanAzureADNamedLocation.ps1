@@ -28,8 +28,10 @@ function Invoke-WTPlanAzureADNamedLocation {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
+            ValueFromPipeLine = $true,
             HelpMessage = "The Azure AD named location object"
         )]
+        [Alias('AzureADNamedLocation', 'LocationDefinition')]
         [pscustomobject]$AzureADNamedLocations,
         [Parameter(
             Mandatory = $false,

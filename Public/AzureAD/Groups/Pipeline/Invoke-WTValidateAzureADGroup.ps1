@@ -46,13 +46,7 @@ function Invoke-WTValidateAzureADGroup {
             if ($Path) {
                 $PathExists = Test-Path -Path $Path
                 if ($PathExists) {
-                    $FilePath = foreach ($Directory in $Path) {
-                        (Get-ChildItem -Path $Directory -Filter "*.json" -Recurse).FullName
-                    }
-                    if (!$FilePath) {
-                        $ErrorMessage = "No JSON files were found in the location specified $Path, please check the path is correct"
-                        throw $ErrorMessage
-                    }
+                    $FilePath = (Get-ChildItem -Path $Path -Filter "*.json" -Recurse).FullName
                 }
                 else {
                     $ErrorMessage = "The provided path does not exist $Path, please check the path is correct"
@@ -63,7 +57,6 @@ function Invoke-WTValidateAzureADGroup {
             # Import groups from JSON file, if the files exist
             if ($FilePath) {
                 $AzureADGroupImport = foreach ($File in $FilePath) {
-                    $FilePathExists = $null
                     $FilePathExists = Test-Path -Path $File
                     if ($FilePathExists) {
                         Get-Content -Raw -Path $File

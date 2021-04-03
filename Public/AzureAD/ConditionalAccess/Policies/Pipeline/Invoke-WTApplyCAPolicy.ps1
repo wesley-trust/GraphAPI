@@ -30,6 +30,7 @@ function Invoke-WTApplyCAPolicy {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The Conditional Access policy object"
         )]
+        [Alias('ConditionalAccessPolicy', 'PolicyDefinition')]
         [pscustomobject]$ConditionalAccessPolicies,
         [Parameter(
             Mandatory = $false,

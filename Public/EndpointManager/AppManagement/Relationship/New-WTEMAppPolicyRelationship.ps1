@@ -70,7 +70,6 @@ function New-WTEMAppPolicyRelationship {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            ValueFromPipeLine = $true,
             HelpMessage = "Specify the Endpoint Manager App policy type"
         )]
         [ValidateSet("Protection")]

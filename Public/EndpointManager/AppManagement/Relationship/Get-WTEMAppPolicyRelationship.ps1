@@ -49,7 +49,6 @@ function Get-WTEMAppPolicyRelationship {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            ValueFromPipeLine = $true,
             HelpMessage = "Specify the Endpoint Manager App policy type to get"
         )]
         [ValidateSet("Protection")]
@@ -57,7 +56,6 @@ function Get-WTEMAppPolicyRelationship {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            ValueFromPipeLine = $true,
             HelpMessage = "Specify the App Policy platform to get, otherwise all are returned"
         )]
         [ValidateSet("Android", "iOS")]

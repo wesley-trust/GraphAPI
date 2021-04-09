@@ -42,7 +42,6 @@ function New-WTEMAppPolicy {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            ValueFromPipeLine = $true,
             HelpMessage = "Specify the Endpoint Manager App policy type to create"
         )]
         [ValidateSet("Protection")]
@@ -50,7 +49,6 @@ function New-WTEMAppPolicy {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            ValueFromPipeLine = $true,
             HelpMessage = "Specify the App Policy platform to target, only required when one is not specified in the config"
         )]
         [ValidateSet("Android", "iOS")]

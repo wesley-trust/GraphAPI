@@ -38,7 +38,7 @@ function New-WTAzureADGroup {
             HelpMessage = "Specify the Azure AD Groups to create"
         )]
         [Alias('AzureADGroup')]
-        [pscustomobject]$AzureADGroups
+        [PSCustomObject]$AzureADGroups
     )
     Begin {
         try {

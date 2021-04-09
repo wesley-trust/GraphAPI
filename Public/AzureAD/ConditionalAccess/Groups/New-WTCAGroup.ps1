@@ -37,7 +37,7 @@ function New-WTCAGroup {
             HelpMessage = "Specify the object containing the Conditional Access groups to create"
         )]
         [Alias('AzureADGroup')]
-        [pscustomobject]$ConditionalAccessGroups,
+        [PSCustomObject]$ConditionalAccessGroups,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,

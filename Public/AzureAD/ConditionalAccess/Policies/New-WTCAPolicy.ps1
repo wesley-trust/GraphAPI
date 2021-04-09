@@ -38,7 +38,7 @@ function New-WTCAPolicy {
             HelpMessage = "Specify the Conditional Access policies to create"
         )]
         [Alias('ConditionalAccessPolicy', 'PolicyDefinition')]
-        [pscustomobject]$ConditionalAccessPolicies,
+        [PSCustomObject]$ConditionalAccessPolicies,
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,

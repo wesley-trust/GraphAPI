@@ -38,7 +38,7 @@ function Edit-WTAzureADGroup {
             HelpMessage = "The Azure AD groups to remove, a group must have a valid id"
         )]
         [Alias('AzureADGroup', 'GroupDefinition')]
-        [pscustomobject]$AzureADGroups
+        [PSCustomObject]$AzureADGroups
     )
     Begin {
         try {

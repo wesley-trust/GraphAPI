@@ -146,7 +146,7 @@ function Invoke-WTValidateAzureADGroup {
                             $GroupValidate.Add("MissingPropertyValues", $PropertyValueCheck)
                         }
                         if ($GroupValidate) {
-                            [pscustomobject]$GroupValidate
+                            [PSCustomObject]$GroupValidate
                         }
                     }
 

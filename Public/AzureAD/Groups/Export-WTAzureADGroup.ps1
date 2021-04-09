@@ -61,7 +61,7 @@ function Export-WTAzureADGroup {
             HelpMessage = "The AzureAD groups to get, this must contain valid id(s), when not specified, all groups are returned"
         )]
         [Alias("Group", "AzureADGroup")]
-        [pscustomobject]$AzureADGroups,
+        [PSCustomObject]$AzureADGroups,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,

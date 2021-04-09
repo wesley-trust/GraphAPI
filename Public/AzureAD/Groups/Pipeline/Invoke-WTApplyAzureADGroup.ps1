@@ -31,7 +31,7 @@ function Invoke-WTApplyAzureADGroup {
             HelpMessage = "The AzureAD group object"
         )]
         [Alias('AzureADGroup', 'GroupDefinition')]
-        [pscustomobject]$AzureADGroups,
+        [PSCustomObject]$AzureADGroups,
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,

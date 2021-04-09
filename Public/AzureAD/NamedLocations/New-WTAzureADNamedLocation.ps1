@@ -38,7 +38,7 @@ function New-WTAzureADNamedLocation {
             HelpMessage = "Specify the Named Location to create"
         )]
         [Alias("NamedLocation", "AzureADNamedLocation", "AzureADNamedLocations")]
-        [pscustomobject]$NamedLocations
+        [PSCustomObject]$NamedLocations
     )
     Begin {
         try {

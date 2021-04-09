@@ -61,7 +61,7 @@ function Export-WTCAPolicy {
             HelpMessage = "The Conditional Access policies to get, this must contain valid id(s), when not specified, all policies are returned"
         )]
         [Alias("policy", "ConditionalAccessPolicy")]
-        [pscustomobject]$ConditionalAccessPolicies,
+        [PSCustomObject]$ConditionalAccessPolicies,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,

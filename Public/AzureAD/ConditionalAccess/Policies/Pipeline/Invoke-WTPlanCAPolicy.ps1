@@ -32,7 +32,7 @@ function Invoke-WTPlanCAPolicy {
             HelpMessage = "The Conditional Access policy object"
         )]
         [Alias('ConditionalAccessPolicy', 'PolicyDefinition')]
-        [pscustomobject]$ConditionalAccessPolicies,
+        [PSCustomObject]$ConditionalAccessPolicies,
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
@@ -219,7 +219,7 @@ function Invoke-WTPlanCAPolicy {
 
                 # If there are policies, return PS object
                 if ($PlanCAPolicies) {
-                    $PlanCAPolicies = [pscustomobject]$PlanCAPolicies
+                    $PlanCAPolicies = [PSCustomObject]$PlanCAPolicies
                     $PlanCAPolicies
                 }
             }

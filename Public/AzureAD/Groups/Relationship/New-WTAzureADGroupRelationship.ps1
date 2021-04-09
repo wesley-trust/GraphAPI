@@ -101,7 +101,7 @@ function New-WTAzureADGroupRelationship {
                 # If there are IDs, for each, create an object with the ID
                 if ($RelationshipIDs) {
                     $RelationshipObject = foreach ($RelationshipId in $RelationshipIDs) {
-                        [pscustomobject]@{
+                        [PSCustomObject]@{
                             "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$RelationshipId"
                         }
                     }

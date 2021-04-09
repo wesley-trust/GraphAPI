@@ -19,7 +19,7 @@ function Invoke-WTGraphPost {
             ValueFromPipeLine = $true,
             HelpMessage = "The objects to be created"
         )]
-        [pscustomobject]$InputObject,
+        [PSCustomObject]$InputObject,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,

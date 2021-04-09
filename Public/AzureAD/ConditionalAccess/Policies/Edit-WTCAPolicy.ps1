@@ -38,7 +38,7 @@ function Edit-WTCAPolicy {
             HelpMessage = "The Conditional Access policies to remove, a policy must have a valid id"
         )]
         [Alias('ConditionalAccessPolicy', 'PolicyDefinition')]
-        [pscustomobject]$ConditionalAccessPolicies,
+        [PSCustomObject]$ConditionalAccessPolicies,
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,

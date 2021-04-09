@@ -31,7 +31,7 @@ function Invoke-WTApplyAzureADNamedLocation {
             HelpMessage = "The AzureAD named location object"
         )]
         [Alias('AzureADNamedLocation', 'LocationDefinition')]
-        [pscustomobject]$AzureADNamedLocations,
+        [PSCustomObject]$AzureADNamedLocations,
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,

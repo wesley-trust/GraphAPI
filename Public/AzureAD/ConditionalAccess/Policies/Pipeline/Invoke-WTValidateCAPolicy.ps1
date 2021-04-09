@@ -179,7 +179,7 @@ function Invoke-WTValidateCAPolicy {
                             $PolicyValidate.Add("MissingConditions", $ConditionsCheck)
                         }
                         if ($PolicyValidate) {
-                            [pscustomobject]$PolicyValidate
+                            [PSCustomObject]$PolicyValidate
                         }
                     }
 

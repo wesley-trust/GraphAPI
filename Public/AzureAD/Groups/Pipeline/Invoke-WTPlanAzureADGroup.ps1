@@ -32,7 +32,7 @@ function Invoke-WTPlanAzureADGroup {
             HelpMessage = "The Azure AD group object"
         )]
         [Alias('AzureADGroup', 'GroupDefinition')]
-        [pscustomobject]$AzureADGroups,
+        [PSCustomObject]$AzureADGroups,
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
@@ -219,7 +219,7 @@ function Invoke-WTPlanAzureADGroup {
 
                 # If there are groups, return PS object
                 if ($PlanAzureADGroups) {
-                    $PlanAzureADGroups = [pscustomobject]$PlanAzureADGroups
+                    $PlanAzureADGroups = [PSCustomObject]$PlanAzureADGroups
                     $PlanAzureADGroups
                 }
             }

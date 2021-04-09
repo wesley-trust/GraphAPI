@@ -146,7 +146,7 @@ function Invoke-WTValidateAzureADNamedLocation {
                             $LocationValidate.Add("MissingPropertyValues", $PropertyValueCheck)
                         }
                         if ($LocationValidate) {
-                            [pscustomobject]$LocationValidate
+                            [PSCustomObject]$LocationValidate
                         }
                     }
 

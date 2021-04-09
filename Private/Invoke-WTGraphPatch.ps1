@@ -19,7 +19,7 @@ function Invoke-WTGraphPatch {
             ValueFromPipeLine = $true,
             HelpMessage = "The objects to be patched"
         )]
-        [pscustomobject]$InputObject,
+        [PSCustomObject]$InputObject,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,

@@ -54,6 +54,13 @@ function New-WTEMAppPolicyRelationship {
         [Alias('AssignmentID')]
         [string[]]$AssignmentIDs,
         [parameter(
+            Mandatory = $true,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "Specify whether the type of the group to assign to the Endpoint Manager App protection policy"
+        )]
+        [ValidateSet("Include", "Exclude")]
+        [string]$AssignmentType,
+        [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "Specify the target apps to add to the Endpoint Manager App protection policy"
@@ -110,17 +117,7 @@ function New-WTEMAppPolicyRelationship {
             }
             if ($AccessToken) {
 
-                # Build Parameters
-                $Parameters = @{
-                    AccessToken = $AccessToken
-                    Uri         = "$Uri/$Id/$Relationship"
-                    Activity    = $Activity
-                }
-                if ($ExcludePreviewFeatures) {
-                    $Parameters.Add("ExcludePreviewFeatures", $true)
-                }
-
-                # Specify platform specific parameters
+                # Variables based upon parameters
                 if ($PolicyType -eq "Protection") {
                     if ($Platform -eq "Android") {
                         $AppPlatformIdentifier = "androidMobileAppIdentifier"
@@ -133,6 +130,22 @@ function New-WTEMAppPolicyRelationship {
                         $Uri = "deviceAppManagement/iosManagedAppProtections"
                     }
                 }
+                if ($AssignmentType -eq "Include") {
+                    $PropertyType = "groupAssignmentTarget"
+                }
+                elseif ($AssignmentType -eq "Exclude") {
+                    $PropertyType = "exclusionGroupAssignmentTarget"
+                }
+
+                # Build Parameters
+                $Parameters = @{
+                    AccessToken = $AccessToken
+                    Uri         = "$Uri/$Id/$Relationship"
+                    Activity    = $Activity
+                }
+                if ($ExcludePreviewFeatures) {
+                    $Parameters.Add("ExcludePreviewFeatures", $true)
+                }
 
                 # If there are assignment IDs, build an object to add these, else, build an app object for each app
                 if ($AssignmentIDs) {
@@ -141,7 +154,7 @@ function New-WTEMAppPolicyRelationship {
                             foreach ($AssignmentId in $AssignmentIDs) {
                                 [PSCustomObject]@{
                                     "target" = [PSCustomObject]@{
-                                        "@odata.type" = "#microsoft.graph.groupAssignmentTarget"
+                                        "@odata.type" = "#microsoft.graph.$PropertyType"
                                         "groupId"     = $AssignmentId
                                     }
                                 }

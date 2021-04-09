@@ -96,6 +96,16 @@ function Get-WTEMAppPolicy {
             }
             if ($AccessToken) {
                 
+                # Variables based upon parameters
+                if ($PolicyType -eq "Protection") {
+                    if ($Platform -eq "Android") {
+                        $Uri = "deviceAppManagement/androidManagedAppProtections"
+                    }
+                    elseif ($Platform -eq "iOS") {
+                        $Uri = "deviceAppManagement/iosManagedAppProtections"
+                    }
+                }
+                                
                 # Build Parameters
                 $Parameters = @{
                     AccessToken = $AccessToken
@@ -109,16 +119,6 @@ function Get-WTEMAppPolicy {
                 }
                 if ($IDs) {
                     $Parameters.Add("IDs", $IDs)
-                }
-
-                # Specify platform specific parameters
-                if ($PolicyType -eq "Protection") {
-                    if ($Platform -eq "Android") {
-                        $Uri = "deviceAppManagement/androidManagedAppProtections"
-                    }
-                    elseif ($Platform -eq "iOS") {
-                        $Uri = "deviceAppManagement/iosManagedAppProtections"
-                    }
                 }
 
                 # Get Endpoint Manager App policies

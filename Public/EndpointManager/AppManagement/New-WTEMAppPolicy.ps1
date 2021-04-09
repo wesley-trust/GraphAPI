@@ -100,6 +100,16 @@ function New-WTEMAppPolicy {
             }
             if ($AccessToken) {
                 
+                # Variables based upon parameters
+                if ($PolicyType -eq "Protection") {
+                    if ($Platform -eq "Android") {
+                        $Uri = "deviceAppManagement/androidManagedAppProtections"
+                    }
+                    elseif ($Platform -eq "iOS") {
+                        $Uri = "deviceAppManagement/iosManagedAppProtections"
+                    }
+                }
+
                 # Build Parameters
                 $Parameters = @{
                     AccessToken       = $AccessToken
@@ -108,16 +118,6 @@ function New-WTEMAppPolicy {
                 }
                 if ($ExcludePreviewFeatures) {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
-                }
-                
-                # Specify platform specific parameters
-                if ($PolicyType -eq "Protection") {
-                    if ($Platform -eq "Android") {
-                        $Uri = "deviceAppManagement/androidManagedAppProtections"
-                    }
-                    elseif ($Platform -eq "iOS") {
-                        $Uri = "deviceAppManagement/iosManagedAppProtections"
-                    }
                 }
                 
                 # If there are App Policies to deploy, for each

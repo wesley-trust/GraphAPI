@@ -79,7 +79,7 @@ function Get-WTEMAppPolicyRelationship {
             # Variables
             $Activity = "Getting Endpoint Manager App Policy $Relationship"
             $Uri = "deviceAppManagement/targetedManagedAppConfigurations"
-            
+
         }
         catch {
             Write-Error -Message $_.Exception
@@ -98,16 +98,7 @@ function Get-WTEMAppPolicyRelationship {
             }
             if ($AccessToken) {
 
-                # Build Parameters
-                $Parameters = @{
-                    AccessToken = $AccessToken
-                    Activity    = $Activity
-                }
-                if ($ExcludePreviewFeatures) {
-                    $Parameters.Add("ExcludePreviewFeatures", $true)
-                }
-
-                # Specify platform specific parameters
+                # Variables based upon parameters
                 if ($PolicyType -eq "Protection") {
                     if ($Platform -eq "Android") {
                         $Uri = "deviceAppManagement/androidManagedAppProtections"
@@ -115,6 +106,15 @@ function Get-WTEMAppPolicyRelationship {
                     elseif ($Platform -eq "iOS") {
                         $Uri = "deviceAppManagement/iosManagedAppProtections"
                     }
+                }
+                                
+                # Build Parameters
+                $Parameters = @{
+                    AccessToken = $AccessToken
+                    Activity    = $Activity
+                }
+                if ($ExcludePreviewFeatures) {
+                    $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
 
                 # Get App Protection relationship

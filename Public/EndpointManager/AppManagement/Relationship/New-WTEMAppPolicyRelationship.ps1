@@ -42,24 +42,24 @@ function New-WTEMAppPolicyRelationship {
         [parameter(
             Mandatory = $true,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The group relationship to create, such as target apps or group assignments"
+            HelpMessage = "The app policy relationship to create, such as target apps or group assignments"
         )]
         [ValidateSet("targetApps", "assign")]
         [string]$Relationship,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The ids of the group to assign to the Endpoint Manager App protection policy"
+            HelpMessage = "The ids of the include group to assign to the Endpoint Manager App protection policy"
         )]
-        [Alias('AssignmentID')]
-        [string[]]$AssignmentIDs,
+        [Alias('IncludeAssignmentID')]
+        [string[]]$IncludeAssignmentIDs,
         [parameter(
-            Mandatory = $true,
+            Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Specify whether the type of the group to assign to the Endpoint Manager App protection policy"
+            HelpMessage = "The ids of the exclude group to assign to the Endpoint Manager App protection policy"
         )]
-        [ValidateSet("Include", "Exclude")]
-        [string]$AssignmentType,
+        [Alias('ExcludeAssignmentID')]
+        [string[]]$ExcludeAssignmentIDs,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
@@ -96,7 +96,7 @@ function New-WTEMAppPolicyRelationship {
             }
 
             # Variables
-            $Activity = "Adding Endpoint Manager App policy relationship"
+            $Activity = "Adding Endpoint Manager App policy $Relationship relationship"
 
         }
         catch {
@@ -129,12 +129,6 @@ function New-WTEMAppPolicyRelationship {
                         $Uri = "deviceAppManagement/iosManagedAppProtections"
                     }
                 }
-                if ($AssignmentType -eq "Include") {
-                    $PropertyType = "groupAssignmentTarget"
-                }
-                elseif ($AssignmentType -eq "Exclude") {
-                    $PropertyType = "exclusionGroupAssignmentTarget"
-                }
 
                 # Build Parameters
                 $Parameters = @{
@@ -147,33 +141,60 @@ function New-WTEMAppPolicyRelationship {
                 }
 
                 # If there are assignment IDs, build an object to add these, else, build an app object for each app
-                if ($AssignmentIDs) {
+                if ($IncludeAssignmentIds -or $ExcludeAssignmentIDs) {
+                    
+                    # Build Assignment objects
+                    if ($IncludeAssignmentIDs) {
+                        $IncludeAssignmentObject = [PSCustomObject]@{
+                            "target" = foreach ($IncludeAssignmentId in $IncludeAssignmentIDs) {
+                                [PSCustomObject]@{
+                                    "@odata.type" = "#microsoft.graph.groupAssignmentTarget"
+                                    "groupId"     = $IncludeAssignmentId
+                                }
+                            }
+                        }
+                    }
+                    if ($ExcludeAssignmentIDs) {
+                        $ExcludeAssignmentObject = [PSCustomObject]@{    
+                            "target" = foreach ($ExcludeAssignmentId in $ExcludeAssignmentIDs) {
+                                [PSCustomObject]@{
+                                    "@odata.type" = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                                    "groupId"     = $ExcludeAssignmentId
+                                }
+                            }
+                        }
+                    }
+
+                    # Build input object
                     $InputObject = [PSCustomObject]@{
                         "assignments" = @(
-                            foreach ($AssignmentId in $AssignmentIDs) {
-                                [PSCustomObject]@{
-                                    "target" = [PSCustomObject]@{
-                                        "@odata.type" = "#microsoft.graph.$PropertyType"
-                                        "groupId"     = $AssignmentId
-                                    }
-                                }
+                            if ($IncludeAssignmentObject) {
+                                $IncludeAssignmentObject
+                            } 
+                            if ($ExcludeAssignment) {
+                                $ExcludeAssignmentObject
                             }
                         )
                     }
                 }
                 elseif ($Apps) {
+
+                    # Build Apps object
+                    $AppsObject = foreach ($App in $Apps) {
+                        [PSCustomObject]@{
+                            "@odata.type"         = "#microsoft.graph.managedMobileApp"
+                            "mobileAppIdentifier" = [PSCustomObject]@{
+                                "@odata.type"  = "microsoft.graph.$AppPlatformIdentifier"
+                                $AppIdentifier = $App.mobileAppIdentifier.$AppIdentifier
+                            }
+                            "id"                  = $App.id
+                        }
+                    }
+
+                    # Build input object
                     $InputObject = [PSCustomObject]@{
                         "apps" = @(
-                            foreach ($App in $Apps) {
-                                [PSCustomObject]@{
-                                    "@odata.type"         = "#microsoft.graph.managedMobileApp"
-                                    "mobileAppIdentifier" = [PSCustomObject]@{
-                                        "@odata.type"  = "microsoft.graph.$AppPlatformIdentifier"
-                                        $AppIdentifier = $App.mobileAppIdentifier.$AppIdentifier
-                                    }
-                                    "id"                  = $App.id
-                                }
-                            }
+                            $AppsObject
                         )
                     }
                 }
@@ -185,7 +206,7 @@ function New-WTEMAppPolicyRelationship {
                         -InputObject $InputObject
                 }
                 else {
-                    $ErrorMessage = "There are no Endpoint Manager App policy relationships to be added"
+                    $ErrorMessage = "There are no Endpoint Manager App policy $Relationship relationships to be added"
                     Write-Error $ErrorMessage
                 }
             }

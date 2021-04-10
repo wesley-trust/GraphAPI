@@ -171,7 +171,7 @@ function New-WTEMAppPolicyRelationship {
                             if ($IncludeAssignmentObject) {
                                 $IncludeAssignmentObject
                             } 
-                            if ($ExcludeAssignment) {
+                            if ($ExcludeAssignmentObject) {
                                 $ExcludeAssignmentObject
                             }
                         )

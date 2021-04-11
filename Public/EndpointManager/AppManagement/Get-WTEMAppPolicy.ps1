@@ -4,13 +4,13 @@ function Get-WTEMAppPolicy {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client ID for the Endpoint Manager service principal with Endpoint Manager policy Graph permissions"
+            HelpMessage = "Client ID for the Azure AD service principal with Endpoint Manager policy Graph permissions"
         )]
         [string]$ClientID,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client secret for the Endpoint Manager service principal with Endpoint Manager policy Graph permissions"
+            HelpMessage = "Client secret for the Azure AD service principal with Endpoint Manager policy Graph permissions"
         )]
         [string]$ClientSecret,
         [parameter(

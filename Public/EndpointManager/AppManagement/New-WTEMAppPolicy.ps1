@@ -4,13 +4,13 @@ function New-WTEMAppPolicy {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client ID for the Endpoint Manager service principal with Endpoint Manager policy Graph permissions"
+            HelpMessage = "Client ID for the Azure AD service principal with Endpoint Manager policy Graph permissions"
         )]
         [string]$ClientID,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client secret for the Endpoint Manager service principal with Endpoint Manager policy Graph permissions"
+            HelpMessage = "Client secret for the Azure AD service principal with Endpoint Manager policy Graph permissions"
         )]
         [string]$ClientSecret,
         [parameter(
@@ -37,7 +37,7 @@ function New-WTEMAppPolicy {
             ValueFromPipeLine = $true,
             HelpMessage = "Specify the Endpoint Manager App Policies to create"
         )]
-        [Alias('AppPolicy')]
+        [Alias('AppPolicy',"PolicyDefinition")]
         [PSCustomObject]$AppPolicies,
         [parameter(
             Mandatory = $false,

@@ -35,7 +35,7 @@ function Edit-WTCAPolicy {
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
             ValueFromPipeLine = $true,
-            HelpMessage = "The Conditional Access policies to remove, a policy must have a valid id"
+            HelpMessage = "The Conditional Access policies to update, a policy must have a valid id"
         )]
         [Alias('ConditionalAccessPolicy', 'PolicyDefinition')]
         [PSCustomObject]$ConditionalAccessPolicies,
@@ -100,7 +100,7 @@ function Edit-WTCAPolicy {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
 
-                # If there are policies to update, foreach policy with a policy id
+                # If there are policies to update, override policy state if required
                 if ($ConditionalAccessPolicies) {
                     
                     if ($PolicyState) {

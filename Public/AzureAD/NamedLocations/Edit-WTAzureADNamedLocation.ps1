@@ -35,7 +35,7 @@ function Edit-WTAzureADNamedLocation {
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
             ValueFromPipeLine = $true,
-            HelpMessage = "The Azure AD named locations to remove, a named location must have a valid id"
+            HelpMessage = "The Azure AD named locations to update, a named location must have a valid id"
         )]
         [Alias("NamedLocation", "AzureADNamedLocations", "AzureADNamedLocation", "LocationDefinition")]
         [PSCustomObject]$NamedLocations
@@ -91,7 +91,7 @@ function Edit-WTAzureADNamedLocation {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
 
-                # If there are named locations to update, foreach named location with a named location id
+                # If there are named locations to update
                 if ($NamedLocations) {
                     
                     # Update named locations

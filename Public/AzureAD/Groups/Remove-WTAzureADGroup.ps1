@@ -85,7 +85,7 @@ function Remove-WTAzureADGroup {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
                 
-                # If there are policies to be removed,  remove them
+                # If there are groups to be removed, remove them
                 if ($IDs) {
                     Invoke-WTGraphDelete `
                         @Parameters `

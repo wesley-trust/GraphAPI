@@ -35,7 +35,7 @@ function Edit-WTAzureADGroup {
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
             ValueFromPipeLine = $true,
-            HelpMessage = "The Azure AD groups to remove, a group must have a valid id"
+            HelpMessage = "The Azure AD groups to update, a group must have a valid id"
         )]
         [Alias('AzureADGroup', 'GroupDefinition')]
         [PSCustomObject]$AzureADGroups
@@ -91,7 +91,7 @@ function Edit-WTAzureADGroup {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
 
-                # If there are groups to update, foreach group with a group id
+                # If there are groups to update
                 if ($AzureADGroups) {
                     
                     # Update groups

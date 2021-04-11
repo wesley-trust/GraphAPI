@@ -74,7 +74,7 @@ function Get-WTEMAppPolicy {
             }
 
             # Variables
-            $Activity = "Getting Endpoint Manager App policies"
+            $Activity = "Getting Endpoint Manager App $PolicyType policies"
             $Uri = "deviceAppManagement/managedAppPolicies"
             $Tags = @("SVC", "REF", "ENV")
 
@@ -129,7 +129,7 @@ function Get-WTEMAppPolicy {
                     $QueryResponse
                 }
                 else {
-                    $WarningMessage = "No App policies exist in Endpoint Manager, or with parameters specified"
+                    $WarningMessage = "No App $PolicyType policies exist in Endpoint Manager, or with parameters specified"
                     Write-Warning $WarningMessage
                 }
             }

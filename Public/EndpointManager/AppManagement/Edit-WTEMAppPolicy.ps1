@@ -68,7 +68,7 @@ function Edit-WTEMAppPolicy {
             }
 
             # Variables
-            $Activity = "Updating Endpoint Manager App Policies"
+            $Activity = "Updating Endpoint Manager App $PolicyType policies"
             $Uri = "deviceAppManagement/managedAppPolicies"
             $CleanUpProperties = (
                 "id",
@@ -129,7 +129,7 @@ function Edit-WTEMAppPolicy {
                         -InputObject $AppPolicies
                 }
                 else {
-                    $ErrorMessage = "There are no Endpoint Manager App policies to be updated"
+                    $ErrorMessage = "There are no Endpoint Manager App $PolicyType policies to be updated"
                     Write-Error $ErrorMessage
                 }
             }

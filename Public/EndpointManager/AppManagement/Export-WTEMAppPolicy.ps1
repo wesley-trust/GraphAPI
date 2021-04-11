@@ -246,7 +246,7 @@ function Export-WTEMAppPolicy {
                 }
             }
             else {
-                $WarningMessage = "There are no Endpoint Manager App policies to export"
+                $WarningMessage = "There are no Endpoint Manager App $PolicyType policies to export"
                 Write-Warning $WarningMessage
             }
         }

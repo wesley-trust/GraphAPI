@@ -68,7 +68,7 @@ function Remove-WTEMAppPolicy {
             }
 
             # Variables
-            $Activity = "Removing Endpoint Manager App policies"
+            $Activity = "Removing Endpoint Manager App $PolicyType policies"
             $Uri = "deviceAppManagement/managedAppPolicies"
 
         }
@@ -116,7 +116,7 @@ function Remove-WTEMAppPolicy {
                         -IDs $IDs
                 }
                 else {
-                    $ErrorMessage = "There are no Ids specified which are required to remove policies"
+                    $ErrorMessage = "There are no Ids specified which are required to remove $PolicyType policies"
                     Write-Error $ErrorMessage
                 }
             }

@@ -68,7 +68,7 @@ function New-WTEMAppPolicy {
             }
 
             # Variables
-            $Activity = "Creating Endpoint Manager App policies"
+            $Activity = "Creating Endpoint Manager App $PolicyType policies"
             $Uri = "deviceAppManagement/managedAppPolicies"
             $CleanUpProperties = (
                 "id",

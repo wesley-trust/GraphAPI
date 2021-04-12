@@ -40,18 +40,26 @@ function New-WTEMDevicePolicy {
         [Alias('DevicePolicy', "PolicyDefinition")]
         [PSCustomObject]$DevicePolicies,
         [parameter(
-            Mandatory = $false,
+            Mandatory = $true,
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "Specify the Endpoint Manager Device policy type to create"
         )]
         [ValidateSet("Compliance", "Configuration")]
-        [string]$PolicyType = "Compliance"
+        [string]$PolicyType,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "Default group Id to CC on notification messages for compliance policies"
+        )]
+        [string]$NotificationMessageCCGroupId
     )
     Begin {
         try {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
+                "GraphAPI\Public\EndpointManager\DeviceManagement\ScheduledAction\Notification\New-WTEMNotificationTemplate.ps1",
+                "GraphAPI\Public\EndpointManager\DeviceManagement\ScheduledAction\Notification\New-WTEMNotificationMessage.ps1",
                 "GraphAPI\Private\Invoke-WTGraphPost.ps1"
             )
 
@@ -73,19 +81,8 @@ function New-WTEMDevicePolicy {
                 "REF",
                 "ENV"
             )
-            $DefaultGracePeriodHours = "24"
-            $DefaultAction = "block"
-            $DefaultScheduledActionsForRule = @(
-                [PSCustomObject]@{
-                    "ruleName"                      = $null
-                    "scheduledActionConfigurations" = @(
-                        [PSCustomObject]@{
-                            "gracePeriodHours" = $DefaultGracePeriodHours
-                            "actionType"       = $DefaultAction
-                        }
-                    )
-                }
-            )
+            $BlockGracePeriodHours = "24"
+            $NotificationGracePeriodHours = "0"
         }
         catch {
             Write-Error -Message $_.Exception
@@ -125,10 +122,71 @@ function New-WTEMDevicePolicy {
                 # If there are Device Policies to deploy
                 if ($DevicePolicies) {
 
-                    # If compliance policy, and a non-compliance action is not specified, include default action
+                    # If there are compliance policies, and a non-compliance action is not specified, create default action
+                    # At least one action is required for the policy to successfully deploy
                     if ($PolicyType -eq "Compliance") {
+
                         $DevicePolicies = foreach ($Policy in $DevicePolicies) {
                             if (!$Policy.scheduledActionsForRule) {
+
+                                # Create notification template
+                                $NotificationTemplateObject = New-WTEMNotificationTemplate -AccessToken $AccessToken `
+                                    -DisplayName $Policy.displayName
+
+                                if ($NotificationTemplateObject) {
+                        
+                                    # Create notification message
+                                    $NotificationMessageObject = New-WTEMNotificationMessage -AccessToken $AccessToken `
+                                        -NotificationTemplateId $NotificationTemplateObject.Id
+
+                                    if ($NotificationMessageObject) {
+                                    
+                                        # Build Notification Action Configuration
+                                        $NotificationActionConfiguration = [PSCustomObject]@{
+                                            "gracePeriodHours"          = $NotificationGracePeriodHours
+                                            "actionType"                = "notification"
+                                            "notificationTemplateId"    = $NotificationTemplateObject.Id
+                                            "notificationMessageCCList" = @(
+                                                if ($NotificationMessageCCGroupId) {
+                                                    $NotificationMessageCCGroupId
+                                                }
+                                            )
+                                        }
+                                    }
+                                    else {
+                                        $ErrorMessage = "Failed to create notification message but an exception has not occurred"
+                                        throw $ErrorMessage
+                                    }
+                                }
+                                else {
+                                    $ErrorMessage = "Failed to create notification template but an exception has not occurred"
+                                    throw $ErrorMessage
+                                }
+
+                                # Build Block Action Configuration
+                                $BlockActionConfiguration = [PSCustomObject]@{
+                                    "gracePeriodHours"          = $BlockGracePeriodHours
+                                    "actionType"                = "block"
+                                    "notificationTemplateId"    = "00000000-0000-0000-0000-000000000000"
+                                    "notificationMessageCCList" = @()
+                                }
+
+                                # Create scheduled action rule object
+                                $DefaultScheduledActionsForRule = @(
+                                    [PSCustomObject]@{
+                                        "ruleName"                      = "Notify then block in 24 hours"
+                                        "scheduledActionConfigurations" = @(
+                                            if ($BlockActionConfiguration) {
+                                                $BlockActionConfiguration
+                                            }
+                                            if ($NotificationActionConfiguration) {
+                                                $NotificationActionConfiguration
+                                            }
+                                        )
+                                    }
+                                )
+                                
+                                # Add to policy
                                 $Policy | Add-Member -NotePropertyName "scheduledActionsForRule" -NotePropertyValue $DefaultScheduledActionsForRule
                             }
                             $Policy

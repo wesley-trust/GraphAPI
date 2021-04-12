@@ -20,7 +20,9 @@ Contains code for calling the Microsoft Graph API with PowerShell
 - Update
 - Remove
 - Export
-## CI/CD Pipeline to Import, Plan and Deploy:
+## [CI/CD Pipeline] to Import, Plan and Deploy:
 - Validating the input against set criteria
 - Evaluating the input against what is deployed, to create a change plan for approval
 - Deploying to a specified environment, applying the approved plan
+
+[pipeline-link]: https://dev.azure.com/wesleytrust/GraphAPI

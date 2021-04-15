@@ -37,7 +37,7 @@ function New-WTEMAppPolicy {
             ValueFromPipeLine = $true,
             HelpMessage = "Specify the Endpoint Manager App Policies to create"
         )]
-        [Alias('AppPolicy',"PolicyDefinition")]
+        [Alias("AppPolicy","PolicyDefinition","EMAppPolicies","EMAppPolicy")]
         [PSCustomObject]$AppPolicies,
         [parameter(
             Mandatory = $false,

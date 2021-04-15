@@ -37,7 +37,7 @@ function Edit-WTEMAppPolicy {
             ValueFromPipeLine = $true,
             HelpMessage = "The Endpoint Manager App policies to update, a policy must have a valid id"
         )]
-        [Alias('AppPolicy', 'PolicyDefinition')]
+        [Alias("AppPolicy","PolicyDefinition","EMAppPolicies","EMAppPolicy")]
         [PSCustomObject]$AppPolicies,
         [parameter(
             Mandatory = $false,

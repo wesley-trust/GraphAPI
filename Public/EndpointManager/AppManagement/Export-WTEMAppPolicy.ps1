@@ -89,7 +89,7 @@ function Export-WTEMAppPolicy {
             HelpMessage = "The tag to use as the subdirectory to organise the export, default is 'SVC'"
         )]
         [Alias("Tag")]
-        [string]$DirectoryTag = "SVC"
+        [string]$DirectoryTag = "ENV"
     )
     Begin {
         try {

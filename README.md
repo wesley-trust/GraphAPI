@@ -10,9 +10,8 @@ Contains code for calling the Microsoft Graph API with PowerShell
 ## Endpoint Manager (Intune)
 |  |  main  | develop |
 |:---| :----: | :-----: |
-| Device Compliance for Windows (10) |  |
-| App Protection for Android |  |
-| App Protection for iOS (including iPadOS) |  |
+| Device Policies | [![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Endpoint%20Manager/Device%20Management/Policies/SVC-EM%3BENV-P%3B%20Device%20Policies?branchName=main)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=18&branchName=main) | [![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Endpoint%20Manager/Device%20Management/Policies/SVC-EM%3BENV-D%3B%20Device%20Policies?branchName=develop)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=19&branchName=develop) |
+| App Policies  | [![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Endpoint%20Manager/App%20Management/Policies/SVC-EM%3BENV-P%3B%20App%20Policies?branchName=main)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=15&branchName=main) | [![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Endpoint%20Manager/App%20Management/Policies/SVC-EM%3BENV-D%3B%20App%20Policies?branchName=develop)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=16&branchName=develop) |
 ### PowerShell wrapped Microsoft Graph API calls to:
 - Import
 - Get

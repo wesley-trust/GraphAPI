@@ -44,7 +44,7 @@ function Remove-WTEMGroup {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "GraphAPI\Public\AzureAD\EndpointManager\Groups\Get-WTEMGroup.ps1"
+                "GraphAPI\Public\EndpointManager\Groups\Get-WTEMGroup.ps1",
                 "GraphAPI\Public\AzureAD\Groups\Remove-WTAzureADGroup.ps1"
             )
 

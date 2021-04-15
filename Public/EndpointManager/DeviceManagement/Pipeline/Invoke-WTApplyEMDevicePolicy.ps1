@@ -262,7 +262,6 @@ function Invoke-WTApplyEMDevicePolicy {
                         # Create assignment relationship
                         New-WTEMDevicePolicyRelationship @Parameters `
                             -Id $CreatedPolicy.id `
-                            -Relationship "assign" `
                             -PolicyType $PolicyType `
                             -IncludeAssignmentID $EMDeviceIncludeGroup.id `
                             -ExcludeAssignmentID $EMDeviceExcludeGroup.id

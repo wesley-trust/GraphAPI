@@ -116,7 +116,7 @@ function Invoke-WTPlanEMAppPolicy {
                 if ($RemoveExistingPolicies -or $UpdateExistingPolicies) {
 
                     # Get existing policies for comparison
-                    $ExistingPolicies = Get-WTCAPolicy @Parameters
+                    $ExistingPolicies = Get-WTEMAppPolicy @Parameters
 
                     if ($ExistingPolicies) {
 

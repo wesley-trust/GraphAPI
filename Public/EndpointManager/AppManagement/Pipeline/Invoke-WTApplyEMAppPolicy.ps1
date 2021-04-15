@@ -105,8 +105,8 @@ function Invoke-WTApplyEMAppPolicy {
                 "GraphAPI\Public\EndpointManager\AppManagement\Edit-WTEMAppPolicy.ps1",
                 "GraphAPI\Public\EndpointManager\AppManagement\Export-WTEMAppPolicy.ps1",
                 "GraphAPI\Public\AzureAD\Groups\Export-WTAzureADGroup.ps1",
-                "GraphAPI\Public\AzureAD\Groups\Relationship\New-WTAzureADGroupRelationship.ps1"
-                "GraphAPI\Public\EndpointManager\AppManagement\Relationship\Get-WTEMAppPolicyRelationship.ps1"
+                "GraphAPI\Public\AzureAD\Groups\Relationship\New-WTAzureADGroupRelationship.ps1",
+                "GraphAPI\Public\EndpointManager\AppManagement\Relationship\Get-WTEMAppPolicyRelationship.ps1",
                 "GraphAPI\Public\EndpointManager\AppManagement\Relationship\New-WTEMAppPolicyRelationship.ps1"
             )
             

@@ -202,7 +202,7 @@ function Invoke-WTApplyEMAppPolicy {
                     # Evaluate the tags on the policies to be created
                     $TaggedPolicies = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $CreatePolicies -PropertyToTag $PropertyToTag
 
-                    # Calculate the display names to be used for the EMApp groups (excluding the policy that targets admin roles)
+                    # Calculate the display names to be used for the EM groups
                     $EMAppGroupDisplayNames = foreach ($Policy in $TaggedPolicies) {
                         $DisplayName = $null
                         foreach ($Tag in $Tags) {
@@ -214,7 +214,7 @@ function Invoke-WTApplyEMAppPolicy {
                     # Create include and exclude groups
                     $EMAppIncludeGroups = New-WTEMGroup @Parameters -DisplayNames $EMAppGroupDisplayNames -GroupType Include
                     $EMAppExcludeGroups = New-WTEMGroup @Parameters -DisplayNames $EMAppGroupDisplayNames -GroupType Exclude
-                    
+
                     # Tag groups
                     $TaggedEMAppIncludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $EMAppIncludeGroups -PropertyToTag $PropertyToTag
                     $TaggedEMAppExcludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $EMAppExcludeGroups -PropertyToTag $PropertyToTag
@@ -222,10 +222,22 @@ function Invoke-WTApplyEMAppPolicy {
                     # For each policy, perform policy specific changes
                     $CreatedPolicies = foreach ($Policy in $TaggedPolicies) {
 
-                        # Create and return the policy
+                        # Find the matching include group
+                        $EMAppIncludeGroup = $null
+                        $EMAppIncludeGroup = $TaggedEMAppIncludeGroups | Where-Object {
+                            $_.ref -eq $Policy.ref -and $_.env -eq $Policy.env
+                        }
+
+                        # Find the matching exclude group
+                        $EMAppExcludeGroup = $null
+                        $EMAppExcludeGroup = $TaggedEMAppExcludeGroups | Where-Object {
+                            $_.ref -eq $Policy.ref -and $_.env -eq $Policy.env
+                        }
+
+                        # Create the policy and add to variable
                         $CreatedPolicy = $null
                         New-WTEMAppPolicy @Parameters -EMAppPolicies $Policy | Tee-Object -Variable CreatedPolicy
-                        
+
                         # Set policy specific settings depending on policy type
                         $Platform = $null
                         $PolicyType = $null
@@ -241,25 +253,12 @@ function Invoke-WTApplyEMAppPolicy {
                             $Apps = $iOSApps
                         }
 
-                        # Find the matching include group
-                        $EMAppIncludeGroup = $null
-                        $EMAppIncludeGroup = $TaggedEMAppIncludeGroups | Where-Object {
-                            $_.ref -eq $Policy.ref -and $_.env -eq $Policy.env
-                        }
-
                         # Adding an appropriate member id if supplied
                         if (${ENV:IncludeUserGroupID}) {
                             New-WTAzureADGroupRelationship @Parameters `
                                 -Id $EMAppIncludeGroup.id `
                                 -Relationship "members" `
-                                -RelationshipIDs ${ENV:INCLUDEUSERGROUPID} `
-                            | Out-Null
-                        }
-
-                        # Find the matching exclude group
-                        $EMAppExcludeGroup = $null
-                        $EMAppExcludeGroup = $TaggedEMAppExcludeGroups | Where-Object {
-                            $_.ref -eq $Policy.ref -and $_.env -eq $Policy.env
+                                -RelationshipIDs ${ENV:INCLUDEUSERGROUPID}
                         }
 
                         # Adding an appropriate member id if supplied
@@ -267,8 +266,7 @@ function Invoke-WTApplyEMAppPolicy {
                             New-WTAzureADGroupRelationship @Parameters `
                                 -Id $EMAppExcludeGroup.id `
                                 -Relationship "members" `
-                                -RelationshipIDs ${ENV:EXCLUDEUSERGROUPID} `
-                            | Out-Null
+                                -RelationshipIDs ${ENV:EXCLUDEUSERGROUPID}
                         }
 
                         # Create assignment relationship
@@ -278,8 +276,7 @@ function Invoke-WTApplyEMAppPolicy {
                             -PolicyType $PolicyType `
                             -Platform $Platform `
                             -IncludeAssignmentID $EMAppIncludeGroup.id `
-                            -ExcludeAssignmentID $EMAppExcludeGroup.id `
-                        | Out-Null
+                            -ExcludeAssignmentID $EMAppExcludeGroup.id
 
                         # Create apps relationship, if applicable
                         if ($Apps) {
@@ -288,15 +285,15 @@ function Invoke-WTApplyEMAppPolicy {
                                 -Relationship "targetApps" `
                                 -PolicyType $PolicyType `
                                 -Platform $Platform `
-                                -Apps $Apps `
-                            | Out-Null
+                                -Apps $Apps
                         }
                     }
                     
                     # Export policies
                     Export-WTEMAppPolicy -EMAppPolicies $CreatedPolicies `
                         -Path $Path `
-                        -ExcludeExportCleanup
+                        -ExcludeExportCleanup `
+                        -DirectoryTag "ENV"
 
                     # Path to group config
                     $GroupsPath = $Path + "\..\..\Groups"

@@ -150,8 +150,7 @@ function Invoke-WTApplyEMDevicePolicy {
                             
                             ## Get policy assignments
                             $PolicyAssignments = Get-WTEMDevicePolicyRelationship @Parameters `
-                                -Ids $EMDevicePolicies.RemovePolicies.id `
-                                -Relationship "assignments"
+                                -Ids $EMDevicePolicies.RemovePolicies.id
 
                             # Filter to group ids and unique list
                             $PolicyGroupIDs = $PolicyAssignments.target.groupId | Sort-Object -Unique

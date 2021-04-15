@@ -68,7 +68,7 @@ function New-WTEMAppPolicyRelationship {
         [Alias('App')]
         [PSCustomObject]$Apps,
         [parameter(
-            Mandatory = $false,
+            Mandatory = $true,
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "Specify the Endpoint Manager App policy type"
         )]

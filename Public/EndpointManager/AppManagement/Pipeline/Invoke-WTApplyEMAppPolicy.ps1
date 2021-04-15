@@ -225,6 +225,21 @@ function Invoke-WTApplyEMAppPolicy {
                         # Create and return the policy
                         $CreatedPolicy = $null
                         New-WTEMAppPolicy @Parameters -EMAppPolicies $Policy | Tee-Object -Variable CreatedPolicy
+                        
+                        # Set policy specific settings depending on policy type
+                        $Platform = $null
+                        $PolicyType = $null
+                        $Apps = $null
+                        if ($CreatedPolicy.'@odata.type' -eq "#microsoft.graph.androidManagedAppProtection") {
+                            $PolicyType = "Protection"
+                            $Platform = "Android"
+                            $Apps = $AndroidApps
+                        }
+                        elseif ($CreatedPolicy.'@odata.type' -eq "#microsoft.graph.iOSManagedAppProtection") {
+                            $PolicyType = "Protection"
+                            $Platform = "iOS"
+                            $Apps = $iOSApps
+                        }
 
                         # Find the matching include group
                         $EMAppIncludeGroup = $null
@@ -237,7 +252,8 @@ function Invoke-WTApplyEMAppPolicy {
                             New-WTAzureADGroupRelationship @Parameters `
                                 -Id $EMAppIncludeGroup.id `
                                 -Relationship "members" `
-                                -RelationshipIDs ${ENV:INCLUDEUSERGROUPID}
+                                -RelationshipIDs ${ENV:INCLUDEUSERGROUPID} `
+                            | Out-Null
                         }
 
                         # Find the matching exclude group
@@ -251,36 +267,29 @@ function Invoke-WTApplyEMAppPolicy {
                             New-WTAzureADGroupRelationship @Parameters `
                                 -Id $EMAppExcludeGroup.id `
                                 -Relationship "members" `
-                                -RelationshipIDs ${ENV:EXCLUDEUSERGROUPID}
+                                -RelationshipIDs ${ENV:EXCLUDEUSERGROUPID} `
+                            | Out-Null
                         }
 
                         # Create assignment relationship
                         New-WTEMAppPolicyRelationship @Parameters `
                             -Id $CreatedPolicy.id `
                             -Relationship "assign" `
+                            -PolicyType $PolicyType `
+                            -Platform $Platform `
                             -IncludeAssignmentID $EMAppIncludeGroup.id `
-                            -ExcludeAssignmentID $EMAppExcludeGroup.id
+                            -ExcludeAssignmentID $EMAppExcludeGroup.id `
+                        | Out-Null
 
-                        # Create apps relationship for each platform, if applicable
-                        if ($CreatedPolicy.target.'@odata.type' -eq "#microsoft.graph.androidManagedAppProtection") {
-                            if ($AndroidApps) {
-                                New-WTEMAppPolicyRelationship @Parameters `
-                                    -Id $CreatedPolicy.id `
-                                    -Relationship "apps" `
-                                    -PolicyType "Protection" `
-                                    -Platform "Android" `
-                                    -Apps $AndroidApps
-                            }
-                        }
-                        elseif ($CreatedPolicy.target.'@odata.type' -eq "#microsoft.graph.iOSManagedAppProtection") {
-                            if ($iOSApps) {
-                                New-WTEMAppPolicyRelationship @Parameters `
-                                    -Id $CreatedPolicy.id `
-                                    -Relationship "apps" `
-                                    -PolicyType "Protection" `
-                                    -Platform "iOS" `
-                                    -Apps $iOSApps
-                            }
+                        # Create apps relationship, if applicable
+                        if ($Apps) {
+                            New-WTEMAppPolicyRelationship @Parameters `
+                                -Id $CreatedPolicy.id `
+                                -Relationship "targetApps" `
+                                -PolicyType $PolicyType `
+                                -Platform $Platform `
+                                -Apps $Apps `
+                            | Out-Null
                         }
                     }
                     

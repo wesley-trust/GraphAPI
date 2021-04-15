@@ -60,7 +60,7 @@ function Export-WTEMAppPolicy {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The AzureAD policies to get, this must contain valid id(s), when not specified, all policies are returned"
         )]
-        [Alias("Policy", "AppPolicy")]
+        [Alias("AppPolicy","PolicyDefinition","EMAppPolicies","EMAppPolicy")]
         [PSCustomObject]$AppPolicies,
         [parameter(
             Mandatory = $false,

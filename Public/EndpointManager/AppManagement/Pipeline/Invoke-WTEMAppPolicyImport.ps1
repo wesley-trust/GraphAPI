@@ -37,6 +37,18 @@ function Invoke-WTEMAppPolicyImport {
             HelpMessage = "The directory path(s) of which all JSON file(s) will be imported"
         )]
         [string]$Path,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "The file path to the JSON definition of Android apps"
+        )]
+        [string]$AndroidAppsFilePath,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "The file path to the JSON definition of iOS apps"
+        )]
+        [string]$iOSAppsFilePath,
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
@@ -180,6 +192,20 @@ function Invoke-WTEMAppPolicyImport {
                 if ($Stage -eq "Apply") {
                     if ($PlanEMAppPolicies) {
                         
+                        # Import Apps
+                        if ($AndroidAppsFilePath) {
+                            $TestPath = Test-Path $AndroidAppsFilePath -PathType Leaf
+                            if ($TestPath) {
+                                $AndroidApps = Get-Content -Raw -Path $AndroidAppsFilePath | ConvertFrom-Json
+                            }
+                        }
+                        if ($iOSAppsFilePath) {
+                            $TestPath = Test-Path $iOSAppsFilePath -PathType Leaf
+                            if ($TestPath) {
+                                $iOSApps = Get-Content -Raw -Path $iOSAppsFilePath | ConvertFrom-Json
+                            }
+                        }
+
                         # Build Parameters
                         $ApplyParameters = @{
                             AccessToken   = $AccessToken
@@ -205,6 +231,12 @@ function Invoke-WTEMAppPolicyImport {
                         }
                         if ($Pipeline) {
                             $ApplyParameters.Add("Pipeline", $true)
+                        }
+                        if ($AndroidApps) {
+                            $ApplyParameters.Add("AndroidApps", $AndroidApps)
+                        }
+                        if ($iOSApps) {
+                            $ApplyParameters.Add("iOSApps", $iOSApps)
                         }
                     
                         # Apply plan to Endpoint Manager

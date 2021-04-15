@@ -60,7 +60,7 @@ function Export-WTEMDevicePolicy {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The AzureAD policies to get, this must contain valid id(s), when not specified, all policies are returned"
         )]
-        [Alias("Policy", "DevicePolicy")]
+        [Alias('DevicePolicy', "PolicyDefinition","EMDevicePolicies","EMDevicePolicy")]
         [PSCustomObject]$DevicePolicies,
         [parameter(
             Mandatory = $false,
@@ -82,7 +82,7 @@ function Export-WTEMDevicePolicy {
             HelpMessage = "The tag to use as the subdirectory to organise the export, default is 'SVC'"
         )]
         [Alias("Tag")]
-        [string]$DirectoryTag = "SVC"
+        [string]$DirectoryTag = "ENV"
     )
     Begin {
         try {

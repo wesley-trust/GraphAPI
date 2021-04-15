@@ -37,7 +37,7 @@ function Edit-WTEMDevicePolicy {
             ValueFromPipeLine = $true,
             HelpMessage = "The Endpoint Manager Device policies to update, a policy must have a valid id"
         )]
-        [Alias('DevicePolicy', 'PolicyDefinition')]
+        [Alias('DevicePolicy', "PolicyDefinition","EMDevicePolicies","EMDevicePolicy")]
         [PSCustomObject]$DevicePolicies,
         [parameter(
             Mandatory = $false,

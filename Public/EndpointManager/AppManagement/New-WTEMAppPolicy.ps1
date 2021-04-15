@@ -32,7 +32,7 @@ function New-WTEMAppPolicy {
         )]
         [switch]$ExcludePreviewFeatures,
         [parameter(
-            Mandatory = $false,
+            Mandatory = $true,
             ValueFromPipeLineByPropertyName = $true,
             ValueFromPipeLine = $true,
             HelpMessage = "Specify the Endpoint Manager App Policies to create"

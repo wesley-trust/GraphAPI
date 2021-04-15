@@ -32,12 +32,12 @@ function New-WTEMDevicePolicy {
         )]
         [switch]$ExcludePreviewFeatures,
         [parameter(
-            Mandatory = $false,
+            Mandatory = $true,
             ValueFromPipeLineByPropertyName = $true,
             ValueFromPipeLine = $true,
             HelpMessage = "Specify the Endpoint Manager Device Policies to create"
         )]
-        [Alias('DevicePolicy', "PolicyDefinition")]
+        [Alias('DevicePolicy', "PolicyDefinition","EMDevicePolicies","EMDevicePolicy")]
         [PSCustomObject]$DevicePolicies,
         [parameter(
             Mandatory = $true,
@@ -51,6 +51,7 @@ function New-WTEMDevicePolicy {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "Default group Id to CC on notification messages for compliance policies"
         )]
+        [Alias("NotificationEmail","CC","Email")]
         [string]$NotificationMessageCCGroupId
     )
     Begin {

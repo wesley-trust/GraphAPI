@@ -1,5 +1,5 @@
 function New-WTCAPolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

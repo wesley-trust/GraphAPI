@@ -1,5 +1,5 @@
 function Get-WTAzureADGroup {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

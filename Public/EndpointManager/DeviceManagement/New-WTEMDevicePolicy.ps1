@@ -1,5 +1,5 @@
 function New-WTEMDevicePolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,
@@ -59,7 +59,7 @@ function New-WTEMDevicePolicy {
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
                 "GraphAPI\Public\EndpointManager\DeviceManagement\ScheduledAction\Notification\New-WTEMNotificationTemplate.ps1",
-                "GraphAPI\Public\EndpointManager\DeviceManagement\ScheduledAction\Notification\New-WTEMNotificationMessage.ps1",
+                "GraphAPI\Public\EndpointManager\DeviceManagement\ScheduledAction\Notification\Relationship\New-WTEMNotificationMessage.ps1",
                 "GraphAPI\Private\Invoke-WTGraphPost.ps1"
             )
 

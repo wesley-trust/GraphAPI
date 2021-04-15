@@ -1,5 +1,5 @@
 function Invoke-WTGraphGet {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

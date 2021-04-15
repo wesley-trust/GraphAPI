@@ -1,5 +1,5 @@
 function Invoke-WTAzureADGroupImport {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

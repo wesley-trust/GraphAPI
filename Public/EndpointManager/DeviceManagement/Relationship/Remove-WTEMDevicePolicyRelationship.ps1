@@ -1,5 +1,5 @@
 function Remove-WTEMDevicePolicyRelationship {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

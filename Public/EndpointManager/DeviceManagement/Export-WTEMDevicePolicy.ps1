@@ -1,5 +1,5 @@
 function Export-WTEMDevicePolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

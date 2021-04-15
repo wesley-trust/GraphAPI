@@ -1,5 +1,5 @@
 function Edit-WTCAPolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

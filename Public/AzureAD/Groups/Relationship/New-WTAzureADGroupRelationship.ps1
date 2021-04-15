@@ -1,5 +1,5 @@
 function New-WTAzureADGroupRelationship {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

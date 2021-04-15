@@ -1,5 +1,5 @@
 function Export-WTAzureADNamedLocation {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

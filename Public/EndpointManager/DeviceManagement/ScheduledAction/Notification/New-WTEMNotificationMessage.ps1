@@ -1,5 +1,5 @@
 function New-WTEMNotificationMessage {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

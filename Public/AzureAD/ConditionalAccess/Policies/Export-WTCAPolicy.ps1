@@ -1,5 +1,5 @@
 function Export-WTCAPolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

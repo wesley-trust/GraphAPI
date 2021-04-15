@@ -1,5 +1,5 @@
 function Remove-WTEMNotificationTemplate {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

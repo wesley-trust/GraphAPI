@@ -1,5 +1,5 @@
 function Remove-WTCAPolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

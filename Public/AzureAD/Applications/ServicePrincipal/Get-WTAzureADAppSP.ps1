@@ -1,5 +1,5 @@
 function Get-WTAzureADAppSP {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

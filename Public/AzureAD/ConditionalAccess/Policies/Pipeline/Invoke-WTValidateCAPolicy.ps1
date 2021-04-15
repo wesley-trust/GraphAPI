@@ -1,5 +1,5 @@
 function Invoke-WTValidateCAPolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

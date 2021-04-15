@@ -1,5 +1,5 @@
 function Invoke-WTValidateAzureADGroup {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

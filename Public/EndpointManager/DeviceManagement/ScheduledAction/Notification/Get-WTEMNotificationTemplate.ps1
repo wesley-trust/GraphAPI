@@ -1,5 +1,5 @@
 function Get-WTEMNotificationTemplate {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

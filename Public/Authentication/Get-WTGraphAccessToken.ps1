@@ -1,5 +1,5 @@
 function Get-WTGraphAccessToken {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $true,

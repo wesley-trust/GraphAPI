@@ -1,5 +1,5 @@
 function Edit-WTAzureADNamedLocation {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

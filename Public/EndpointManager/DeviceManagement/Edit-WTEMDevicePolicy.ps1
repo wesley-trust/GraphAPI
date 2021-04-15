@@ -1,5 +1,5 @@
 function Edit-WTEMDevicePolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

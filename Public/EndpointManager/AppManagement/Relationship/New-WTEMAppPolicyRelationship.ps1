@@ -1,5 +1,5 @@
 function New-WTEMAppPolicyRelationship {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

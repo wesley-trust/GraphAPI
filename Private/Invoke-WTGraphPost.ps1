@@ -1,5 +1,5 @@
 function Invoke-WTGraphPost {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

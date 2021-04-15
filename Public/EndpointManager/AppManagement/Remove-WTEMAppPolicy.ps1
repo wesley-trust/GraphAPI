@@ -1,5 +1,5 @@
 function Remove-WTEMAppPolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

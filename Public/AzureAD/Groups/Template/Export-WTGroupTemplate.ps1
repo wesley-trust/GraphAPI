@@ -1,5 +1,5 @@
 function Export-WTGroupTemplate {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

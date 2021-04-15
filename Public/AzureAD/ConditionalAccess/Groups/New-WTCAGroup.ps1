@@ -1,5 +1,5 @@
 function New-WTCAGroup {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

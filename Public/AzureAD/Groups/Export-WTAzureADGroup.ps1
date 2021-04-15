@@ -1,5 +1,5 @@
 function Export-WTAzureADGroup {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

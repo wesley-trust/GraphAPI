@@ -1,5 +1,5 @@
 function Invoke-WTCAPolicyImport {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

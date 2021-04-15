@@ -1,5 +1,5 @@
 function Get-WTAzureADNamedLocation {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

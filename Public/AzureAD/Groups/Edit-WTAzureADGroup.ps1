@@ -1,5 +1,5 @@
 function Edit-WTAzureADGroup {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

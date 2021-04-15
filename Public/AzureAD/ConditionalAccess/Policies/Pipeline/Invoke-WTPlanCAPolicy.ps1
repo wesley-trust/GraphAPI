@@ -1,5 +1,5 @@
 function Invoke-WTPlanCAPolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

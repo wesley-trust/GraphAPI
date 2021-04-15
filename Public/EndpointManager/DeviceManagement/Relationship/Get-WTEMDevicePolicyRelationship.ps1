@@ -1,5 +1,5 @@
 function Get-WTEMDevicePolicyRelationship {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

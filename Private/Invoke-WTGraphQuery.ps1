@@ -1,5 +1,5 @@
 function Invoke-WTGraphQuery {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $true,

@@ -1,5 +1,5 @@
 function Edit-WTEMAppPolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

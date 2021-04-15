@@ -1,5 +1,5 @@
 function Remove-WTAzureADGroup {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

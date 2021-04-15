@@ -1,5 +1,5 @@
 function Remove-WTAzureADGroupRelationship {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

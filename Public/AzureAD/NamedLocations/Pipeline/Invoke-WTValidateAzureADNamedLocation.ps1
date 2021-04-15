@@ -1,5 +1,5 @@
 function Invoke-WTValidateAzureADNamedLocation {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

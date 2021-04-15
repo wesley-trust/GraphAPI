@@ -1,5 +1,5 @@
 function Invoke-WTGraphDelete {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

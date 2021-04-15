@@ -1,5 +1,5 @@
 function Invoke-WTApplyCAPolicy {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

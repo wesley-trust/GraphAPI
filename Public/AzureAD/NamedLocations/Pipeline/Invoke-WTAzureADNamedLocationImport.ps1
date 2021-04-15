@@ -1,5 +1,5 @@
 function Invoke-WTAzureADNamedLocationImport {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

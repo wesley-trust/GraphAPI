@@ -1,5 +1,5 @@
 function Invoke-WTGraphPatch {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

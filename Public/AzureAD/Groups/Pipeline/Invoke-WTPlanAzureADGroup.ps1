@@ -1,5 +1,5 @@
 function Invoke-WTPlanAzureADGroup {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

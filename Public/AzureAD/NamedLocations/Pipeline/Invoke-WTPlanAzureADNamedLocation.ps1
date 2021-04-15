@@ -1,5 +1,5 @@
 function Invoke-WTPlanAzureADNamedLocation {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

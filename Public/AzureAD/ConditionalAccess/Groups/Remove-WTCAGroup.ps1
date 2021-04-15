@@ -1,5 +1,5 @@
 function Remove-WTCAGroup {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
         [parameter(
             Mandatory = $false,

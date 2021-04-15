@@ -182,7 +182,7 @@ function Invoke-WTEMAppPolicyImport {
                         
                         # Build Parameters
                         $ApplyParameters = @{
-                            AccessToken               = $AccessToken
+                            AccessToken   = $AccessToken
                             EMAppPolicies = $PlanEMAppPolicies
                         }
                         if ($ExcludePreviewFeatures) {

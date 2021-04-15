@@ -80,7 +80,8 @@ function Invoke-WTPlanEMAppPolicy {
                 "SideIndicator",
                 "version",
                 "deployedAppCount",
-                "isAssigned"
+                "isAssigned",
+                "@odata.context"
             )
         }
         catch {
@@ -161,22 +162,23 @@ function Invoke-WTPlanEMAppPolicy {
                                 # If policies exist, with ids that matched the import
                                 if ($UpdatePolicies) {
 
-                                    ## Get properties from policies
+                                    # Get properties from policies
                                     $PolicyProperties = ($UpdatePolicies | Get-Member -MemberType NoteProperty).name | Select-Object -Unique
+                                    $PolicyProperties = [system.collections.ArrayList]$PolicyProperties
                                     
                                     # Clean up properties that should not be compared
                                     if ($CleanUpProperties) {
                                         foreach ($Property in $CleanUpProperties) {
-                                            $PolicyProperties.PSObject.Properties.Remove("$Property")
+                                            $PolicyProperties.Remove("$Property")
                                         }
                                     }
-
+                                    
                                     # Compare again, with all property elements for differences
                                     $PolicyPropertyComparison = Compare-Object `
                                         -ReferenceObject $ExistingPolicies `
                                         -DifferenceObject $UpdatePolicies `
                                         -Property $PolicyProperties
-
+                                    
                                     $UpdatePolicies = $PolicyPropertyComparison | Where-Object { $_.sideindicator -eq "=>" }
                                 }
                             }

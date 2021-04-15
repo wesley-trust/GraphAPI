@@ -79,8 +79,8 @@ function Invoke-WTPlanEMDevicePolicy {
                 "lastModifiedDateTime",
                 "SideIndicator",
                 "version",
-                "deployedDeviceCount",
-                "isAssigned"
+                "isAssigned",
+                "@odata.context"
             )
         }
         catch {
@@ -161,13 +161,14 @@ function Invoke-WTPlanEMDevicePolicy {
                                 # If policies exist, with ids that matched the import
                                 if ($UpdatePolicies) {
 
-                                    ## Get properties from policies
+                                    # Get properties from policies
                                     $PolicyProperties = ($UpdatePolicies | Get-Member -MemberType NoteProperty).name | Select-Object -Unique
+                                    $PolicyProperties = [system.collections.ArrayList]$PolicyProperties
                                     
                                     # Clean up properties that should not be compared
                                     if ($CleanUpProperties) {
                                         foreach ($Property in $CleanUpProperties) {
-                                            $PolicyProperties.PSObject.Properties.Remove("$Property")
+                                            $PolicyProperties.Remove("$Property")
                                         }
                                     }
 

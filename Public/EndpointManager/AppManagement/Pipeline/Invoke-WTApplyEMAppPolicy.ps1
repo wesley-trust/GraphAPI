@@ -159,8 +159,8 @@ function Invoke-WTApplyEMAppPolicy {
                             ## Get policy assignments
                             $PolicyAssignments = Get-WTEMAppPolicyRelationship @Parameters `
                                 -Ids $EMAppPolicies.RemovePolicies.id `
-                                -Relationship "assignments" -
-                                
+                                -Relationship "assignments"
+
                             # Filter to group ids and unique list
                             $PolicyGroupIDs = $PolicyAssignments.target.groupId | Sort-Object -Unique
 

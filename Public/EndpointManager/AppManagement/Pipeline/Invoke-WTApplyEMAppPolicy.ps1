@@ -164,8 +164,10 @@ function Invoke-WTApplyEMAppPolicy {
                             # Filter to group ids and unique list
                             $PolicyGroupIDs = $PolicyAssignments.target.groupId | Sort-Object -Unique
 
-                            # Pass all groups, which will perform a check and remove only Endpoint Manager groups
-                            Remove-WTEMGroup @Parameters -IDs $PolicyGroupIDs
+                            # If there are ids, pass all groups, which will perform a check and remove only Endpoint Manager groups
+                            if ($PolicyGroupIDs) {
+                                Remove-WTEMGroup @Parameters -IDs $PolicyGroupIDs
+                            }
                         }
 
                         # Pass the ids of the policies to the remove function

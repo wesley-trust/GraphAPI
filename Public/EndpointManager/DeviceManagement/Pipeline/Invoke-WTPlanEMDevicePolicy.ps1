@@ -118,7 +118,7 @@ function Invoke-WTPlanEMDevicePolicy {
                 if ($RemoveExistingPolicies -or $UpdateExistingPolicies) {
 
                     # Get existing policies for comparison
-                    $ExistingPolicies = Get-WTEMDevicePolicy @Parameters -IncludeScheduledActions
+                    $ExistingPolicies = Get-WTEMDevicePolicy @Parameters -PolicyType "Compliance" -IncludeScheduledActions
 
                     if ($ExistingPolicies) {
 

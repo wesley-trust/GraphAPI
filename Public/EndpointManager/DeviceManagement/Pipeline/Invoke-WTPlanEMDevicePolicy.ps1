@@ -80,7 +80,9 @@ function Invoke-WTPlanEMDevicePolicy {
                 "SideIndicator",
                 "version",
                 "isAssigned",
-                "@odata.context"
+                "@odata.context",
+                "scheduledActionsForRule",
+                "scheduledActionsForRule@odata.context"
             )
         }
         catch {
@@ -116,7 +118,7 @@ function Invoke-WTPlanEMDevicePolicy {
                 if ($RemoveExistingPolicies -or $UpdateExistingPolicies) {
 
                     # Get existing policies for comparison
-                    $ExistingPolicies = Get-WTEMDevicePolicy @Parameters
+                    $ExistingPolicies = Get-WTEMDevicePolicy @Parameters -IncludeScheduledActions
 
                     if ($ExistingPolicies) {
 

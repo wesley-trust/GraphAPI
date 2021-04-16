@@ -100,6 +100,7 @@ function Invoke-WTApplyEMDevicePolicy {
                 "GraphAPI\Public\AzureAD\Groups\Relationship\New-WTAzureADGroupRelationship.ps1",
                 "GraphAPI\Public\EndpointManager\DeviceManagement\Relationship\Get-WTEMDevicePolicyRelationship.ps1",
                 "GraphAPI\Public\EndpointManager\DeviceManagement\Relationship\New-WTEMDevicePolicyRelationship.ps1"
+                "GraphAPI\Public\EndpointManager\DeviceManagement\ScheduledAction\Notification\Remove-WTEMNotificationTemplate.ps1"
             )
             
             # Function dot source
@@ -156,19 +157,20 @@ function Invoke-WTApplyEMDevicePolicy {
                             $PolicyGroupIDs = $PolicyAssignments.target.groupId | Sort-Object -Unique
 
                             # If there are ids, pass all groups, which will perform a check and remove only Endpoint Manager groups
-                            if ($PolicyGroupIDs){
+                            if ($PolicyGroupIDs) {
                                 Remove-WTEMGroup @Parameters -IDs $PolicyGroupIDs
                             }
                         }
 
-                        # Get notification templates for policy
-                        $NotificationTemplates = Get-WTEMNotificationTemplate @Parameters `
-                            -Ids $EMDevicePolicies.RemovePolicies.id
+                        # Filter to notification action for policy
+                        $NotificationActions = $EMDevicePolicies.RemovePolicies.scheduledActionsForRule.scheduledActionConfigurations | Where-Object {
+                            $_.actionType -eq "notification"
+                        }
 
-                        # If notification templates exist, remove them
-                        if ($NotificationTemplates) {
+                        # If notification action exist, remove the template
+                        if ($NotificationActions.id) {
                             Remove-WTEMNotificationTemplate @Parameters `
-                                -Ids $NotificationTemplates.id
+                                -Ids $NotificationActions.notificationTemplateId
                         }
 
                         # Pass the ids of the policies to the remove function

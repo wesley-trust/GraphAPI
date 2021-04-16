@@ -46,12 +46,19 @@ function Get-WTEMDevicePolicy {
         [Alias("id", "PolicyID", "PolicyIDs")]
         [string[]]$IDs,
         [parameter(
-            Mandatory = $false,
+            Mandatory = $true,
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "Specify the Endpoint Manager Device policy type to get"
         )]
         [ValidateSet("Compliance", "Configuration")]
-        [string]$PolicyType = "Compliance"
+        [string]$PolicyType,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "Specify whether scheduled actions for compliance policies are returned"
+        )]
+        [switch]$IncludeScheduledActions
+
     )
     Begin {
         try {
@@ -69,6 +76,7 @@ function Get-WTEMDevicePolicy {
             # Variables
             $Activity = "Getting Endpoint Manager Device $PolicyType policies"
             $Tags = @("SVC", "REF", "ENV")
+            $Expand = "?`$expand=scheduledActionsForRule(`$expand=scheduledActionConfigurations)"
 
         }
         catch {
@@ -107,12 +115,33 @@ function Get-WTEMDevicePolicy {
                 if (!$ExcludeTagEvaluation) {
                     $Parameters.Add("Tags", $Tags)
                 }
-                if ($IDs) {
-                    $Parameters.Add("IDs", $IDs)
-                }
 
-                # Get Endpoint Manager Device policies
-                $QueryResponse = Invoke-WTGraphGet @Parameters -Uri $Uri
+                # Get Endpoint Manager Device policies with scheduled actions
+                if ($IncludeScheduledActions) {
+                    if ($PolicyType -eq "Compliance") {
+                        if (!$IDs) {
+                            $Policies = Invoke-WTGraphGet @Parameters -Uri $Uri
+                            $Ids = $Policies.id
+                        }
+                        if ($Ids) {
+                            $QueryResponse = foreach ($Id in $IDs) {
+                                Invoke-WTGraphGet @Parameters -Uri $Uri/$id/$Expand
+                            }
+                        }
+                    }
+                    else {
+                        $ErrorMessage = "Only compliance policies can have scheduled actions, check if the parameters are correct"
+                        throw $ErrorMessage
+                    }
+                }
+                else {
+                    if ($IDs) {
+                        $Parameters.Add("IDs", $IDs)
+                    }
+                    
+                    # Get Endpoint Manager Device policies
+                    $QueryResponse = Invoke-WTGraphGet @Parameters -Uri $Uri
+                }
 
                 # Return response if one is returned
                 if ($QueryResponse) {

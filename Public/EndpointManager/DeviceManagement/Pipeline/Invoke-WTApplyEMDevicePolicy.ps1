@@ -148,15 +148,27 @@ function Invoke-WTApplyEMDevicePolicy {
                         # If the switch to not remove groups is not set, remove the groups for each Endpoint Manager policy also
                         if (!$ExcludeGroupRemoval) {
                             
-                            ## Get policy assignments
+                            # Get policy assignments
                             $PolicyAssignments = Get-WTEMDevicePolicyRelationship @Parameters `
                                 -Ids $EMDevicePolicies.RemovePolicies.id
 
                             # Filter to group ids and unique list
                             $PolicyGroupIDs = $PolicyAssignments.target.groupId | Sort-Object -Unique
 
-                            # Pass all groups, which will perform a check and remove only Endpoint Manager groups
-                            Remove-WTEMGroup @Parameters -IDs $PolicyGroupIDs
+                            # If there are ids, pass all groups, which will perform a check and remove only Endpoint Manager groups
+                            if ($PolicyGroupIDs){
+                                Remove-WTEMGroup @Parameters -IDs $PolicyGroupIDs
+                            }
+                        }
+
+                        # Get notification templates for policy
+                        $NotificationTemplates = Get-WTEMNotificationTemplate @Parameters `
+                            -Ids $EMDevicePolicies.RemovePolicies.id
+
+                        # If notification templates exist, remove them
+                        if ($NotificationTemplates) {
+                            Remove-WTEMNotificationTemplate @Parameters `
+                                -Ids $NotificationTemplates.id
                         }
 
                         # Pass the ids of the policies to the remove function

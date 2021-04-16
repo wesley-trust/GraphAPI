@@ -161,7 +161,7 @@ function Invoke-WTApplyCAPolicy {
                             $PolicyGroupIDs = $PolicyIncludeGroupIDs + $PolicyExcludeGroupIDs | Sort-Object -Unique
 
                             # If there are ids, pass all groups, which will perform a check and remove only Conditional Access groups
-                            if ($PolicyGroupIDs){
+                            if ($PolicyGroupIDs) {
                                 Remove-WTCAGroup @Parameters -IDs $PolicyGroupIDs
                             }
                         }

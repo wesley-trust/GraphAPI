@@ -1,4 +1,4 @@
-function New-WTAzureADRoleMember {
+function New-WTAzureADRoleRelationship {
     [CmdletBinding()]
     param (
         [parameter(

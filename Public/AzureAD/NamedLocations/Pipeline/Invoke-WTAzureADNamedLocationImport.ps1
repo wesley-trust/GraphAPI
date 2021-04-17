@@ -116,8 +116,10 @@ function Invoke-WTAzureADNamedLocationImport {
             
                 # Import and validate named locations
                 Write-Host "Stage 1: Validate"
-                Invoke-WTValidateAzureADNamedLocation @ValidateParameters | Tee-Object -Variable ValidateAzureADNamedLocations
-            
+                if ($FilePath -or $Path) {
+                    Invoke-WTValidateAzureADNamedLocation @ValidateParameters | Tee-Object -Variable ValidateAzureADNamedLocations
+                }
+                
                 # If there are no named locations to import, but existing named locations should be removed, for safety, "Force" is required
                 if (!$ValidateAzureADNamedLocations) {
                     if ($RemoveExistingNamedLocations -and !$Force) {
@@ -175,7 +177,7 @@ function Invoke-WTAzureADNamedLocationImport {
                         
                         # Build Parameters
                         $ApplyParameters = @{
-                            AccessToken               = $AccessToken
+                            AccessToken           = $AccessToken
                             AzureADNamedLocations = $PlanAzureADNamedLocations
                         }
                         if ($ExcludePreviewFeatures) {

@@ -116,8 +116,10 @@ function Invoke-WTAzureADGroupImport {
             
                 # Import and validate groups
                 Write-Host "Stage 1: Validate"
-                Invoke-WTValidateAzureADGroup @ValidateParameters | Tee-Object -Variable ValidateAzureADGroups
-            
+                if ($FilePath -or $Path) {
+                    Invoke-WTValidateAzureADGroup @ValidateParameters | Tee-Object -Variable ValidateAzureADGroups
+                }
+                
                 # If there are no groups to import, but existing groups should be removed, for safety, "Force" is required
                 if (!$ValidateAzureADGroups) {
                     if ($RemoveExistingGroups -and !$Force) {
@@ -175,7 +177,7 @@ function Invoke-WTAzureADGroupImport {
                         
                         # Build Parameters
                         $ApplyParameters = @{
-                            AccessToken               = $AccessToken
+                            AccessToken   = $AccessToken
                             AzureADGroups = $PlanAzureADGroups
                         }
                         if ($ExcludePreviewFeatures) {

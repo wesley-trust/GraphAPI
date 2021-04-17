@@ -135,8 +135,10 @@ function Invoke-WTEMDevicePolicyImport {
             
                 # Import and validate policies
                 Write-Host "Stage 1: Validate"
-                Invoke-WTValidateEMDevicePolicy @ValidateParameters | Tee-Object -Variable ValidateEMDevicePolicies
-            
+                if ($FilePath -or $Path){
+                    Invoke-WTValidateEMDevicePolicy @ValidateParameters | Tee-Object -Variable ValidateEMDevicePolicies
+                }
+
                 # If there are no policies to import, but existing policies should be removed, for safety, "Force" is required
                 if (!$ValidateEMDevicePolicies) {
                     if ($RemoveExistingPolicies -and !$Force) {

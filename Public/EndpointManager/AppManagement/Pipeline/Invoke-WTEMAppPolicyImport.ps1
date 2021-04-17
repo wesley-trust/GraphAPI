@@ -135,8 +135,10 @@ function Invoke-WTEMAppPolicyImport {
             
                 # Import and validate policies
                 Write-Host "Stage 1: Validate"
-                Invoke-WTValidateEMAppPolicy @ValidateParameters | Tee-Object -Variable ValidateEMAppPolicies
-            
+                if ($FilePath -or $Path) {
+                    Invoke-WTValidateEMAppPolicy @ValidateParameters | Tee-Object -Variable ValidateEMAppPolicies
+                }
+                
                 # If there are no policies to import, but existing policies should be removed, for safety, "Force" is required
                 if (!$ValidateEMAppPolicies) {
                     if ($RemoveExistingPolicies -and !$Force) {

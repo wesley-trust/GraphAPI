@@ -4,13 +4,13 @@ function New-WTAzureADGroup {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client ID for the Azure AD service principal with Azure AD group Graph permissions"
+            HelpMessage = "Client ID for the Azure AD service principal with Azure AD group Graph permissions, Privileged Role Administrator is required for role groups"
         )]
         [string]$ClientID,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client secret for the Azure AD service principal with Azure AD group Graph permissions"
+            HelpMessage = "Client secret for the Azure AD service principal with Azure AD group Graph permissions, Privileged Role Administrator is required for role groups"
         )]
         [string]$ClientSecret,
         [parameter(

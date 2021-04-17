@@ -44,7 +44,7 @@ function New-WTAzureADGroupRelationship {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The group relationship to add, such as group members or owners"
         )]
-        [ValidateSet("members", "owners")]
+        [ValidateSet("members", "owners", "assignLicense")]
         [string]$Relationship,
         [parameter(
             Mandatory = $false,
@@ -90,19 +90,38 @@ function New-WTAzureADGroupRelationship {
 
                 # Build Parameters
                 $Parameters = @{
-                    AccessToken       = $AccessToken
-                    Uri               = "$Uri/$Id/$Relationship/`$ref"
-                    Activity          = $Activity
+                    AccessToken = $AccessToken
+                    Activity    = $Activity
                 }
                 if ($ExcludePreviewFeatures) {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
+                if ($Relationship -eq "assignLicense") {
+                    $Parameters.Add("Uri", "$Uri/$Id/$Relationship")
+                }
+                else {
+                    $Parameters.Add("Uri", "$Uri/$Id/$Relationship/`$ref")
+                }
 
-                # If there are IDs, for each, create an object with the ID
+                # If there are IDs, for each, create an appropriate object with the IDs
                 if ($RelationshipIDs) {
-                    $RelationshipObject = foreach ($RelationshipId in $RelationshipIDs) {
-                        [PSCustomObject]@{
-                            "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$RelationshipId"
+                    if ($Relationship -eq "assignLicense") {
+                        $Licences = foreach ($RelationshipId in $RelationshipIDs) {
+                            [PSCustomObject]@{
+                                "skuId" = $RelationshipId
+                            }
+                        }
+                        $RelationshipObject = [PSCustomObject]@{
+                            addLicenses = @(
+                                $Licences
+                            )
+                        }
+                    }
+                    else {
+                        $RelationshipObject = foreach ($RelationshipId in $RelationshipIDs) {
+                            [PSCustomObject]@{
+                                "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$RelationshipId"
+                            }
                         }
                     }
 

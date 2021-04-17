@@ -44,7 +44,7 @@ function Remove-WTAzureADGroupRelationship {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The group relationship to remove, such as group members or owners"
         )]
-        [ValidateSet("members", "owners")]
+        [ValidateSet("members", "owners", "assignLicense")]
         [string]$Relationship,
         [parameter(
             Mandatory = $false,
@@ -59,6 +59,7 @@ function Remove-WTAzureADGroupRelationship {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
+                "GraphAPI\Private\Invoke-WTGraphPost.ps1",
                 "GraphAPI\Private\Invoke-WTGraphDelete.ps1"
             )
 
@@ -90,21 +91,40 @@ function Remove-WTAzureADGroupRelationship {
 
                 # Build Parameters
                 $Parameters = @{
-                    AccessToken       = $AccessToken
-                    Activity          = $Activity
+                    AccessToken = $AccessToken
+                    Activity    = $Activity
                 }
                 if ($ExcludePreviewFeatures) {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
 
-                # If there are IDs, for each, remove the group relationship
+                # If there are IDs, for each, where appropriate create an object and remove the group relationship with the appropriate function
                 if ($RelationshipIDs) {
-                    foreach ($RelationshipId in $RelationshipIDs) {
+                    if ($Relationship -eq "assignLicense") {
+                        $Licences = foreach ($RelationshipId in $RelationshipIDs) {
+                            [PSCustomObject]@{
+                                "skuId" = $RelationshipId
+                            }
+                        }
+                        $RelationshipObject = [PSCustomObject]@{
+                            removeLicenses = @(
+                                $Licences
+                            )
+                        }
                         
                         # Remove group relationship
-                        Invoke-WTGraphDelete `
+                        Invoke-WTGraphPost `
                             @Parameters `
-                            -Uri "$Uri/$Id/$Relationship/$RelationshipId/`$ref"
+                            -InputObject $RelationshipObject
+                    }
+                    else {
+                        foreach ($RelationshipId in $RelationshipIDs) {
+                        
+                            # Remove group relationship
+                            Invoke-WTGraphDelete `
+                                @Parameters `
+                                -Uri "$Uri/$Id/$Relationship/$RelationshipId/`$ref"
+                        }
                     }
                 }
                 else {

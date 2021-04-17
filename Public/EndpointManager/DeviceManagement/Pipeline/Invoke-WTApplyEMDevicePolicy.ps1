@@ -162,19 +162,19 @@ function Invoke-WTApplyEMDevicePolicy {
                             }
                         }
 
+                        # Pass the ids of the policies to the remove function
+                        Remove-WTEMDevicePolicy @Parameters -PolicyIDs $EMDevicePolicies.RemovePolicies.id
+
                         # Filter to notification action for policy
                         $NotificationActions = $EMDevicePolicies.RemovePolicies.scheduledActionsForRule.scheduledActionConfigurations | Where-Object {
                             $_.actionType -eq "notification"
                         }
-
-                        # If notification action exist, remove the template
-                        if ($NotificationActions.id) {
+                        
+                        # If notification templates exist, remove the templates after the policy, so it's no longer in use
+                        if ($NotificationActions.notificationTemplateId) {
                             Remove-WTEMNotificationTemplate @Parameters `
                                 -Ids $NotificationActions.notificationTemplateId
                         }
-
-                        # Pass the ids of the policies to the remove function
-                        Remove-WTEMDevicePolicy @Parameters -PolicyIDs $EMDevicePolicies.RemovePolicies.id
                     }
                     else {
                         $WarningMessage = "No policies will be removed, as none exist that are different to the import"

@@ -50,7 +50,7 @@ function Get-WTAzureADGroupRelationship {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The group relationship to return, such as group members, owners or groups this group is a member of"
         )]
-        [ValidateSet("members", "owners", "memberOf")]
+        [ValidateSet("members", "owners", "memberOf", "assignLicense")]
         [string]$Relationship
     )
     Begin {

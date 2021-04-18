@@ -147,7 +147,7 @@ function Invoke-WTPlanSubscription {
                     $PlanSubscriptions.Add("RemoveSubscriptions", $RemoveSubscriptions)
                     
                     # Output current action
-                    Write-Host "Subscription to remove: $($RemoveSubscriptions.count)"
+                    Write-Host "Defined Subscription to remove: $($RemoveSubscriptions.count)"
 
                     foreach ($Subscription in $RemoveSubscriptions) {
                         Write-Host "Remove: Subscription ID: $($Subscription.id) (Subscription Groups will be removed as appropriate)" -ForegroundColor DarkRed
@@ -156,24 +156,11 @@ function Invoke-WTPlanSubscription {
                 else {
                     Write-Host "No Subscription will be removed, as none exist that are different to the import"
                 }
-                if ($UpdateSubscriptions) {
-                    $PlanSubscriptions.Add("UpdateSubscriptions", $UpdateSubscriptions)
-                                        
-                    # Output current action
-                    Write-Host "Subscription to update: $($UpdateSubscriptions.count)"
-                    
-                    foreach ($Subscription in $UpdateSubscriptions) {
-                        Write-Host "Update: Subscription ID: $($Subscription.id)" -ForegroundColor DarkYellow
-                    }
-                }
-                else {
-                    Write-Host "No Subscription will be updated, as none exist that are different to the import"
-                }
                 if ($CreateSubscriptions) {
                     $PlanSubscriptions.Add("CreateSubscriptions", $CreateSubscriptions)
                                         
                     # Output current action
-                    Write-Host "Subscription to create: $($CreateSubscriptions.count) ( Groups will be created as appropriate)"
+                    Write-Host "Defined Subscription to create: $($CreateSubscriptions.count) (Subscription Groups will be created as appropriate)"
 
                     foreach ($Subscription in $CreateSubscriptions) {
                         Write-Host "Create: Subscription Name: $($Subscription.skuPartNumber)" -ForegroundColor DarkGreen

@@ -205,7 +205,8 @@ function Invoke-WTApplySubscription {
                             New-WTAzureADGroupRelationship @Parameters `
                                 -Id $SubscriptionGroup.id `
                                 -Relationship "assignLicense" `
-                                -RelationshipIDs $Subscription.skuId
+                                -RelationshipIDs $Subscription.skuId `
+                                | Out-Null
                             
                             # Add member to group
                             if (${ENV:UserGroupID}) {

@@ -108,13 +108,15 @@ function New-WTAzureADGroupRelationship {
                     if ($Relationship -eq "assignLicense") {
                         $Licences = foreach ($RelationshipId in $RelationshipIDs) {
                             [PSCustomObject]@{
+                                "disabledPlans" = @()
                                 "skuId" = $RelationshipId
                             }
                         }
                         $RelationshipObject = [PSCustomObject]@{
-                            addLicenses = @(
+                            addLicenses    = @(
                                 $Licences
                             )
+                            removeLicenses = @()
                         }
                     }
                     else {

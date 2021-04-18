@@ -107,6 +107,7 @@ function Remove-WTAzureADGroupRelationship {
                             }
                         }
                         $RelationshipObject = [PSCustomObject]@{
+                            addLicences    = @()
                             removeLicenses = @(
                                 $Licences
                             )

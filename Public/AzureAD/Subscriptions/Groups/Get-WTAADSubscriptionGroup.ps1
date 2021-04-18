@@ -87,7 +87,7 @@ function Get-WTAADSubscriptionGroup {
                 }
                 
                 # Get Azure AD groups, and filter
-                $SubscriptionGroups = Get-WTAzureADGroup @Parameters | Where-Object {$_.$Tag -eq $Service}
+                $SubscriptionGroups = Get-WTAzureADGroup @Parameters -Select id, displayName, assignedLicenses | Where-Object { $_.$Tag -eq $Service }
                 
                 # Return response if the filtered objects contain the specified service
                 if ($SubscriptionGroups) {

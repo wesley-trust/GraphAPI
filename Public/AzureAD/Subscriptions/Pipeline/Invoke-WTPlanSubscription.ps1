@@ -99,17 +99,17 @@ function Invoke-WTPlanSubscription {
 
                 # Get current enabled subscriptions for comparison
                 $CurrentSubscriptions = Get-WTAzureADSubscription @Parameters
-                $EnabledSubscriptions = $CurrentSubscriptions | Where-Object {
-                    $_.capabilityStatus -eq "Enabled"
+                $AssignableSubscriptions = $CurrentSubscriptions | Where-Object {
+                    $_.capabilityStatus -eq "Enabled" -and $_.appliesTo -eq "User"
                 }
 
                 if ($DefinedSubscriptions) {
 
-                    if ($EnabledSubscriptions) {
+                    if ($AssignableSubscriptions) {
 
                         # Compare object on id and pass thru all objects, including those that exist and are to be imported
                         $SubscriptionComparison = Compare-Object `
-                            -ReferenceObject $EnabledSubscriptions `
+                            -ReferenceObject $AssignableSubscriptions `
                             -DifferenceObject $DefinedSubscriptions `
                             -Property skuPartNumber `
                             -PassThru
@@ -137,7 +137,7 @@ function Invoke-WTPlanSubscription {
                 else {
                     
                     # If no defined subscription exist, any enabled subscriptions should be defined
-                    $CreateSubscriptions = $EnabledSubscriptions
+                    $CreateSubscriptions = $AssignableSubscriptions
                 }
                 
                 # Build object to return

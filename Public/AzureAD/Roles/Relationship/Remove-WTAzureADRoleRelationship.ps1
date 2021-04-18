@@ -44,8 +44,8 @@ function Remove-WTAzureADRoleRelationship {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The directory object ids to remove from the Azure AD role"
         )]
-        [Alias('DirectoryObjectID', "MemberIDs", "MemberID")]
-        [string[]]$DirectoryObjectIDs
+        [Alias('RelationshipID', "MemberIDs", "MemberID")]
+        [string[]]$RelationshipIDs
     )
     Begin {
         try {
@@ -61,9 +61,9 @@ function Remove-WTAzureADRoleRelationship {
             }
 
             # Variables
-            $Activity = "Removing Azure AD role from directory object"
-            $Uri = "directoryRoles"
             $Relationship = "members"
+            $Activity = "Removing Azure AD role $Relationship"
+            $Uri = "directoryRoles"
         }
         catch {
             Write-Error -Message $_.Exception
@@ -93,17 +93,17 @@ function Remove-WTAzureADRoleRelationship {
                 }
 
                 # If there are IDs, for each remove the role
-                if ($DirectoryObjectIDs) {
-                    foreach ($DirectoryObjectID in $DirectoryObjectIDs) {
+                if ($RelationshipIDs) {
+                    foreach ($RelationshipID in $RelationshipIDs) {
                         
                         # Remove role from directory object
                         Invoke-WTGraphDelete `
                             @Parameters `
-                            -Uri "$Uri/$Id/$Relationship/$DirectoryObjectID/`$ref"
+                            -Uri "$Uri/$Id/$Relationship/$RelationshipID/`$ref"
                     }
                 }
                 else {
-                    $ErrorMessage = "There are no directory objects to remove from the roles"
+                    $ErrorMessage = "There are no $Relationship to remove from the Azure AD roles"
                     Write-Error $ErrorMessage
                 }
             }

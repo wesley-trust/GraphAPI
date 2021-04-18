@@ -35,7 +35,7 @@ function Get-WTAzureADRoleRelationship {
             Mandatory = $true,
             ValueFromPipeLineByPropertyName = $true,
             ValueFromPipeLine = $true,
-            HelpMessage = "The Azure AD role to get the directory object, this must contain valid id(s)"
+            HelpMessage = "The Azure AD role to get the directory objects, this must contain valid id(s)"
         )]
         [Alias("RoleID")]
         [string]$ID
@@ -54,9 +54,9 @@ function Get-WTAzureADRoleRelationship {
             }
 
             # Variables
-            $Activity = "Getting Azure AD role directory objects"
-            $Uri = "directoryRoles"
             $Relationship = "members"
+            $Activity = "Getting Azure AD role $Relationship"
+            $Uri = "directoryRoles"
 
         }
         catch {

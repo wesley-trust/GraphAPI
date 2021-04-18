@@ -44,8 +44,8 @@ function New-WTAzureADRoleRelationship {
             ValueFromPipeLineByPropertyName = $true,
             HelpMessage = "The directory object ids to add to the Azure AD role"
         )]
-        [Alias('DirectoryObjectID', "MemberIDs", "MemberID")]
-        [string[]]$DirectoryObjectIDs
+        [Alias('RelationshipID', "MemberIDs", "MemberID")]
+        [string[]]$RelationshipIDs
     )
     Begin {
         try {
@@ -61,9 +61,9 @@ function New-WTAzureADRoleRelationship {
             }
 
             # Variables
-            $Activity = "Adding Azure AD role to directory object"
-            $Uri = "directoryRoles"
             $Relationship = "members"
+            $Activity = "Adding Azure AD role $Relationship"
+            $Uri = "directoryRoles"
         }
         catch {
             Write-Error -Message $_.Exception
@@ -93,10 +93,10 @@ function New-WTAzureADRoleRelationship {
                 }
 
                 # If there are IDs, for each, create an appropriate object with the IDs
-                if ($DirectoryObjectIDs) {
-                    $DirectoryMemberObject = foreach ($DirectoryObjectId in $DirectoryObjectIDs) {
+                if ($RelationshipIDs) {
+                    $DirectoryMemberObject = foreach ($RelationshipId in $RelationshipIDs) {
                         [PSCustomObject]@{
-                            "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$DirectoryObjectId"
+                            "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$RelationshipId"
                         }
                     }
                     
@@ -106,7 +106,7 @@ function New-WTAzureADRoleRelationship {
                         -InputObject $DirectoryMemberObject
                 }
                 else {
-                    $ErrorMessage = "There are no directory objects to add the roles"
+                    $ErrorMessage = "There are no $Relationship to add the Azure AD roles"
                     Write-Error $ErrorMessage
                 }
             }

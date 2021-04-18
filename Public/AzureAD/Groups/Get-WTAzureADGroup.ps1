@@ -112,6 +112,12 @@ function Get-WTAzureADGroup {
                         $Select = "displayName,$Select"
                     }
 
+                    # If there are no ids, get all groups and filter to ids for select query
+                    if (!$IDs){
+                        $Groups = Invoke-WTGraphGet @Parameters -Uri $Uri
+                        $IDs = $Groups.id
+                    }
+                    
                     # If there are Ids, get Azure AD group with selected properties only
                     if ($IDs) {
                         $QueryResponse = foreach ($Id in $IDs) {

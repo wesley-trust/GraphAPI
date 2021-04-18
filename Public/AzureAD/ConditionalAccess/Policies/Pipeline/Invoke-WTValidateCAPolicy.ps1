@@ -157,7 +157,7 @@ function Invoke-WTValidateCAPolicy {
                         }
     
                         # Build and return object
-                        if ($PropertyCheck -or $ControlsCheck -or $ConditionsCheck) {
+                        if ($PropertyCheck -or $PropertyValueCheck -or $ControlsCheck -or $ConditionsCheck) {
                             $PolicyValidate = [ordered]@{}
                             if ($Policy.displayName) {
                                 $PolicyValidate.Add("DisplayName", $Policy.displayName)

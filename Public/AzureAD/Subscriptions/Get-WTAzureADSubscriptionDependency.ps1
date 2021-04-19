@@ -69,9 +69,8 @@ function Get-WTAzureADSubscriptionDependency {
                 . $Function
             }
 
-            # Variables
-            $Activity = "Getting Azure AD Commercial Subscription Dependencies"
-
+            # Output current activity
+            Write-Host "Getting Azure AD Commercial Subscription Dependencies"
         }
         catch {
             Write-Error -Message $_.Exception
@@ -110,11 +109,12 @@ function Get-WTAzureADSubscriptionDependency {
                     throw $ErrorMessage
                 }
             }
-            # Output current activity
-            Write-Host $Activity
             if ($Subscriptions) {
                 if ($ServicePlans) {
-
+                    
+                    # Output current activity
+                    Write-Host "Evaluating Service Plans for subscriptions with dependencies"
+                    
                     # Find subscriptions with dependencies
                     $DependentSubscriptionServicePlans = foreach ($Subscription in $Subscriptions) {
                         $RequiredServicePlans = $null
@@ -136,6 +136,11 @@ function Get-WTAzureADSubscriptionDependency {
 
                     # Find the skuPartNumbers with the dependent Service Plans for each subscription with dependencies
                     if ($DependencyType -eq "SkuPartNumber" -or $DependencyType -eq "SkuId") {
+                        
+                        # Output current activity
+                        Write-Host "Evaluating SKUs containing Service Plans for subscriptions with dependencies"
+                        
+                        # Find the skuPartNumbers with the dependent Service Plans for each subscription with dependencies
                         $DependentSubscriptionSkus = foreach ($DependentSubscription in $DependentSubscriptionServicePlans) {
                             $RequiredSkus = foreach ($Subscription in $Subscriptions) {
                                 foreach ($DependentSubscriptionServicePlan in $DependentSubscription.RequiredServicePlans) {
@@ -153,7 +158,7 @@ function Get-WTAzureADSubscriptionDependency {
                                 }
                             }
                             else {
-                                $WarningMessage = "There are no subscriptions with the required Service Plan dependencies"
+                                $WarningMessage = "There are no SKUs containing Service Plans for subscriptions with dependencies"
                                 Write-Warning $WarningMessage
                             }
                         }

@@ -37,6 +37,12 @@ function Invoke-WTAzureADSubscriptionImport {
             HelpMessage = "The directory path(s) of which all JSON file(s) will be imported"
         )]
         [string]$Path,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "The directory path to the location where the ServicePlan dependencies will be imported"
+        )]
+        [string]$DependentServicePlansPath,
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
@@ -167,9 +173,25 @@ function Invoke-WTAzureADSubscriptionImport {
                 if ($Stage -eq "Apply") {
                     if ($PlanSubscriptions) {
                         
+                        # Import service plan dependencies if they exist and convert from JSON
+                        if ($DependentServicePlansPath) {
+                            $PathExists = Test-Path -Path $DependentServicePlansPath
+                            if ($PathExists) {
+                                $DependentServicePlansFilePath = (Get-ChildItem -Path $DependentServicePlansPath -Filter "*.json").FullName
+                            }
+                            if ($DependentServicePlansFilePath) {
+                                $DependentServicePlansImport = foreach ($DependentServicePlanFile in $DependentServicePlansFilePath) {
+                                    Get-Content -Raw -Path $DependentServicePlanFile
+                                }
+                            }
+                            if ($DependentServicePlansImport) {
+                                $DependentServicePlans = $DependentServicePlansImport | ConvertFrom-Json -Depth 10
+                            }
+                        }
+
                         # Build Parameters
                         $ApplyParameters = @{
-                            AccessToken   = $AccessToken
+                            AccessToken          = $AccessToken
                             DefinedSubscriptions = $PlanSubscriptions
                         }
                         if ($ExcludePreviewFeatures) {
@@ -190,7 +212,10 @@ function Invoke-WTAzureADSubscriptionImport {
                         if ($Pipeline) {
                             $ApplyParameters.Add("Pipeline", $true)
                         }
-                    
+                        if ($DependentServicePlans) {
+                            $ApplyParameters.Add("DependentServicePlans", $DependentServicePlans)
+                        }
+
                         # Apply plan to Azure AD
                         Write-Host "Stage 3: Apply"
                         Invoke-WTApplySubscription @ApplyParameters

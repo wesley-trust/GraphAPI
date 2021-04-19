@@ -32,6 +32,13 @@ function Invoke-WTApplySubscription {
         )]
         [Alias("Subscription", "SubscriptionDefinition", "Subscriptions")]
         [PSCustomObject]$DefinedSubscriptions,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "The Subscription object"
+        )]
+        [Alias("ServicePlan", "ServicePlans", "DependentServicePlan")]
+        [PSCustomObject]$DependentServicePlans,
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
@@ -80,8 +87,10 @@ function Invoke-WTApplySubscription {
                 "GraphAPI\Public\AzureAD\Subscriptions\Groups\Get-WTAADSubscriptionGroup.ps1",
                 "GraphAPI\Public\AzureAD\Subscriptions\Groups\New-WTAADSubscriptionGroup.ps1",
                 "GraphAPI\Public\AzureAD\Subscriptions\Groups\Remove-WTAADSubscriptionGroup.ps1",
+                "GraphAPI\Public\AzureAD\Subscriptions\Get-WTAzureADSubscriptionDependency.ps1",
                 "GraphAPI\Public\AzureAD\Subscriptions\Export-WTAzureADSubscription.ps1",
                 "GraphAPI\Public\AzureAD\Groups\Export-WTAzureADGroup.ps1",
+                "GraphAPI\Public\AzureAD\Groups\Relationship\Get-WTAzureADGroupRelationship.ps1"
                 "GraphAPI\Public\AzureAD\Groups\Relationship\New-WTAzureADGroupRelationship.ps1"
             )
 
@@ -149,15 +158,7 @@ function Invoke-WTApplySubscription {
                                 # If there are ids, pass all groups, which will perform a check and remove only subscription groups
                                 if ($SubscriptionGroups) {
                                     
-                                    # Remove licence from group if assigned
-                                    if ($SubscriptionGroups.assignedLicenses) {
-                                        Remove-WTAzureADGroupRelationship @Parameters `
-                                            -Id $LicenceAssignedGroups.id `
-                                            -Relationship "assignLicense" `
-                                            -RelationshipIDs $SubscriptionGroups.assignedLicenses.skuid
-                                    }
-                                    
-                                    # Remove group
+                                    # Remove group (licences should no longer be assigned to deleted subscriptions)
                                     Remove-WTAADSubscriptionGroup @Parameters -IDs $SubscriptionGroups.id
                                                                             
                                     # Remove group config
@@ -177,6 +178,14 @@ function Invoke-WTApplySubscription {
                 # If there are new subscriptions create the groups
                 if ($DefinedSubscriptions.CreateSubscriptions) {
                     $CreateSubscriptions = $DefinedSubscriptions.CreateSubscriptions
+
+                    # Find subscriptions with service plan dependencies
+                    if ($DependentServicePlans) {
+                        $DependentSubscriptions = Get-WTAzureADSubscriptionDependency @Parameters `
+                            -Subscriptions $CreateSubscriptions `
+                            -ServicePlans $DependentServicePlans `
+                            -DependencyType SkuId
+                    }
 
                     # Calculate the display names to be used for the Subscription groups
                     $SubscriptionGroupDisplayName = foreach ($Subscription in $CreateSubscriptions) {
@@ -201,6 +210,25 @@ function Invoke-WTApplySubscription {
                         # If there is a group for this subscription (as subscriptions may not always have groups)
                         if ($SubscriptionGroup) {
                             
+                            # If this subscription is in the list of dependent subscriptions
+                            if ($Subscription.skuId -in $DependentSubscriptions.skuId) {
+                                
+                                # Filter to the specific subscription dependency
+                                $DependentSubscription = $null
+                                $DependentSubscription = $DependentSubscriptions | Where-Object {
+                                    $_.skuId -eq $Subscription.skuId
+                                }
+
+                                # Assign each required sku for the dependent subscription
+                                foreach ($SkuId in $DependentSubscription.RequiredSkuId) {
+                                    New-WTAzureADGroupRelationship @Parameters `
+                                        -Id $SubscriptionGroup.id `
+                                        -Relationship "assignLicense" `
+                                        -RelationshipIDs $SkuId `
+                                    | Out-Null
+                                }
+                            }
+
                             # Assign licence to group
                             New-WTAzureADGroupRelationship @Parameters `
                                 -Id $SubscriptionGroup.id `
@@ -208,12 +236,19 @@ function Invoke-WTApplySubscription {
                                 -RelationshipIDs $Subscription.skuId `
                             | Out-Null
                             
-                            # Add member to group
+                            # Workaround lack of nested group support, by getting users that should be licenced
                             if (${ENV:UserGroupID}) {
-                                New-WTAzureADGroupRelationship @Parameters `
-                                    -Id $SubscriptionGroup.id `
-                                    -Relationship "members" `
-                                    -RelationshipIDs ${ENV:USERGROUPID}
+                                $Members = Get-WTAzureADGroupRelationship @Parameters `
+                                    -Id ${ENV:UserGroupID} `
+                                    -Relationship "members"
+                                
+                                # Then adding the users that should be licenced directly to the group
+                                if ($Members) {
+                                    New-WTAzureADGroupRelationship @Parameters `
+                                        -Id $SubscriptionGroup.id `
+                                        -Relationship "members" `
+                                        -RelationshipIDs $Members.id
+                                }
                             }
                         }
                     }

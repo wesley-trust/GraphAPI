@@ -31,7 +31,7 @@ function Invoke-WTPlanSubscription {
             ValueFromPipeLine = $true,
             HelpMessage = "The Subscription object"
         )]
-        [Alias("Subscription", "SubscriptionDefinition","Subscriptions")]
+        [Alias("Subscription", "SubscriptionDefinition", "Subscriptions")]
         [PSCustomObject]$DefinedSubscriptions,
         [Parameter(
             Mandatory = $false,
@@ -97,10 +97,10 @@ function Invoke-WTPlanSubscription {
                     $Parameters.Add("ExcludePreviewFeatures", $true)
                 }
 
-                # Get current enabled subscriptions for comparison
+                # Get user subscriptions that have not been deleted
                 $CurrentSubscriptions = Get-WTAzureADSubscription @Parameters
                 $AssignableSubscriptions = $CurrentSubscriptions | Where-Object {
-                    $_.capabilityStatus -eq "Enabled" -and $_.appliesTo -eq "User"
+                    $_.capabilityStatus -ne "Deleted" -and $_.appliesTo -eq "User"
                 }
 
                 if ($DefinedSubscriptions) {

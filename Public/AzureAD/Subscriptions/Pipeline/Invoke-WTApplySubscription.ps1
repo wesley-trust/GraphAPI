@@ -206,7 +206,7 @@ function Invoke-WTApplySubscription {
                                 -Id $SubscriptionGroup.id `
                                 -Relationship "assignLicense" `
                                 -RelationshipIDs $Subscription.skuId `
-                                | Out-Null
+                            | Out-Null
                             
                             # Add member to group
                             if (${ENV:UserGroupID}) {
@@ -223,9 +223,12 @@ function Invoke-WTApplySubscription {
                         -Path $Path `
                         -ExcludeExportCleanup
 
+                    # Path to group config
+                    $GroupsPath = $Path + "\..\Groups"
+
                     # Export groups
                     Export-WTAzureADGroup -AzureADGroups $SubscriptionGroups `
-                        -Path "$Path\Groups" `
+                        -Path $GroupsPath `
                         -ExcludeExportCleanup `
                         -ExcludeTagEvaluation
 

@@ -178,7 +178,7 @@ function Invoke-WTValidateSubscription {
                     else {
 
                         # Return validated subscriptions
-                        Write-Host "All subscriptions have passed validation for required properties, values, controls and conditions"
+                        Write-Host "All subscriptions have passed validation for required properties and values"
                         $ValidSubscriptions = $DefinedSubscriptions
                         $ValidSubscriptions
                     }

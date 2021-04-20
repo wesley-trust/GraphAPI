@@ -7,11 +7,17 @@ Contains code for calling the Microsoft Graph API with PowerShell
 | Groups |[![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Azure%20AD/Groups/SVC-AD%3BENV-P%3B%20Groups?branchName=main)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=9&branchName=main)|[![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Azure%20AD/Groups/SVC-AD%3BENV-D%3B%20Groups?branchName=develop)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=7&branchName=develop)|
 | Named Locations |[![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Azure%20AD/Named%20Locations/SVC-AD%3BENV-P%3B%20Named%20Locations?branchName=main)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=10&branchName=main)|[![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Azure%20AD/Named%20Locations/SVC-AD%3BENV-D%3B%20Named%20Locations?branchName=develop)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=11&branchName=develop)|
 | Subscription Group Assignment | [![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Azure%20AD/Subscriptions/SVC-CS%3BENV-P%3B%20Subscriptions?branchName=main)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=23&branchName=main) | [![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Azure%20AD/Subscriptions/SVC-CS%3BENV-D%3B%20Subscriptions?branchName=develop)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=24&branchName=develop) |
+| Directory Role Group Assignment | | |
+| Privileged Identity Management | | |
+| Organisation Configuration | | |
+| Domain Configuration | | |
+| Authentication Configuration | | |
 ## Endpoint Manager (Intune)
 |  |  main  | develop |
 |:---| :----: | :-----: |
 | Device Policies | [![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Endpoint%20Manager/Device%20Management/Policies/SVC-EM%3BENV-P%3B%20Device%20Policies?branchName=main)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=18&branchName=main) | [![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Endpoint%20Manager/Device%20Management/Policies/SVC-EM%3BENV-D%3B%20Device%20Policies?branchName=develop)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=19&branchName=develop) |
 | App Policies  | [![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Endpoint%20Manager/App%20Management/Policies/SVC-EM%3BENV-P%3B%20App%20Policies?branchName=main)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=15&branchName=main) | [![Build Status](https://dev.azure.com/wesleytrust/GraphAPI/_apis/build/status/Endpoint%20Manager/App%20Management/Policies/SVC-EM%3BENV-D%3B%20App%20Policies?branchName=develop)](https://dev.azure.com/wesleytrust/GraphAPI/_build/latest?definitionId=16&branchName=develop) |
+| Enrolment Configuration | | |
 ### PowerShell wrapped Microsoft Graph API calls to:
 - Import
 - Get

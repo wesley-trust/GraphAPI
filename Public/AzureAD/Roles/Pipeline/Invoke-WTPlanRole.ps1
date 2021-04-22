@@ -147,7 +147,7 @@ function Invoke-WTPlanRole {
                     Write-Host "Defined Role to activate: $($ActivateRoles.count)"
 
                     foreach ($Role in $ActivateRoles) {
-                        Write-Host "Activate: Role ID: $($Role.id) (Role Groups will be activated as appropriate)" -ForegroundColor DarkRed
+                        Write-Host "Activate: Role ID: $($Role.id) (Role Groups will be created as appropriate)" -ForegroundColor DarkRed
                     }
                 }
                 else {

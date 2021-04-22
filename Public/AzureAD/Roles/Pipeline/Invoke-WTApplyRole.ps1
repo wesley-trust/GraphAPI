@@ -69,6 +69,7 @@ function Invoke-WTApplyRole {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
+                "GraphAPI\Public\AzureAD\Roles\New-WTAzureADActivatedRole.ps1",
                 "GraphAPI\Public\AzureAD\Roles\Groups\New-WTAADRoleGroup.ps1",
                 "GraphAPI\Public\AzureAD\Roles\Export-WTAzureADActivatedRole.ps1",
                 "GraphAPI\Public\AzureAD\Roles\Relationship\New-WTAzureADRoleRelationship.ps1",

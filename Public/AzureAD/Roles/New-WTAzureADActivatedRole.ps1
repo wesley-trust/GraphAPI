@@ -37,7 +37,7 @@ function New-WTAzureADActivatedRole {
             ValueFromPipeLine = $true,
             HelpMessage = "Specify the Role to create"
         )]
-        [Alias("Role", "AzureADRole", "AzureADRoles","RoleTemplate")]
+        [Alias("Role", "Roles",  "AzureADRole", "AzureADRoles","RoleTemplate")]
         [PSCustomObject]$RoleTemplates
     )
     Begin {

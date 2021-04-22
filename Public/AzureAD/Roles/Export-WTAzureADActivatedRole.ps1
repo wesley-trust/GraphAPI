@@ -1,4 +1,4 @@
-function Export-WTAzureADSubscription {
+function Export-WTAzureADActivatedRole {
     [CmdletBinding()]
     param (
         [parameter(
@@ -52,24 +52,24 @@ function Export-WTAzureADSubscription {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The Subscriptions to get, this must contain valid id(s), when not specified, all policies are returned"
+            HelpMessage = "The Roles to get, this must contain valid id(s), when not specified, all policies are returned"
         )]
-        [Alias("DefinedSubscription","Subscription","Subscriptions")]
-        [PSCustomObject]$DefinedSubscriptions,
+        [Alias("DefinedRole","Role","Roles")]
+        [PSCustomObject]$DefinedRoles,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The Subscriptions to get, this must contain valid id(s), when not specified, all policies are returned"
+            HelpMessage = "The Roles to get, this must contain valid id(s), when not specified, all policies are returned"
         )]
-        [Alias("id", "SubscriptionID")]
-        [string[]]$SubscriptionIDs
+        [Alias("id", "RoleID")]
+        [string[]]$RoleIDs
     )
     Begin {
         try {
             # Function definitions
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
-                "GraphAPI\Public\AzureAD\Subscriptions\Get-WTAzureADSubscription.ps1"
+                "GraphAPI\Public\AzureAD\Roles\Get-WTAzureADActivatedRole.ps1"
             )
 
             # Function dot source
@@ -95,7 +95,7 @@ function Export-WTAzureADSubscription {
         try {
             
             # If there are no policies to export, get policies based on specified parameters
-            if (!$DefinedSubscriptions) {
+            if (!$DefinedRoles) {
                 
                 # If there is no access token, obtain one
                 if (!$AccessToken) {
@@ -114,14 +114,14 @@ function Export-WTAzureADSubscription {
                     if ($ExcludePreviewFeatures) {
                         $Parameters.Add("ExcludePreviewFeatures", $true)
                     }
-                    if ($SubscriptionIDs) {
-                        $Parameters.Add("SubscriptionIDs", $IDs)
+                    if ($RoleIDs) {
+                        $Parameters.Add("RoleIDs", $IDs)
                     }
 
-                    # Get all Subscriptions
-                    $DefinedSubscriptions = Get-WTAzureADSubscription @Parameters
+                    # Get all Roles
+                    $DefinedRoles = Get-WTAzureADActivatedRole @Parameters
 
-                    if (!$DefinedSubscriptions) {
+                    if (!$DefinedRoles) {
                         $ErrorMessage = "Microsoft Graph did not return a valid response"
                         Write-Error $ErrorMessage
                         throw $ErrorMessage
@@ -135,12 +135,12 @@ function Export-WTAzureADSubscription {
             }
 
             # If there are policies
-            if ($DefinedSubscriptions) {
+            if ($DefinedRoles) {
                     
                 # Sort and filter (if applicable) policies
-                $DefinedSubscriptions = $DefinedSubscriptions | Sort-Object skuPartNumber
+                $DefinedRoles = $DefinedRoles | Sort-Object displayName
                 if (!$ExcludeExportCleanup) {
-                    $DefinedSubscriptions | Foreach-object {
+                    $DefinedRoles | Foreach-object {
                             
                         # Cleanup properties for export
                         foreach ($Property in $CleanUpProperties) {
@@ -150,18 +150,18 @@ function Export-WTAzureADSubscription {
                 }
 
                 # Export to JSON
-                Write-Host "Exporting Subscriptions (Count: $($DefinedSubscriptions.count))"
+                Write-Host "Exporting Roles (Count: $($DefinedRoles.count))"
                     
                 # If a file path is specified, output all policies in one JSON formatted file
                 if ($FilePath) {
-                    $DefinedSubscriptions | ConvertTo-Json -Depth 10 `
+                    $DefinedRoles | ConvertTo-Json -Depth 10 `
                     | Out-File -Force -FilePath $FilePath
                 }
                 else {
-                    foreach ($Subscription in $DefinedSubscriptions) {
+                    foreach ($Role in $DefinedRoles) {
 
                         # Remove characters not supported in Windows file names
-                        $SubscriptionDisplayName = $Subscription.skuPartNumber -replace $UnsupportedCharactersRegEx, "_"
+                        $RoleDisplayName = $Role.displayName -replace $UnsupportedCharactersRegEx, "_"
 
                         # If directory path does not exist for export, create it
                         $TestPath = Test-Path $Path -PathType Container
@@ -170,11 +170,11 @@ function Export-WTAzureADSubscription {
                         }
 
                         # Output current status
-                        Write-Host "Processing Subscription $Counter with file name: $SubscriptionDisplayName.json"
+                        Write-Host "Processing Role $Counter with file name: $RoleDisplayName.json"
                         
                         # Output individual policy JSON file
-                        $Subscription | ConvertTo-Json -Depth 10 `
-                        | Out-File -Force:$true -FilePath "$Path\$SubscriptionDisplayName.json"
+                        $Role | ConvertTo-Json -Depth 10 `
+                        | Out-File -Force:$true -FilePath "$Path\$RoleDisplayName.json"
 
                         # Increment counter
                         $Counter++
@@ -182,7 +182,7 @@ function Export-WTAzureADSubscription {
                 }
             }
             else {
-                $WarningMessage = "There are no Subscriptions to export"
+                $WarningMessage = "There are no Roles to export"
                 Write-Warning $WarningMessage
             }
         }

@@ -93,10 +93,11 @@ function New-WTAADRoleGroup {
                 if ($DisplayNames) {
                     $RoleGroups = foreach ($DisplayName in $DisplayNames) {
                         [PSCustomObject]@{
-                            displayName     = $Tag + "-" + $Service + ";" + $DisplayName + " Role Assignment"
-                            mailEnabled     = $False
-                            mailNickname    = $Service + "-" + (New-WTRandomString -CharacterLength 24 -Alphanumeric)
-                            securityEnabled = $true
+                            displayName        = $Tag + "-" + $Service + ";" + " " + $DisplayName + " Role Active Assignment"
+                            mailEnabled        = $False
+                            mailNickname       = $Service + "-" + (New-WTRandomString -CharacterLength 24 -Alphanumeric)
+                            securityEnabled    = $true
+                            isAssignableToRole = $true
                         }
                     }
                 }

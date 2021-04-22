@@ -55,7 +55,7 @@ function New-WTAzureADActivatedRole {
 
             # Variables
             $Activity = "Activating Azure AD Directory Roles"
-            $Uri = "identity/conditionalAccess/namedLocations"
+            $Uri = "directoryRoles"
             $CleanUpProperties = (
                 "id",
                 "createdDateTime",

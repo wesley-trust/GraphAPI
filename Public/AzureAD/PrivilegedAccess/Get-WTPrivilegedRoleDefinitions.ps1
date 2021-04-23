@@ -1,4 +1,4 @@
-function Get-WTPrivilegedRoleAssignment {
+function Get-WTPrivilegedRoleDefinitions {
     [CmdletBinding()]
     param (
         [parameter(
@@ -45,20 +45,7 @@ function Get-WTPrivilegedRoleAssignment {
             HelpMessage = "The Azure AD roles to get, this must contain valid id(s)"
         )]
         [Alias("id", "RoleID", "RoleIDs")]
-        [string[]]$IDs,
-        [parameter(
-            Mandatory = $false,
-            ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The Azure AD role assignment state to return, permanently active or eligible"
-        )]
-        [ValidateSet("Active", "Eligible", "All")]
-        [string]$AssignmentState = "All",
-        [parameter(
-            Mandatory = $false,
-            ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Specify whether to lookup and return the display name for the roles"
-        )]
-        [switch]$IncludeDisplayName
+        [string[]]$IDs
     )
     Begin {
         try {
@@ -66,8 +53,7 @@ function Get-WTPrivilegedRoleAssignment {
             $Functions = @(
                 "GraphAPI\Public\Authentication\Get-WTGraphAccessToken.ps1",
                 "GraphAPI\Private\Invoke-WTGraphGet.ps1",
-                "GraphAPI\Public\AzureAD\Organisation\Get-WTAzureADOrganisation.ps1",
-                "GraphAPI\Public\AzureAD\Roles\Get-WTAzureADActivatedRole.ps1"
+                "GraphAPI\Public\AzureAD\Organisation\Get-WTAzureADOrganisation.ps1"
             )
 
             # Function dot source
@@ -76,7 +62,7 @@ function Get-WTPrivilegedRoleAssignment {
             }
 
             # Variables
-            $Activity = "Getting Azure AD Privileged Role Assignments"
+            $Activity = "Getting Azure AD Privileged Role Definitions"
         }
         catch {
             Write-Error -Message $_.Exception
@@ -94,16 +80,16 @@ function Get-WTPrivilegedRoleAssignment {
                     -TenantDomain $TenantDomain
             }
             if ($AccessToken) {
-
+                
                 # If the Azure AD tenant is not specified, get Azure AD Organisation information
                 if (!$TenantId) {
                     $Organisation = Get-WTAzureADOrganisation -AccessToken $AccessToken
                     $TenantId = $Organisation.Id
                 }
-                
+
                 # Set resource
-                $Uri = "privilegedAccess/aadRoles/resources/$TenantId/roleAssignments"
-                
+                $Uri = "privilegedAccess/aadRoles/resources/$TenantId/roleDefinitions"
+
                 # Build Parameters
                 $Parameters = @{
                     AccessToken = $AccessToken
@@ -121,52 +107,7 @@ function Get-WTPrivilegedRoleAssignment {
 
                 # Return response if one is returned
                 if ($QueryResponse) {
-
-                    # If display names are required, get activated roles
-                    if ($IncludeDisplayName) {
-                        $ActivatedRoles = Get-WTAzureADActivatedRole -AccessToken $AccessToken
-                    
-                        # For each role assignment returned in the response
-                        $Objects = foreach ($Response in $QueryResponse) {
-                        
-                            # Get the properties of the role
-                            $ResponseProperties = ($Response | Get-Member -MemberType NoteProperty).Name
-                        
-                            # Build a new object containing the existing properties
-                            $ObjectProperties = @{}
-                            foreach ($Property in $ResponseProperties) {
-                                $ObjectProperties.Add($Property, $Response.$Property)
-                            }
-
-                            # If the role definition is in the list of activated role templates
-                            if ($Response.roleDefinitionId -in $ActivatedRoles.roleTemplateId) {
-                            
-                                # Filter to the specific template and add the display name to the object
-                                $ActivatedRole = foreach ($Role in $ActivatedRoles) {
-                                    if ($Response.roleDefinitionId -eq $Role.roleTemplateId) {
-                                        $Role
-                                    }
-                                }
-                                if ($ActivatedRole) {
-                                    $ObjectProperties.Add("displayName", $ActivatedRole.displayName)
-                                }
-                            }
-                            else {
-                                $ObjectProperties.Add("displayName", $null)
-                            }
-                        
-                            # Return the new object
-                            [PSCustomObject]$ObjectProperties
-                        }
-                    
-                        # Return the modified response object
-                        $Objects
-                    }
-                    else {
-                        
-                        # Return original response
-                        $QueryResponse
-                    }
+                    $QueryResponse
                 }
                 else {
                     $WarningMessage = "No Azure AD roles exist in Azure AD, or with parameters specified"

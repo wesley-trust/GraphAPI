@@ -160,10 +160,13 @@ function Invoke-WTApplySubscription {
                                     
                                     # Remove group (licences should no longer be assigned to deleted subscriptions)
                                     Remove-WTAADSubscriptionGroup @Parameters -IDs $SubscriptionGroups.id
-                                                                            
+
+                                    # Path to group config
+                                    $GroupsPath = $Path + "\..\Groups"
+                    
                                     # Remove group config
                                     foreach ($SubscriptionGroup in $SubscriptionGroups) {
-                                        Remove-Item -Path "$Path\Groups\$($SubscriptionGroup.displayName).json"
+                                        Remove-Item -Path "$GroupsPath\$($SubscriptionGroup.displayName).json"
                                     }
                                 }
                             }

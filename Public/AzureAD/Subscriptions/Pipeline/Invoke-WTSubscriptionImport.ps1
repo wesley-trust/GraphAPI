@@ -4,13 +4,13 @@ function Invoke-WTAzureADSubscriptionImport {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client ID for the Azure AD service principal with Conditional Access Graph permissions"
+            HelpMessage = "Client ID for the Azure AD service principal with the correct Graph permissions"
         )]
         [string]$ClientID,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client secret for the Azure AD service principal with Conditional Access Graph permissions"
+            HelpMessage = "Client secret for the Azure AD service principal with the correct Graph permissions"
         )]
         [string]$ClientSecret,
         [parameter(
@@ -53,7 +53,7 @@ function Invoke-WTAzureADSubscriptionImport {
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Specify whether to the groups used for CA subscriptions, should not be removed, if the policy is removed"
+            HelpMessage = "Specify whether the groups used for subscriptions, should not be removed, if the subscription is removed"
         )]
         [switch]
         $ExcludeGroupRemoval,
@@ -66,7 +66,7 @@ function Invoke-WTAzureADSubscriptionImport {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "If there are no subscriptions to import, whether to forcibly remove any defined subscriptions"
+            HelpMessage = "If there are no subscriptions, whether to forcibly remove any defined subscriptions"
         )]
         [switch]$Force,
         [parameter(

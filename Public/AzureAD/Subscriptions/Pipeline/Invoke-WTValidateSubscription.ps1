@@ -31,7 +31,7 @@ function Invoke-WTValidateSubscription {
     Begin {
         try {
             # Variables
-            $RequiredProperties = @("skuPartNumber")
+            $RequiredProperties = @("skuPartNumber","skuId","servicePlans","capabilityStatus","appliesTo")
         }
         catch {
             Write-Error -Message $_.Exception

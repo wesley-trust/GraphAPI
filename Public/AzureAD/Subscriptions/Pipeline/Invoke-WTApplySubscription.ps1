@@ -35,7 +35,7 @@ function Invoke-WTApplySubscription {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "The Subscription object"
+            HelpMessage = "The dependent service plan objects"
         )]
         [Alias("ServicePlan", "ServicePlans", "DependentServicePlan")]
         [PSCustomObject]$DependentServicePlans,
@@ -90,7 +90,7 @@ function Invoke-WTApplySubscription {
                 "GraphAPI\Public\AzureAD\Subscriptions\Get-WTAzureADSubscriptionDependency.ps1",
                 "GraphAPI\Public\AzureAD\Subscriptions\Export-WTAzureADSubscription.ps1",
                 "GraphAPI\Public\AzureAD\Groups\Export-WTAzureADGroup.ps1",
-                "GraphAPI\Public\AzureAD\Groups\Relationship\Get-WTAzureADGroupRelationship.ps1"
+                "GraphAPI\Public\AzureAD\Groups\Relationship\Get-WTAzureADGroupRelationship.ps1",
                 "GraphAPI\Public\AzureAD\Groups\Relationship\New-WTAzureADGroupRelationship.ps1"
             )
 
@@ -137,6 +137,13 @@ function Invoke-WTApplySubscription {
                     # If subscriptions require removing, pass the ids to the remove function
                     if ($DefinedSubscriptions.RemoveSubscriptions) {
                         
+                        # Get and tag group for the subscriptions
+                        $SubscriptionGroups = Get-WTAADSubscriptionGroup
+                        $TaggedSubscriptionGroups = Invoke-WTPropertyTagging -Tags $Tag -QueryResponse $SubscriptionGroups -PropertyToTag $PropertyToTag
+
+                        # Path to group config
+                        $GroupsPath = $Path + "\..\Groups"
+
                         # Remove subscription definition and groups
                         $SubscriptionSkuPartNumbers = $DefinedSubscriptions.RemoveSubscriptions.skuPartNumber
                         foreach ($SubscriptionSkuPartNumber in $SubscriptionSkuPartNumbers) {
@@ -145,29 +152,20 @@ function Invoke-WTApplySubscription {
                             # If the switch to not remove groups is not set, remove the groups for each Subscription also
                             if (!$ExcludeGroupRemoval) {
 
-                                # Get, tag and identify the group for the subscription
-                                $SubscriptionGroups = Get-WTAADSubscriptionGroup
-                                $TaggedSubscriptionGroups = Invoke-WTPropertyTagging -Tags $Tag -QueryResponse $SubscriptionGroups -PropertyToTag $PropertyToTag
-                                $SubscriptionGroups = $TaggedSubscriptionGroups | Where-Object {
+                                # Identify the group for the subscription
+                                $SubscriptionGroup = $null
+                                $SubscriptionGroup = $TaggedSubscriptionGroups | Where-Object {
                                     $_.$Tag -eq $SubscriptionSkuPartNumber
                                 }
 
-                                # Unique groups
-                                $SubscriptionGroups = $SubscriptionGroups | Sort-Object -Unique
-
-                                # If there are ids, pass all groups, which will perform a check and remove only subscription groups
-                                if ($SubscriptionGroups) {
+                                # If there is a group, pass the id which will perform a check and remove only subscription groups
+                                if ($SubscriptionGroup) {
                                     
                                     # Remove group (licences should no longer be assigned to deleted subscriptions)
-                                    Remove-WTAADSubscriptionGroup @Parameters -IDs $SubscriptionGroups.id
+                                    Remove-WTAADSubscriptionGroup @Parameters -IDs $SubscriptionGroup.id
 
-                                    # Path to group config
-                                    $GroupsPath = $Path + "\..\Groups"
-                    
                                     # Remove group config
-                                    foreach ($SubscriptionGroup in $SubscriptionGroups) {
-                                        Remove-Item -Path "$GroupsPath\$($SubscriptionGroup.displayName).json"
-                                    }
+                                    Remove-Item -Path "$GroupsPath\$($SubscriptionGroup.displayName).json"
                                 }
                             }
                         }

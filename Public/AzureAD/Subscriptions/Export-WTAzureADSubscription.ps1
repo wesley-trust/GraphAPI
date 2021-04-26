@@ -4,13 +4,13 @@ function Export-WTAzureADSubscription {
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client ID for the Azure AD service principal with Conditional Access Graph permissions"
+            HelpMessage = "Client ID for the Azure AD service principal with the correct Graph permissions"
         )]
         [string]$ClientID,
         [parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
-            HelpMessage = "Client secret for the Azure AD service principal with Conditional Access Graph permissions"
+            HelpMessage = "Client secret for the Azure AD service principal with the correct Graph permissions"
         )]
         [string]$ClientSecret,
         [parameter(

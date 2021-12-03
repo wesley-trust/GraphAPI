@@ -215,13 +215,15 @@ function Invoke-WTApplyCAPolicy {
                         $DisplayName
                     }
 
-                    # Create include and exclude groups
-                    $ConditionalAccessIncludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAIncludeGroupDisplayNames -GroupType Include
-                    $ConditionalAccessExcludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAExcludeGroupDisplayNames -GroupType Exclude
-                    
-                    # Tag groups
-                    $TaggedCAIncludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessIncludeGroups -PropertyToTag $PropertyToTag
-                    $TaggedCAExcludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessExcludeGroups -PropertyToTag $PropertyToTag
+                    # If there are groups to be created (as not all policies have groups), create and tag groups
+                    if ($CAIncludeGroupDisplayNames){
+                        $ConditionalAccessIncludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAIncludeGroupDisplayNames -GroupType Include
+                        $TaggedCAIncludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessIncludeGroups -PropertyToTag $PropertyToTag
+                    }
+                    if ($CAExcludeGroupDisplayNames){
+                        $ConditionalAccessExcludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAExcludeGroupDisplayNames -GroupType Exclude
+                        $TaggedCAExcludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessExcludeGroups -PropertyToTag $PropertyToTag
+                    }
 
                     # For each policy, perform policy specific changes
                     $CreatePolicies = foreach ($Policy in $TaggedPolicies) {

@@ -153,20 +153,18 @@ function Invoke-WTApplyCAPolicy {
                                 
                             # Policy Include groups
                             $PolicyIncludeGroupIDs = $ConditionalAccessPolicies.RemovePolicies.conditions.users.includeGroups
-                                
+                            
+                            # If there are ids, check and remove only Conditional Access groups
+                            if ($PolicyIncludeGroupIDs) {
+                                Remove-WTCAGroup @Parameters -IDs $PolicyIncludeGroupIDs
+                            }
+
                             # Policy Exclude groups
                             $PolicyExcludeGroupIDs = $ConditionalAccessPolicies.RemovePolicies.conditions.users.excludeGroups
 
-                            # Combined and unique list
-                            $PolicyGroupIDs = @(
-                                $PolicyIncludeGroupIDs,
-                                $PolicyExcludeGroupIDs
-                            )
-                            $PolicyGroupIDs = $PolicyGroupIDs | Sort-Object -Unique
-
-                            # If there are ids, pass all groups, which will perform a check and remove only Conditional Access groups
-                            if ($PolicyGroupIDs) {
-                                Remove-WTCAGroup @Parameters -IDs $PolicyGroupIDs
+                            # If there are ids, check and remove only Conditional Access groups
+                            if ($PolicyExcludeGroupIDs) {
+                                Remove-WTCAGroup @Parameters -IDs $PolicyExcludeGroupID
                             }
                         }
                     }
@@ -220,11 +218,11 @@ function Invoke-WTApplyCAPolicy {
                     }
 
                     # If there are groups to be created (as not all policies have groups), create and tag groups
-                    if ($CAIncludeGroupDisplayNames){
+                    if ($CAIncludeGroupDisplayNames) {
                         $ConditionalAccessIncludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAIncludeGroupDisplayNames -GroupType Include
                         $TaggedCAIncludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessIncludeGroups -PropertyToTag $PropertyToTag
                     }
-                    if ($CAExcludeGroupDisplayNames){
+                    if ($CAExcludeGroupDisplayNames) {
                         $ConditionalAccessExcludeGroups = New-WTCAGroup @Parameters -DisplayNames $CAExcludeGroupDisplayNames -GroupType Exclude
                         $TaggedCAExcludeGroups = Invoke-WTPropertyTagging -Tags $Tags -QueryResponse $ConditionalAccessExcludeGroups -PropertyToTag $PropertyToTag
                     }

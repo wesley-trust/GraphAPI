@@ -164,7 +164,7 @@ function Invoke-WTApplyCAPolicy {
 
                             # If there are ids, check and remove only Conditional Access groups
                             if ($PolicyExcludeGroupIDs) {
-                                Remove-WTCAGroup @Parameters -IDs $PolicyExcludeGroupID
+                                Remove-WTCAGroup @Parameters -IDs $PolicyExcludeGroupIDs
                             }
                         }
                     }

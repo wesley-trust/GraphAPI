@@ -156,9 +156,13 @@ function Invoke-WTApplyCAPolicy {
                                 
                             # Policy Exclude groups
                             $PolicyExcludeGroupIDs = $ConditionalAccessPolicies.RemovePolicies.conditions.users.excludeGroups
-                                
-                            # Combined unique list
-                            $PolicyGroupIDs = $PolicyIncludeGroupIDs + $PolicyExcludeGroupIDs | Sort-Object -Unique
+
+                            # Combined and unique list
+                            $PolicyGroupIDs = @(
+                                $PolicyIncludeGroupIDs,
+                                $PolicyExcludeGroupIDs
+                            )
+                            $PolicyGroupIDs = $PolicyGroupIDs | Sort-Object -Unique
 
                             # If there are ids, pass all groups, which will perform a check and remove only Conditional Access groups
                             if ($PolicyGroupIDs) {

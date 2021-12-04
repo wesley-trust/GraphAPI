@@ -138,22 +138,27 @@ function Invoke-WTValidateCAPolicy {
 
                         # Check for missing conditions (under applications)
                         $ApplicationsProperties = $null
-                        $ApplicationsProperties = ($Policy.conditions.applications | Get-Member -MemberType NoteProperty).name
                         $ConditionsCheck = $null
+                        if ($Policy.conditions.applications) {
+                            $ApplicationsProperties = ($Policy.conditions.applications | Get-Member -MemberType NoteProperty).name
 
-                        # For each condition, return true if a value exists for each condition checked
-                        $ConditionsCheck = foreach ($Condition in $ApplicationsProperties) {
-                            if ($Policy.conditions.applications.$Condition) {
-                                $true
+                            # For each condition, return true if a value exists for each condition checked
+                            $ConditionsCheck = foreach ($Condition in $ApplicationsProperties) {
+                                if ($Policy.conditions.applications.$Condition) {
+                                    $true
+                                }
+                            }
+    
+                            # If true is not in the condition check variable, it means there were no conditions that had a value
+                            if ($true -notin $ConditionsCheck) {
+                                $ConditionsCheck = Write-Output "No application conditions specified, at least one must be specified"
+                            }
+                            else {
+                                $ConditionsCheck = $null
                             }
                         }
-    
-                        # If true is not in the condition check variable, it means there were no conditions that had a value
-                        if ($true -notin $ConditionsCheck) {
-                            $ConditionsCheck = Write-Output "No application conditions specified, at least one must be specified"
-                        }
                         else {
-                            $ConditionsCheck = $null
+                            $ConditionsCheck = Write-Output "No application conditions specified, at least one must be specified"
                         }
     
                         # Build and return object

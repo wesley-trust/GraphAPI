@@ -123,10 +123,8 @@ function Invoke-WTValidateCAPolicy {
                         # Check whether each required property has a value, if not, return property
                         $PropertyValueCheck = $null
                         $PropertyValueCheck = foreach ($Property in $RequiredProperties) {
-                            if ($Policy.$Property) {
-                                if ($null -eq $Policy.$Property) {
-                                    $Property
-                                }
+                            if ($null -eq $Policy.$Property) {
+                                $Property
                             }
                         }
 

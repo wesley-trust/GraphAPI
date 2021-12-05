@@ -171,11 +171,11 @@ function Invoke-WTPlanCAPolicy {
                                             $ExistingPolicy = $ExistingPolicies | Where-Object { $_.id -eq $Policy.id }
                                     
                                             # Generate JSON hash for existing policy
-                                            $ExistingPolicy = $ExistingPolicy | ConvertToJson -Depth 10
+                                            $ExistingPolicy = $ExistingPolicy | ConvertTo-Json -Depth 10
                                             $ExistingPolicyHash = Get-FileHash -InputStream ([System.IO.MemoryStream]::New([System.Text.Encoding]::ASCII.GetBytes($ExistingPolicy)))
                                     
                                             # Generate JSON hash for update policy
-                                            $UpdatePolicy = $Policy | ConvertToJson -Depth 10
+                                            $UpdatePolicy = $Policy | ConvertTo-Json -Depth 10
                                             $UpdatePolicyHash = Get-FileHash -InputStream ([System.IO.MemoryStream]::New([System.Text.Encoding]::ASCII.GetBytes($UpdatePolicy)))
 
                                             # Compare policies, and return the policy should the hashes not match

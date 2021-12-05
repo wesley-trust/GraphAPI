@@ -33,6 +33,12 @@ function Invoke-WTPlanCAPolicy {
         )]
         [Alias('ConditionalAccessPolicy', 'PolicyDefinition')]
         [PSCustomObject]$ConditionalAccessPolicies,
+        [parameter(
+            Mandatory = $false,
+            ValueFromPipeLineByPropertyName = $true,
+            HelpMessage = "Specify whether to compare policy differences by calculating the policy hash, instead of using Compare-Object"
+        )]
+        [bool]$UseHashComparison = $true,
         [Parameter(
             Mandatory = $false,
             ValueFromPipeLineByPropertyName = $true,
@@ -73,6 +79,16 @@ function Invoke-WTPlanCAPolicy {
             foreach ($Function in $Functions) {
                 . $Function
             }
+
+            # Variables
+            $PropertiesToCompare = @(
+                "id", 
+                "displayName", 
+                "state", 
+                "sessionControls", 
+                "conditions", 
+                "grantControls"
+            )
 
         }
         catch {
@@ -143,23 +159,48 @@ function Invoke-WTPlanCAPolicy {
                         if ($UpdateExistingPolicies) {
                             if ($ConditionalAccessPolicies) {
                                 
-                                # Check whether the policies that could be updated have valid ids (so can be updated, ignore the rest)
+                                # Check whether the policies that could be updated have valid ids (so can be updated, ignoring the rest)
                                 $UpdatePolicies = foreach ($Policy in $ConditionalAccessPolicies) {
                                     if ($Policy.id -in $ExistingPolicies.id) {
-                                        $Policy
+                                        
+                                        # Compare the hashes of the policies, or just return policies that exist
+                                        if ($UseHashComparison) {
+                                            
+                                            # Filter to matching existing policy
+                                            $ExistingPolicy = $null
+                                            $ExistingPolicy = $ExistingPolicies | Where-Object { $_.id -eq $Policy.id }
+                                    
+                                            # Generate JSON hash for existing policy
+                                            $ExistingPolicy = $ExistingPolicy | ConvertToJson -Depth 10
+                                            $ExistingPolicyHash = Get-FileHash -InputStream ([System.IO.MemoryStream]::New([System.Text.Encoding]::ASCII.GetBytes($ExistingPolicy)))
+                                    
+                                            # Generate JSON hash for update policy
+                                            $UpdatePolicy = $Policy | ConvertToJson -Depth 10
+                                            $UpdatePolicyHash = Get-FileHash -InputStream ([System.IO.MemoryStream]::New([System.Text.Encoding]::ASCII.GetBytes($UpdatePolicy)))
+
+                                            # Compare policies, and return the policy should the hashes not match
+                                            if ($UpdatePolicyHash.hash -ne $ExistingPolicyHash.hash) {
+                                                $Policy
+                                            }
+                                        }
+                                        else {
+                                            $Policy
+                                        }
                                     }
                                 }
 
-                                # If policies exist, with ids that matched the import
-                                if ($UpdatePolicies) {
-                            
-                                    # Compare again, with all mandatory property elements for differences
-                                    $PolicyPropertyComparison = Compare-Object `
-                                        -ReferenceObject $ExistingPolicies `
-                                        -DifferenceObject $UpdatePolicies `
-                                        -Property id, displayName, state, sessionControls, conditions, grantControls
+                                # If hash comparison should not be used, and policies exist to be compared, compare them
+                                if (!$UseHashComparison) {
+                                    if ($UpdatePolicies) {
 
-                                    $UpdatePolicies = $PolicyPropertyComparison | Where-Object { $_.sideindicator -eq "=>" }
+                                        # Compare with specified properties for differences
+                                        $PolicyPropertyComparison = Compare-Object `
+                                            -ReferenceObject $ExistingPolicies `
+                                            -DifferenceObject $UpdatePolicies `
+                                            -Property $PropertiesToCompare
+    
+                                        $UpdatePolicies = $PolicyPropertyComparison | Where-Object { $_.sideindicator -eq "=>" }
+                                    }
                                 }
                             }
                         }

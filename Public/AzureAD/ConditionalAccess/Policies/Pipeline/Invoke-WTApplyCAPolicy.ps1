@@ -178,6 +178,11 @@ function Invoke-WTApplyCAPolicy {
                     # If policies require updating, pass the ids
                     if ($ConditionalAccessPolicies.UpdatePolicies) {
                         Edit-WTCAPolicy @Parameters -ConditionalAccessPolicies $ConditionalAccessPolicies.UpdatePolicies -PolicyState $PolicyState
+                        
+                        # Export policies
+                        Export-WTCAPolicy -ConditionalAccessPolicies $ConditionalAccessPolicies.UpdatePolicies `
+                            -Path $Path `
+                            -ExcludeExportCleanup
                     }
                     else {
                         $WarningMessage = "No policies will be updated, as none exist that are different to the import"
@@ -324,22 +329,28 @@ function Invoke-WTApplyCAPolicy {
                     $GroupsPath = $Path + "\..\Groups"
                     
                     # Export include groups if any exist
-                    if ($ConditionalAccessIncludeGroups){
+                    if ($ConditionalAccessIncludeGroups) {
                         Export-WTAzureADGroup -AzureADGroups $ConditionalAccessIncludeGroups `
-                        -Path $GroupsPath `
-                        -ExcludeExportCleanup `
-                        -DirectoryTag "ENV"
+                            -Path $GroupsPath `
+                            -ExcludeExportCleanup `
+                            -DirectoryTag "ENV"
                     }
 
                     # Export exclude groups if any exist
-                    if ($ConditionalAccessExcludeGroups){
+                    if ($ConditionalAccessExcludeGroups) {
                         Export-WTAzureADGroup -AzureADGroups $ConditionalAccessExcludeGroups `
-                        -Path $GroupsPath `
-                        -ExcludeExportCleanup `
-                        -DirectoryTag "ENV"
+                            -Path $GroupsPath `
+                            -ExcludeExportCleanup `
+                            -DirectoryTag "ENV"
                     }
-                    
-                    # If executing in a pipeline, stage, commit and push the changes back to the repo
+                }
+                else {
+                    $WarningMessage = "No policies will be created, as none exist that are different to the import"
+                    Write-Warning $WarningMessage
+                }
+
+                # If executing in a pipeline, stage, commit and push any changes back to the repo
+                if ($ConditionalAccessPolicies.CreatePolicies -or $ConditionalAccessPolicies.UpdatePolicies) {
                     if ($Pipeline) {
                         Write-Host "Commit configuration changes post pipeline deployment"
                         Set-Location ${ENV:REPOHOME}
@@ -349,10 +360,6 @@ function Invoke-WTApplyCAPolicy {
                         git commit -a -m "Commit configuration changes post deployment [skip ci]"
                         git push https://${ENV:GITHUBPAT}@github.com/wesley-trust/${ENV:GITHUBCONFIGREPO}.git HEAD:${ENV:BRANCH}
                     }
-                }
-                else {
-                    $WarningMessage = "No policies will be created, as none exist that are different to the import"
-                    Write-Warning $WarningMessage
                 }
             }
             else {

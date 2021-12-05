@@ -204,7 +204,7 @@ function Invoke-WTPlanCAPolicy {
                                 }
 
                                 # If hash comparison should not be used, and policies exist to be compared, compare them
-                                # This will only compare the parent level, and not the contents of nested properties
+                                # This will only compare the root level, and not the contents of nested properties
                                 if (!$UseHashComparison) {
                                     if ($UpdatePolicies) {
 

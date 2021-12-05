@@ -89,7 +89,11 @@ function Invoke-WTPlanCAPolicy {
                 "conditions", 
                 "grantControls"
             )
-
+            $CleanUpProperties = (
+                "createdDateTime",
+                "modifiedDateTime",
+                "@odata.context"
+            )
         }
         catch {
             Write-Error -Message $_.Exception
@@ -170,10 +174,20 @@ function Invoke-WTPlanCAPolicy {
                                             $ExistingPolicy = $null
                                             $ExistingPolicy = $ExistingPolicies | Where-Object { $_.id -eq $Policy.id }
                                     
+                                            # Remove properties that should not be used for hash generation
+                                            foreach ($Property in $CleanUpProperties) {
+                                                $ExistingPolicy.PSObject.Properties.Remove("$Property")
+                                            }
+
                                             # Generate JSON hash for existing policy
                                             $ExistingPolicy = $ExistingPolicy | ConvertTo-Json -Depth 10
                                             $ExistingPolicyHash = Get-FileHash -InputStream ([System.IO.MemoryStream]::New([System.Text.Encoding]::ASCII.GetBytes($ExistingPolicy)))
                                     
+                                            # Remove properties that should not be used for hash generation
+                                            foreach ($Property in $CleanUpProperties) {
+                                                $Policy.PSObject.Properties.Remove("$Property")
+                                            }
+
                                             # Generate JSON hash for update policy
                                             $UpdatePolicy = $Policy | ConvertTo-Json -Depth 10
                                             $UpdatePolicyHash = Get-FileHash -InputStream ([System.IO.MemoryStream]::New([System.Text.Encoding]::ASCII.GetBytes($UpdatePolicy)))
@@ -190,6 +204,7 @@ function Invoke-WTPlanCAPolicy {
                                 }
 
                                 # If hash comparison should not be used, and policies exist to be compared, compare them
+                                # This will only compare the parent level, and not the contents of nested properties
                                 if (!$UseHashComparison) {
                                     if ($UpdatePolicies) {
 

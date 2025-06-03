@@ -59,7 +59,7 @@ function Invoke-WTGraphQuery {
                 }
 
                 $HeaderParameters = @{
-                    "Content-Type"  = "application\json"
+                    "Content-Type"  = "application/json"
                     "Authorization" = "Bearer $AccessToken"
                 }
 
